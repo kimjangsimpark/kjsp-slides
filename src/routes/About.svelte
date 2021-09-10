@@ -3,7 +3,7 @@
     index: string | number;
   }
 
-  export let params:IAboutParams ;
+  export let params: IAboutParams;
 </script>
 
 <main>
