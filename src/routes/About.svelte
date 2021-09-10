@@ -1,5 +1,9 @@
 <script lang="ts">
-  export let params = {};
+  interface IAboutParams {
+    index: string | number;
+  }
+
+  export let params:IAboutParams ;
 </script>
 
 <main>
