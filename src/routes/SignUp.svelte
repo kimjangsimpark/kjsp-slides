@@ -1,14 +1,8 @@
 <script lang="ts">
-  interface IAboutParams {
-    index: string | number;
-  }
-
-  export let params: IAboutParams;
 </script>
 
 <main>
-  <h1>About</h1>
-  <h2>{params.index}</h2>
+  <h1>Sign Up</h1>
 </main>
 
 <style lang="scss">
