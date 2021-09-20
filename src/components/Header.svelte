@@ -53,12 +53,18 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    height: 64px;
+    height: $global-header-heihgt;
     padding: {
       left: 16px;
       right: 16px;
     }
+    background-color: #ffffff;
     border-bottom: 1px solid $gray-line-2;
+
+    :global(a.active) {
+      font-weight: 500;
+      color: $primary-color;
+    }
 
     .logo {
       a {
@@ -94,6 +100,7 @@
               right: 16px;
               bottom: 8px;
             }
+
             &:hover {
               color: $primary-color;
             }
