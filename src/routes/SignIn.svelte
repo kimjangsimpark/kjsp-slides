@@ -7,6 +7,9 @@
 
 <style lang="scss">
   main {
+    display: flex;
+    justify-content: center;
+    margin-top: 100px;
     padding: 20px;
 
     h1 {
