@@ -1,8 +1,33 @@
 <script lang="ts">
+  import AccountForm from '@/components/AccountForm.svelte';
+
+  let email: string;
+  let password: string;
+
+  $: disablesSubmitButton = !(email && password);
 </script>
 
 <main>
-  <h1>Sign In</h1>
+  <AccountForm>
+    <h2 slot="formTitle">Sign in</h2>
+    <input
+      type="text"
+      name="email"
+      id="email"
+      slot="email"
+      placeholder=" "
+      bind:value={email}
+    />
+    <input
+      type="password"
+      name="password"
+      id="password"
+      slot="password"
+      placeholder=" "
+      bind:value={password}
+    />
+    <button slot="submitButton" disabled={disablesSubmitButton}>Sign in</button>
+  </AccountForm>
 </main>
 
 <style lang="scss">
@@ -11,12 +36,5 @@
     justify-content: center;
     margin-top: 100px;
     padding: 20px;
-
-    h1 {
-      font: {
-        weight: 100;
-        size: 10rem;
-      }
-    }
   }
 </style>
