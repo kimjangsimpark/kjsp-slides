@@ -1,4 +1,9 @@
+<script lang="ts">
+  import TopMenuBar from '@/components/editor/TopMenuBar.svelte';
+</script>
+
 <main>
+  <TopMenuBar />
   <h1>Edit</h1>
 </main>
 
