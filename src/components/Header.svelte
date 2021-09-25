@@ -5,7 +5,7 @@
 
 <header class="header">
   <div class="logo">
-    <a href="/">
+    <a href="/" use:link>
       <svg
         data-name="Layer 1"
         id="Layer_1"
