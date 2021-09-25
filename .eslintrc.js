@@ -33,5 +33,6 @@ module.exports = {
   ignorePatterns: ['node_modules'],
   rules: {
     quotes: ['error', 'single'],
+    '@typescript-eslint/no-unsafe-assignment': 'off',
   },
 };
