@@ -1,8 +1,26 @@
 <script lang="ts">
   import AccountForm from '@/components/AccountForm.svelte';
+  import { userInfo } from '@/store/user';
+  import { push } from 'svelte-spa-router';
 
   let email: string;
   let password: string;
+
+  const handleClickSignInButton = () => {
+    signIn();
+  };
+
+  const signIn = () => {
+    // @todo 서버와 통신
+    userInfo.set({
+      username: 'Tim Cook',
+      email,
+      accessToken: 'aaa.bbb.ccc1',
+      isAuthenticated: true,
+    });
+    localStorage.setItem('accessToken', 'aaa.bbb.ccc1');
+    void push('/edit');
+  };
 
   $: disablesSubmitButton = !(email && password);
 </script>
@@ -26,7 +44,11 @@
       placeholder=" "
       bind:value={password}
     />
-    <button slot="submitButton" disabled={disablesSubmitButton}>Sign in</button>
+    <button
+      slot="submitButton"
+      disabled={disablesSubmitButton}
+      on:click={handleClickSignInButton}>Sign in</button
+    >
   </AccountForm>
 </main>
 

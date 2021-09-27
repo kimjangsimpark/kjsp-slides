@@ -1,6 +1,20 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { link } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
+  import { userInfo } from '@/store/user';
+
+  onMount(() => {
+    console.log('mount!');
+  });
+
+  let showsSubMenu = false;
+
+  const handleProfileClick = () => {
+    showsSubMenu = !showsSubMenu;
+  };
+
+  $: hasUserInfo = $userInfo.isAuthenticated;
 </script>
 
 <header class="header">
@@ -39,11 +53,23 @@
     </a>
   </div>
   <nav class="header-navigation">
-    <ul>
+    <ul class="page-list">
       <li><a href="/price" use:link use:active>Price</a></li>
-      <li><a href="/sign-in" use:link use:active>Sign In</a></li>
-      <li><a href="/sign-up" use:link use:active>Sign Up</a></li>
+      {#if !hasUserInfo}
+        <li><a href="/sign-in" use:link use:active>Sign In</a></li>
+        <li><a href="/sign-up" use:link use:active>Sign Up</a></li>
+      {/if}
     </ul>
+    {#if hasUserInfo}
+      <div class="user-info" on:click={handleProfileClick}>
+        <div class:active={showsSubMenu}>{$userInfo.username}</div>
+        <div class="more-icon">=</div>
+        <ul class="user-info-sub-menu" class:show={showsSubMenu}>
+          <li><a href="/my/setting">Setting</a></li>
+          <li><button>Logout</button></li>
+        </ul>
+      </div>
+    {/if}
   </nav>
 </header>
 
@@ -58,7 +84,7 @@
       left: 16px;
       right: 16px;
     }
-    background-color: #ffffff;
+    background-color: $background-color-light;
     border-bottom: 1px solid $gray-line-2;
 
     :global(a.active) {
@@ -88,9 +114,15 @@
     }
 
     .header-navigation {
-      ul {
+      display: flex;
+      height: 100%;
+
+      ul.page-list {
         display: flex;
+        align-items: center;
+        height: 100%;
         font-weight: 300;
+
         li {
           a {
             display: block;
@@ -107,8 +139,64 @@
           }
 
           &:active {
+            transform: translateY(0.05rem);
             border-radius: 3px;
-            background-color: rgb(248, 248, 248);
+            background-color: #f8f8f8;
+            box-shadow: inset 1px 1px 1px $gray-line-1;
+          }
+        }
+      }
+
+      .user-info {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: {
+          left: 16px;
+          top: 8px;
+          right: 16px;
+          bottom: 8px;
+        }
+        cursor: pointer;
+
+        &:hover,
+        .active {
+          color: $primary-color;
+        }
+
+        .more-icon {
+          margin-left: 8px;
+        }
+
+        .user-info-sub-menu {
+          display: none;
+          position: absolute;
+          top: 64px;
+          right: 10px;
+
+          width: 90%;
+
+          &.show {
+            display: block;
+          }
+
+          li {
+            width: 100%;
+            font-size: 14px;
+
+            a {
+              display: block;
+              padding: 10px;
+              text-align: center;
+              background-color: inherit;
+            }
+
+            button {
+              width: 100%;
+              padding: 10px;
+              border: none;
+              background-color: inherit;
+            }
           }
         }
       }
