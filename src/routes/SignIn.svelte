@@ -2,6 +2,7 @@
   import AccountForm from '@/components/AccountForm.svelte';
   import { userInfo } from '@/store/user';
   import { push } from 'svelte-spa-router';
+  import AuthObserver from '@/components/auth/AuthObserver.svelte';
 
   let email: string;
   let password: string;
@@ -15,8 +16,6 @@
     userInfo.set({
       username: 'Tim Cook',
       email,
-      accessToken: 'aaa.bbb.ccc1',
-      isAuthenticated: true,
     });
     localStorage.setItem('accessToken', 'aaa.bbb.ccc1');
     void push('/edit');
@@ -24,6 +23,8 @@
 
   $: disablesSubmitButton = !(email && password);
 </script>
+
+<AuthObserver isPublic={true} allowsAuthoriedUser={true} />
 
 <main>
   <AccountForm>

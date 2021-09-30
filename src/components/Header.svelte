@@ -13,8 +13,6 @@
   const handleProfileClick = () => {
     showsSubMenu = !showsSubMenu;
   };
-
-  $: hasUserInfo = $userInfo.isAuthenticated;
 </script>
 
 <header class="header">
@@ -55,12 +53,12 @@
   <nav class="header-navigation">
     <ul class="page-list">
       <li><a href="/price" use:link use:active>Price</a></li>
-      {#if !hasUserInfo}
+      {#if !$userInfo}
         <li><a href="/sign-in" use:link use:active>Sign In</a></li>
         <li><a href="/sign-up" use:link use:active>Sign Up</a></li>
       {/if}
     </ul>
-    {#if hasUserInfo}
+    {#if $userInfo}
       <div class="user-info" on:click={handleProfileClick}>
         <div class:active={showsSubMenu}>{$userInfo.username}</div>
         <div class="more-icon">=</div>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AuthObserver from '@/components/auth/AuthObserver.svelte';
   import AccountForm from '@/components/AccountForm.svelte';
 
   let name: string;
@@ -7,6 +8,8 @@
 
   $: disablesSubmitButton = !(name && email && password);
 </script>
+
+<AuthObserver isPublic={true} allowsAuthoriedUser={true} />
 
 <main>
   <AccountForm>
