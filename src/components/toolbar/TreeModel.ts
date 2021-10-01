@@ -1,6 +1,6 @@
 export interface ToolbarModel {
   title: string;
-  children: TreeModel;
+  children: TreeModel[];
 }
 
 export interface TreeModel {
