@@ -1,17 +1,31 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { link } from 'svelte-spa-router';
+  import { link, push } from 'svelte-spa-router';
   import active from 'svelte-spa-router/active';
   import { userInfo } from '@/store/user';
 
-  onMount(() => {
-    console.log('mount!');
-  });
-
   let showsSubMenu = false;
+
+  const handleWindowClick = (e: MouseEvent) => {
+    if ((e.target as HTMLElement).matches('.user-info')) return;
+
+    showsSubMenu = false;
+    window.removeEventListener('click', handleWindowClick);
+  };
 
   const handleProfileClick = () => {
     showsSubMenu = !showsSubMenu;
+
+    window.addEventListener('click', handleWindowClick);
+  };
+
+  const handleLogoutButtonClick = () => {
+    const acceptLogout = confirm('로그아웃 하시겠어요?');
+
+    if (!acceptLogout) return;
+
+    localStorage.removeItem('accessToken');
+    userInfo.set(null);
+    void push('/');
   };
 </script>
 
@@ -64,7 +78,7 @@
         <div class="more-icon">=</div>
         <ul class="user-info-sub-menu" class:show={showsSubMenu}>
           <li><a href="/my/setting">Setting</a></li>
-          <li><button>Logout</button></li>
+          <li><button on:click={handleLogoutButtonClick}>Logout</button></li>
         </ul>
       </div>
     {/if}
@@ -156,6 +170,14 @@
           bottom: 8px;
         }
         cursor: pointer;
+
+        & div {
+          pointer-events: none;
+        }
+
+        & button {
+          pointer-events: all;
+        }
 
         &:hover,
         .active {
