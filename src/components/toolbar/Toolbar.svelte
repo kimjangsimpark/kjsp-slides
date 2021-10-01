@@ -1,26 +1,41 @@
-<script type="ts" context="module">
+<script type="ts">
   import Tree from './Tree.svelte';
-  import type { ToolbarModel, TreeModel } from './TreeModel';
+  import type { ToolbarModel } from './TreeModel';
 
   let currentActive: number | undefined;
   const items: ToolbarModel[] = [
     {
       title: 'File',
-      children: [],
+      children: [
+        {
+          title: 'item',
+        },
+      ],
     },
     {
       title: 'Edit',
-      children: [],
+      children: [
+        {
+          title: 'item',
+        },
+      ],
     },
     {
       title: 'View',
-      children: [],
+      children: [
+        {
+          title: 'item',
+        },
+      ],
     },
   ];
 
-  const onToolbarClick = (e: MouseEvent, item: ToolbarModel, index: number) => {
-    currentActive = index;
-    console.log(currentActive);
+  const onToolbarClick = (index: number) => {
+    if (currentActive === index) {
+      currentActive = undefined;
+    } else {
+      currentActive = index;
+    }
   };
 </script>
 
@@ -30,10 +45,10 @@
       <div
         class="toolbar-item"
         class:active={currentActive === index}
-        on:click={e => onToolbarClick(e, item, index)}
+        on:click={() => onToolbarClick(index)}
       >
         {item.title}
-        {#if currentActive === index}
+        {#if currentActive === index && item.children}
           <Tree models={item.children} />
         {/if}
       </div>
@@ -52,6 +67,7 @@
       &:active {
         background-color: yellow;
       }
+      position: relative;
       padding: 5px;
     }
   }

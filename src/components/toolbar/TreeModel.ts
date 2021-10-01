@@ -1,5 +1,6 @@
 export interface ToolbarModel {
   title: string;
+  active?: boolean;
   children: TreeModel[];
 }
 
