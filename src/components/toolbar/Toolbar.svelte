@@ -110,7 +110,9 @@
         class:active={currentActive === index}
         on:click={() => onToolbarClick(index)}
       >
-        {item.title}
+        <div class="toolbar-item-title">
+          {item.title}
+        </div>
         {#if currentActive === index && item.children}
           <Tree models={item.children} parent={null} />
         {/if}
@@ -124,14 +126,13 @@
     display: flex;
 
     .toolbar-item {
-      &:hover {
+      .toolbar-item-title:hover {
         opacity: 0.45;
       }
-      &:active {
+      .toolbar-item-title:active {
         background-color: yellow;
       }
       position: relative;
-      padding: 5px;
     }
   }
 </style>
