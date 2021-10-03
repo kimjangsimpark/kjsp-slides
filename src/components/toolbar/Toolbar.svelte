@@ -102,7 +102,7 @@
   };
 </script>
 
-<div>
+<div id="toolbar-container">
   <div class="toolbar-root">
     {#each items as item, index}
       <div
@@ -122,6 +122,10 @@
 </div>
 
 <style type="scss">
+  #toolbar-container {
+    box-shadow: 0 2px 6px 0 rgb(0 0 0 / 10%);
+  }
+
   .toolbar-root {
     display: flex;
     -moz-user-select: -moz-none;
