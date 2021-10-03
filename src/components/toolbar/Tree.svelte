@@ -65,6 +65,16 @@
       justify-content: space-between;
       position: relative;
 
+      -moz-user-select: -moz-none;
+      -khtml-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+
+      &:not(:first-child) {
+        margin-top: 10px;
+      }
+
       .tree-item-title {
         flex: 1 1 auto;
         &:hover {

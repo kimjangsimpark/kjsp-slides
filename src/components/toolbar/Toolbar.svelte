@@ -124,13 +124,19 @@
 <style type="scss">
   .toolbar-root {
     display: flex;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
     .toolbar-item {
-      .toolbar-item-title:hover {
-        opacity: 0.45;
-      }
-      .toolbar-item-title:active {
-        background-color: yellow;
+      cursor: pointer;
+      .toolbar-item-title {
+        margin: 10px;
+        &:hover {
+          opacity: 0.45;
+        }
       }
       position: relative;
     }
