@@ -31,7 +31,7 @@
 
 <header class="header">
   <div class="logo">
-    <a href="/" use:link>
+    <a href="/home" use:link>
       <svg
         data-name="Layer 1"
         id="Layer_1"
@@ -66,10 +66,10 @@
   </div>
   <nav class="header-navigation">
     <ul class="page-list">
-      <li><a href="/price" use:link use:active>Price</a></li>
+      <li><a href="/home/price" use:link use:active>Price</a></li>
       {#if !$userInfo}
-        <li><a href="/sign-in" use:link use:active>Sign In</a></li>
-        <li><a href="/sign-up" use:link use:active>Sign Up</a></li>
+        <li><a href="/home/sign-in" use:link use:active>Sign In</a></li>
+        <li><a href="/home/sign-up" use:link use:active>Sign Up</a></li>
       {/if}
     </ul>
     {#if $userInfo}
