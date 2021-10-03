@@ -13,10 +13,10 @@
       userInfo.set(null);
       localStorage.removeItem('accessToken');
 
-      return isPublic ? null : push('/sign-in');
+      return isPublic ? null : push('/home/sign-in');
     } else if (accessToken) {
       // 이미 로그인한 사용자는 진입할 수 없는 페이지
-      if (allowsAuthoriedUser) return push('/');
+      if (allowsAuthoriedUser) return push('/home');
       // accessToken가지고 call GET userInfo
       // token으로 get userInfo 실패시 -> 홈화면 || 로그인화면으로 리다이렉트
       userInfo.set(null);

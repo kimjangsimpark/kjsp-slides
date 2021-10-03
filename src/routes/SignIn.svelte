@@ -18,7 +18,7 @@
       email,
     });
     localStorage.setItem('accessToken', 'aaa.bbb.ccc1');
-    void push('/edit');
+    void push('/home');
   };
 
   $: disablesSubmitButton = !(email && password);

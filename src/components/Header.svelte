@@ -25,7 +25,7 @@
 
     localStorage.removeItem('accessToken');
     userInfo.set(null);
-    void push('/');
+    void push('/home');
   };
 </script>
 
