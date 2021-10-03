@@ -9,6 +9,69 @@
       children: [
         {
           title: 'item',
+          children: [
+            {
+              title: 'item',
+            },
+            {
+              title: 'item',
+              children: [
+                {
+                  title: 'item',
+                },
+                {
+                  title: 'item',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          title: 'item',
+          children: [
+            {
+              title: 'item',
+            },
+            {
+              title: 'item',
+            },
+            {
+              title: 'item',
+              children: [
+                {
+                  title: 'item',
+                },
+                {
+                  title: 'item',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          title: 'item',
+          children: [
+            {
+              title: 'item',
+            },
+            {
+              title: 'item',
+            },
+            {
+              title: 'item',
+              children: [
+                {
+                  title: 'item',
+                },
+                {
+                  title: 'item',
+                },
+                {
+                  title: 'item',
+                },
+              ],
+            },
+          ],
         },
       ],
     },
@@ -49,7 +112,7 @@
       >
         {item.title}
         {#if currentActive === index && item.children}
-          <Tree models={item.children} />
+          <Tree models={item.children} parent={null} />
         {/if}
       </div>
     {/each}
