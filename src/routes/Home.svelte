@@ -1,10 +1,6 @@
-<script lang="ts">
-  import { count } from '@/store/store';
-</script>
-
 <main>
   <h1>Home</h1>
-  <h2>Store count: {$count}</h2>
+  <h2><a href="/#/app">APP</a></h2>
 </main>
 
 <style lang="scss">
