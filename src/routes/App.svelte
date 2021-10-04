@@ -1,6 +1,7 @@
 <script type="ts">
   import Toolbar from '@/components/toolbar/Toolbar.svelte';
   import Sidebar from '@/components/sidebar/Sidebar.svelte';
+  import PropertySidebar from '@/components/sidebar/PropertiesSidebar.svelte';
 </script>
 
 <div id="app-root">
@@ -11,8 +12,11 @@
     <div id="side-bar-root">
       <Sidebar />
     </div>
-    <div id="app-root">app</div>
-    <div id="property-bar-root">right side bar</div>
+    <div id="app-root">
+      app
+      <div class="rectangle">rectangle</div>
+    </div>
+    <PropertySidebar />
   </div>
 </div>
 
@@ -36,9 +40,11 @@
         flex: 1 1 auto;
       }
 
-      #property-bar-root {
-        flex: 0 0 auto;
-        width: 200px;
+      .rectangle {
+        border: 1px solid #000000;
+        width: 100px;
+        height: 50px;
+        text-align: center;
       }
     }
   }
