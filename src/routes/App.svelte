@@ -29,7 +29,7 @@
     #app-body {
       flex: 1 1 auto;
       display: flex;
-      height: calc(100vh - 38px);
+      height: calc(100vh - 66px);
 
       #side-bar-root {
         flex: 0 0 auto;
