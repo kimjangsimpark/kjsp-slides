@@ -2,25 +2,34 @@
 
 <div id="editor">
   <div id="scaler">
-    <div id="page" />
+    <div id="frame">
+      <div id="page" />
+    </div>
   </div>
 </div>
 
 <style type="scss">
   #editor {
     height: 100%;
+    position: relative;
   }
 
   #scaler {
     display: inline-block;
-    transform-origin: left top;
-    transform: scale(1.1);
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+
+  #frame {
+    display: inline-block;
+    padding: 20px;
   }
 
   #page {
     border: 1px solid gray;
     background: white;
-    width: 500px;
-    height: 500px;
+    width: 1920px;
+    height: 1080px;
   }
 </style>
