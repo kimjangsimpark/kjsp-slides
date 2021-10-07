@@ -1,9 +1,10 @@
-<script type="ts"></script>
+<script type="ts">
+</script>
 
 <div id="editor">
   <div id="scaler">
     <div id="frame">
-      <div id="page" />
+      <div class="page" />
     </div>
   </div>
 </div>
@@ -18,7 +19,7 @@
     display: inline-block;
     position: absolute;
     inset: 50% auto auto 50%;
-    transform: translate(-50%, -50%) scale(0.2);
+    transform: translate(-50%, -50%) scale(0.3);
   }
 
   #frame {
@@ -26,7 +27,7 @@
     padding: 20px;
   }
 
-  #page {
+  .page {
     border: 1px solid gray;
     background: white;
     width: 1920px;
