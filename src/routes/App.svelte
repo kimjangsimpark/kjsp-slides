@@ -1,6 +1,7 @@
 <script type="ts">
   import Toolbar from '@/components/toolbar/Toolbar.svelte';
   import Sidebar from '@/components/sidebar/Sidebar.svelte';
+  import Editor from '@/components/editor/Editor.svelte';
   import PropertySidebar from '@/components/sidebar/PropertiesSidebar.svelte';
 </script>
 
@@ -12,9 +13,8 @@
     <div id="side-bar-root">
       <Sidebar />
     </div>
-    <div id="app-root">
-      app
-      <div class="rectangle">rectangle</div>
+    <div id="editor-root">
+      <Editor />
     </div>
     <PropertySidebar />
   </div>
@@ -36,8 +36,10 @@
         width: 200px;
       }
 
-      #app-root {
+      #editor-root {
         flex: 1 1 auto;
+        background: #e9eaed;
+        overflow: auto;
       }
 
       .rectangle {
