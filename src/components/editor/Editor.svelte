@@ -1,4 +1,5 @@
 <script type="ts">
+  let scale = 1;
 </script>
 
 <div id="editor">
@@ -18,8 +19,8 @@
   #scaler {
     display: inline-block;
     position: absolute;
-    inset: 50% auto auto 50%;
-    transform: translate(-50%, -50%) scale(0.3);
+    transform-origin: top left;
+    transform: scale(0.6);
   }
 
   #frame {

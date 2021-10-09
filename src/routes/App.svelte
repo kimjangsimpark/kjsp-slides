@@ -1,5 +1,6 @@
 <script type="ts">
   import Toolbar from '@/components/toolbar/Toolbar.svelte';
+  import SubToolbar from '@/components/toolbar/SubToolbar.svelte';
   import Sidebar from '@/components/sidebar/Sidebar.svelte';
   import Editor from '@/components/editor/Editor.svelte';
   import PropertySidebar from '@/components/sidebar/PropertiesSidebar.svelte';
@@ -8,6 +9,9 @@
 <div id="app-root">
   <div id="toolbar-root">
     <Toolbar />
+  </div>
+  <div id="subtoolbar-root">
+    <SubToolbar />
   </div>
   <div id="app-body">
     <div id="side-bar-root">

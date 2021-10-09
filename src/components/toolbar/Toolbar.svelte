@@ -159,8 +159,8 @@
 
 <style type="scss">
   #toolbar-root-container {
-    box-shadow: 0 2px 6px 0 rgb(0 0 0 / 10%);
     display: flex;
+    border-bottom: 1px solid rgb(0 0 0 / 10%);
 
     #icon-container {
       display: flex;
