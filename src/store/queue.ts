@@ -13,4 +13,3 @@ export const queue$ = writable<QueueState>({
   currentQueueIndex: 0,
   queues: [],
 });
-
