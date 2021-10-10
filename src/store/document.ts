@@ -49,5 +49,9 @@ const documentReducer: ReducerFn<DocumentState, DocumentAction> = (state, action
 
 export const [document$, documenrReducer] = useReducer<DocumentState, DocumentAction>({
   documentName: 'Document Name',
-  queues: []
+  queues: [{
+    index: 0,
+    actions: [],
+    objects: []
+  }]
 }, documentReducer);

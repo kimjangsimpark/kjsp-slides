@@ -1,5 +1,10 @@
 <script type="ts">
-  let current = 1;
+  import { currentQueue$, CurrentQueueState } from '@/store/queue';
+  let currentQueue: CurrentQueueState;
+  currentQueue$.subscribe(state => {
+    currentQueue = state;
+    console.log(currentQueue);
+  });
 </script>
 
 <div id="subtoolbar">

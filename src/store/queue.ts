@@ -1,15 +1,39 @@
-import { writable } from 'svelte/store';
+import { document$, DocumentState, Queue } from './document';
+import { ReducerFn, useReducer } from './reducible';
 
-export interface Queue {
+export interface CurrentQueueState {
+  queue?: Queue;
+}
+
+export interface ChangeCurrentQueueAction {
+  type: 'changeCurrentQueue';
   index: number;
 }
 
-export interface QueueState {
-  currentQueueIndex: number;
-  queues: Queue[];
+export type CurrentQueueAction = ChangeCurrentQueueAction;
+
+const reducer: ReducerFn<CurrentQueueState, CurrentQueueAction> = (state, action) => {
+  switch (action.type) {
+    case 'changeCurrentQueue':
+      return {
+        ...state,
+        queue: documentState.queues[action.index],
+      };
+    default:
+      throw new Error('Not Supported Current Queue Action');
+  }
 }
 
-export const queue$ = writable<QueueState>({
-  currentQueueIndex: 0,
-  queues: [],
+export const [
+  currentQueue$,
+  currentQueueReducer
+] = useReducer<CurrentQueueState, CurrentQueueAction>({}, reducer);
+
+let documentState: DocumentState;
+document$.subscribe(state => {
+  documentState = state;
+  currentQueueReducer({
+    type: 'changeCurrentQueue',
+    index: 0
+  });
 });
