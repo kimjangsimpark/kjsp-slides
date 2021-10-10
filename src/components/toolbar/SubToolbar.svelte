@@ -12,7 +12,7 @@
   currentQueue$.subscribe(state => {
     currentQueueState = state;
     const start = Math.max(state.queue.index - 3, 0);
-    const end = Math.min(state.queue.index + 3, documentState.queues.length);
+    const end = Math.min(state.queue.index + 4, documentState.queues.length);
     ranges = documentState.queues.slice(start, end);
   });
 
@@ -29,6 +29,9 @@
 
   const onNextClicked = () => {
     const pendingIndex = currentQueueState.queue.index + 1;
+    if (pendingIndex >= documentState.queues.length - 1) {
+      return;
+    }
     currentQueueReducer({
       type: 'changeCurrentQueue',
       index: pendingIndex,
@@ -42,11 +45,11 @@
   </div>
   {#each ranges as queue}
     <div class="subtoolbar-item {queue === currentQueueState.queue ? 'current' : ''}">
-      {queue.index}
+      {Number(queue.index) + 1}
     </div>
   {/each}
   <div class="subtoolbar-item btn prev">
-    <button>next</button>
+    <button on:click={onNextClicked}>next</button>
   </div>
 </div>
 
