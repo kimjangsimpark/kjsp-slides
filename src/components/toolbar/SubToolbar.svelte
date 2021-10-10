@@ -1,21 +1,50 @@
 <script type="ts">
-  import { currentQueue$, CurrentQueueState } from '@/store/queue';
-  let currentQueue: CurrentQueueState;
-  currentQueue$.subscribe(state => {
-    currentQueue = state;
-    console.log(currentQueue);
+  import { document$, DocumentState, Queue } from '@/store/document';
+  import { currentQueue$, currentQueueReducer, CurrentQueueState } from '@/store/queue';
+
+  let documentState: DocumentState;
+  document$.subscribe(state => {
+    documentState = state;
   });
+
+  let currentQueueState: CurrentQueueState;
+  let ranges: Queue[] = [];
+  currentQueue$.subscribe(state => {
+    currentQueueState = state;
+    const start = Math.max(state.queue.index - 3, 0);
+    const end = Math.min(state.queue.index + 3, documentState.queues.length);
+    ranges = documentState.queues.slice(start, end);
+  });
+
+  const onPrevClicked = () => {
+    const pendingIndex = currentQueueState.queue.index - 1;
+    if (pendingIndex < 0) {
+      return;
+    }
+    currentQueueReducer({
+      type: 'changeCurrentQueue',
+      index: pendingIndex,
+    });
+  };
+
+  const onNextClicked = () => {
+    const pendingIndex = currentQueueState.queue.index + 1;
+    currentQueueReducer({
+      type: 'changeCurrentQueue',
+      index: pendingIndex,
+    });
+  };
 </script>
 
 <div id="subtoolbar">
   <div class="subtoolbar-item btn prev">
-    <button>prev</button>
+    <button on:click={onPrevClicked}>prev</button>
   </div>
-  <div class="subtoolbar-item">1</div>
-  <div class="subtoolbar-item">2</div>
-  <div class="subtoolbar-item">3</div>
-  <div class="subtoolbar-item">4</div>
-  <div class="subtoolbar-item">5</div>
+  {#each ranges as queue}
+    <div class="subtoolbar-item {queue === currentQueueState.queue ? 'current' : ''}">
+      {queue.index}
+    </div>
+  {/each}
   <div class="subtoolbar-item btn prev">
     <button>next</button>
   </div>
@@ -30,6 +59,10 @@
 
     .subtoolbar-item {
       margin: 10px;
+
+      &.current {
+        color: red;
+      }
     }
   }
 </style>

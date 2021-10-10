@@ -2,7 +2,7 @@ import { document$, DocumentState, Queue } from './document';
 import { ReducerFn, useReducer } from './reducible';
 
 export interface CurrentQueueState {
-  queue?: Queue;
+  queue: Queue;
 }
 
 export interface ChangeCurrentQueueAction {
@@ -27,13 +27,19 @@ const reducer: ReducerFn<CurrentQueueState, CurrentQueueAction> = (state, action
 export const [
   currentQueue$,
   currentQueueReducer
-] = useReducer<CurrentQueueState, CurrentQueueAction>({}, reducer);
+] = useReducer<CurrentQueueState, CurrentQueueAction>({
+  queue: {
+    index: 0,
+    actions: [],
+    objects: [],
+  }
+}, reducer);
 
 let documentState: DocumentState;
 document$.subscribe(state => {
   documentState = state;
   currentQueueReducer({
     type: 'changeCurrentQueue',
-    index: 0
+    index: 4
   });
 });
