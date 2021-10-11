@@ -1,6 +1,7 @@
 import { ReducerFn, useReducer } from './reducible';
 
 export interface QueueAction {
+  index: number;
   type: string;
 }
 
