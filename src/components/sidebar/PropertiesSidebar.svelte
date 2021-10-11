@@ -1,8 +1,15 @@
 <script type="ts">
+  import CurrentQueueObjectActionList from './CurrentQueueObjectActionList.svelte';
+  import { QueueObjectState, currentQueObject$ } from '@/store/queueObject';
+
+  let currentQueueObject: QueueObjectState;
+  currentQueObject$.subscribe(state => {
+    currentQueueObject = state;
+  });
 </script>
 
 <aside id="property-bar-root">
-  <article class="que-list-wrapper">que list</article>
+  <CurrentQueueObjectActionList {currentQueueObject} />
   <article class="current-effects-wrapper">effects</article>
   <article class="border-wrapper">border</article>
   <article class="fill-wrapper">fill</article>
@@ -13,5 +20,9 @@
     flex: 0 0 auto;
     width: 200px;
     border-left: 1px solid $gray-line-1;
+
+    & :global(article) {
+      border-bottom: 1px solid $gray-line-2;
+    }
   }
 </style>
