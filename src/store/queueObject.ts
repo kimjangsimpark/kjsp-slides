@@ -74,27 +74,27 @@ export const [
   actions: [
     {
       type: 'create',
-      queueIndex: 1,
+      index: 1,
     },
     {
       type: 'fade-in',
-      queueIndex: 1,
+      index: 1,
     },
     {
       type: 'fade-in',
-      queueIndex: 2,
+      index: 2,
     },
     {
       type: 'transition',
-      queueIndex: 3,
+      index: 3,
     },
     {
       type: 'transition',
-      queueIndex: 3,
+      index: 3,
     },
     {
       type: 'delete',
-      queueIndex: 4,
+      index: 4,
     },
   ],
   shape: {

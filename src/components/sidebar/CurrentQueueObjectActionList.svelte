@@ -10,7 +10,7 @@
   <header>Action list</header>
   <ol class="action-list">
     {#each currentQueueObjectActionList as action}
-      <li class="action-list-item">#{action.queueIndex} {action.type}</li>
+      <li class="action-list-item">#{action.index} {action.type}</li>
     {/each}
   </ol>
 </article>
