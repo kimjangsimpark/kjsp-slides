@@ -30,7 +30,6 @@ export const [
 ] = useReducer<CurrentQueueState, CurrentQueueAction>({
   queue: {
     index: 0,
-    actions: [],
     objects: [],
   }
 }, reducer);

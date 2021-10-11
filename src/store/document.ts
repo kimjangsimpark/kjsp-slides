@@ -1,17 +1,18 @@
 import { ReducerFn, useReducer } from './reducible';
 
 export interface QueueAction {
+  index: number;
   type: string;
   queueIndex: number;
 }
 
 export interface QueueObject {
   type: string;
+  actions: QueueAction[];
 }
 
 export interface Queue {
   index: number;
-  actions: QueueAction[];
   objects: QueueObject[];
 }
 
