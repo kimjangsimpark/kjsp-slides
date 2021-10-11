@@ -45,13 +45,6 @@
         background: #e9eaed;
         overflow: auto;
       }
-
-      .rectangle {
-        border: 1px solid #000000;
-        width: 100px;
-        height: 50px;
-        text-align: center;
-      }
     }
   }
 </style>
