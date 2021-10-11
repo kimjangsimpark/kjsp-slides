@@ -6,11 +6,11 @@ export interface QueueAction {
 
 export interface QueueObject {
   type: string;
+  actions: QueueAction[];
 }
 
 export interface Queue {
   index: number;
-  actions: QueueAction[];
   objects: QueueObject[];
 }
 
