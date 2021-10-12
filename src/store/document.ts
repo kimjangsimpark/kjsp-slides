@@ -7,6 +7,12 @@ export interface QueueAction {
 
 export interface QueueObject {
   type: string;
+  rect: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }
   actions: QueueAction[];
 }
 
@@ -62,7 +68,16 @@ export const [document$, documenrReducer] = useReducer<DocumentState, DocumentAc
   },
   queues: Array.from(new Array(100)).map((item, index) => ({
     index: index,
-    actions: [],
-    objects: []
+    objects: [{
+      type: 'square',
+      identifier: 'dk3nfjk3hnbcj3jh434',
+      rect: {
+        x: 100,
+        y: 200,
+        width: 500,
+        height: 300
+      },
+      actions: []
+    }]
   })),
 }, documentReducer);
