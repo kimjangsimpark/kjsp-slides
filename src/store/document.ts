@@ -27,8 +27,14 @@ export interface DocumentChangeAction {
   state: DocumentState;
 }
 
+export interface DocumentRect {
+  width: number;
+  height: number;
+}
+
 export interface DocumentState {
   documentName: string;
+  rect: DocumentRect;
   queues: Queue[];
 }
 
@@ -50,6 +56,10 @@ const documentReducer: ReducerFn<DocumentState, DocumentAction> = (state, action
 
 export const [document$, documenrReducer] = useReducer<DocumentState, DocumentAction>({
   documentName: 'Document Name',
+  rect: {
+    width: 1920,
+    height: 1080
+  },
   queues: Array.from(new Array(100)).map((item, index) => ({
     index: index,
     actions: [],

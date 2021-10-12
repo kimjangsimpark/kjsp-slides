@@ -1,11 +1,18 @@
 <script type="ts">
-  let scale = 1;
+  import { document$, DocumentState } from '@/store/document';
+
+  let document: DocumentState;
+  document$.subscribe(state => (document = state));
+  let scale = 0.6;
 </script>
 
 <div id="editor">
-  <div id="scaler">
+  <div id="scaler" style="transform: scale({scale});">
     <div id="frame">
-      <div class="page" />
+      <div
+        class="page"
+        style="width: {document.rect.width}px; height: {document.rect.height}px;"
+      />
     </div>
   </div>
 </div>
@@ -20,7 +27,6 @@
     display: inline-block;
     position: absolute;
     transform-origin: top left;
-    transform: scale(0.6);
   }
 
   #frame {
@@ -31,7 +37,5 @@
   .page {
     border: 1px solid gray;
     background: white;
-    width: 1920px;
-    height: 1080px;
   }
 </style>
