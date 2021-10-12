@@ -1,4 +1,4 @@
-import type { QueueAction } from './document';
+import type { QueueAction, QueueEffect } from './document';
 import { ReducerFn, useReducer } from './reducible';
 
 /**
@@ -32,6 +32,7 @@ export interface Text {
 export interface QueueObjectState {
   type: string; // 개체 타입 (모양)
   actions: QueueAction[];
+  effect: QueueEffect[];
   shape: Shape, // 가로, 세로, 테두리, 테두리 색상, 배경 색상
   position: Position, // (x, y) 포지션
   text?: Text, // innerText, textColor
@@ -97,6 +98,7 @@ export const [
       index: 4,
     },
   ],
+  effect: [{ type: 'create' }, { type: 'move' }],
   shape: {
     width: 200,
     height: 100,

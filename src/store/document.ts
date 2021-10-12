@@ -5,6 +5,10 @@ export interface QueueAction {
   type: string;
 }
 
+export interface QueueEffect {
+  type: string;
+}
+
 export interface QueueObject {
   type: string;
   rect: {
