@@ -11,7 +11,15 @@
 
   let scale = 0.6;
 
-  const onObjectClicked = (obj: QueueObject) => {
+  const onEmptySpaceClicked = () => {
+    currentQueObjectReducer({
+      type: 'resetCurrentQueueObject',
+    });
+  };
+
+  const onObjectClicked = (e: MouseEvent, obj: QueueObject) => {
+    e.preventDefault();
+    e.stopPropagation();
     currentQueObjectReducer({
       type: 'changeCurrentQueueObject',
       state: obj,
@@ -25,11 +33,12 @@
       <svg
         class="page"
         style="width: {document.rect.width}px; height: {document.rect.height}px;"
+        on:click={() => onEmptySpaceClicked()}
       >
         {#if currentQueue.queue.objects}
           {#each currentQueue.queue.objects as object}
             {#if object.type === 'rectangle'}
-              <g on:click={() => onObjectClicked(object)}>
+              <g on:click={e => onObjectClicked(e, object)}>
                 <rect
                   x={object.rect.x}
                   y={object.rect.y}
