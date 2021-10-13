@@ -1,9 +1,18 @@
 <script lang="ts">
-  import type { QueueObjectState } from '@/store/queueObject';
+  import type { QueueEffect } from '@/store/document';
+  import { currentQueue$, CurrentQueueState } from '@/store/queue';
+  import { currentQueObject$ } from '@/store/queueObject';
 
-  export let currentQueueObject: QueueObjectState;
+  let currentQueue: CurrentQueueState;
+  currentQueue$.subscribe(state => (currentQueue = state));
 
-  $: currentQueueObjectEffectList = currentQueueObject.effect;
+  export let currentQueueObjectEffects: QueueEffect[] | undefined;
+  currentQueObject$.subscribe(state => {
+    const queueIndex = currentQueue.queue.index;
+    currentQueueObjectEffects = state?.effects.filter(
+      effect => effect.index === queueIndex,
+    );
+  });
 </script>
 
 <article class="effect-list-wrapper">
@@ -12,9 +21,11 @@
     <button>+</button>
   </header>
   <ol class="effect-list">
-    {#each currentQueueObjectEffectList as action}
-      <li class="effect-list-item">{action.type}</li>
-    {/each}
+    {#if currentQueueObjectEffects}
+      {#each currentQueueObjectEffects as effect}
+        <li class="effect-list-item">{effect.type}</li>
+      {/each}
+    {/if}
   </ol>
 </article>
 

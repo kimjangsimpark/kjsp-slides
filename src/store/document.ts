@@ -1,23 +1,43 @@
 import { ReducerFn, useReducer } from './reducible';
 
-export interface QueueAction {
+export interface QueueEffect {
   index: number;
   type: string;
 }
 
-export interface QueueEffect {
-  type: string;
+/**
+ * interface QueueAction
+ * queueIndex / actionType
+ * #1 생성
+ * #1 페이드 인
+ * #2 건들이지 않음
+ * #3 삭제
+ * #3 페이드 아웃
+ */
+
+ export interface Shape {
+  width: number;
+  height: number;
+  lineWidth: number;
+  lineColor?: string;
+}
+
+export interface Position {
+  x: number;
+  y: number;
+}
+
+export interface Text {
+  innerText: string;
+  textColor: string;
 }
 
 export interface QueueObject {
-  type: string;
-  rect: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  }
-  actions: QueueAction[];
+  type: string; // 개체 타입 (모양)
+  effects: QueueEffect[];
+  shape: Shape, // 가로, 세로, 테두리, 테두리 색상, 배경 색상
+  position: Position, // (x, y) 포지션
+  text?: Text, // innerText, textColor
 }
 
 export interface Queue {
@@ -73,7 +93,7 @@ export const [document$, documenrReducer] = useReducer<DocumentState, DocumentAc
   queues: Array.from(new Array(100)).map((item, index) => ({
     index: index,
     objects: [{
-      type: 'square',
+      type: 'rectangle',
       identifier: 'dk3nfjk3hnbcj3jh434',
       rect: {
         x: 100,
@@ -81,7 +101,41 @@ export const [document$, documenrReducer] = useReducer<DocumentState, DocumentAc
         width: 500,
         height: 300
       },
-      actions: []
+      effects: [
+        {
+          type: 'create',
+          index: 1,
+        },
+        {
+          type: 'fade-in',
+          index: 1,
+        },
+        {
+          type: 'fade-in',
+          index: 2,
+        },
+        {
+          type: 'transition',
+          index: 3,
+        },
+        {
+          type: 'transition',
+          index: 3,
+        },
+        {
+          type: 'delete',
+          index: 4,
+        },
+      ],
+      shape: {
+        width: 200,
+        height: 100,
+        lineWidth: 1,
+      },
+      position: {
+        x: 0,
+        y: 0,
+      },
     }]
   })),
 }, documentReducer);

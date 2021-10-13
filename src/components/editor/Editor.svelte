@@ -1,6 +1,7 @@
 <script type="ts">
-  import { document$, DocumentState } from '@/store/document';
+  import { document$, DocumentState, QueueObject } from '@/store/document';
   import { currentQueue$, CurrentQueueState } from '@/store/queue';
+  import { currentQueObjectReducer } from '@/store/queueObject';
 
   let document: DocumentState;
   document$.subscribe(state => (document = state));
@@ -9,6 +10,13 @@
   currentQueue$.subscribe(state => (currentQueue = state));
 
   let scale = 0.6;
+
+  const onObjectClicked = (obj: QueueObject) => {
+    currentQueObjectReducer({
+      type: 'changeCurrentQueueObject',
+      state: obj,
+    });
+  };
 </script>
 
 <div id="editor">
@@ -20,8 +28,8 @@
       >
         {#if currentQueue.queue.objects}
           {#each currentQueue.queue.objects as object}
-            {#if object.type === 'square'}
-              <g>
+            {#if object.type === 'rectangle'}
+              <g on:click={() => onObjectClicked(object)}>
                 <rect
                   x={object.rect.x}
                   y={object.rect.y}

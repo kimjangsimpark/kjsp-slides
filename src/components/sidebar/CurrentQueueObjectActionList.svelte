@@ -1,17 +1,19 @@
 <script lang="ts">
-  import type { QueueObjectState } from '@/store/queueObject';
+  import type { QueueObject } from '@/store/document';
 
-  export let currentQueueObject: QueueObjectState;
-
-  $: currentQueueObjectActionList = currentQueueObject.actions;
+  import { currentQueObject$ } from '@/store/queueObject';
+  export let currentQueueObject: QueueObject | null;
+  currentQueObject$.subscribe(state => (currentQueueObject = state));
 </script>
 
 <article class="action-list-wrapper">
   <header>Action list</header>
   <ol class="action-list">
-    {#each currentQueueObjectActionList as action}
-      <li class="action-list-item">#{action.index} {action.type}</li>
-    {/each}
+    {#if currentQueueObject}
+      {#each currentQueueObject.effects as effect}
+        <li class="action-list-item">#{effect.index} {effect.type}</li>
+      {/each}
+    {/if}
   </ol>
 </article>
 
