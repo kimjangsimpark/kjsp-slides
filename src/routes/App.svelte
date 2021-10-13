@@ -4,6 +4,11 @@
   import Sidebar from '@/components/sidebar/Sidebar.svelte';
   import Editor from '@/components/editor/Editor.svelte';
   import PropertySidebar from '@/components/sidebar/PropertiesSidebar.svelte';
+
+  import { currentQueObject$ } from '@/store/queueObject';
+  import type { QueueObject } from '@/store/document';
+  let currentQueObject: QueueObject | null = null;
+  currentQueObject$.subscribe(state => (currentQueObject = state));
 </script>
 
 <div id="app-root">
@@ -20,7 +25,9 @@
     <div id="editor-root">
       <Editor />
     </div>
-    <PropertySidebar />
+    {#if currentQueObject}
+      <PropertySidebar />
+    {/if}
   </div>
 </div>
 
@@ -33,7 +40,7 @@
     #app-body {
       flex: 1 1 auto;
       display: flex;
-      height: calc(100vh - 66px);
+      height: calc(100vh - 108px);
 
       #side-bar-root {
         flex: 0 0 auto;
