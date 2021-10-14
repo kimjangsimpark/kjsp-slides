@@ -37,7 +37,14 @@ document$.subscribe(() => {
 
 export const currentQueue$: Observable<CurrentQueueState> = combineLatest([ document$, currentQueueSubject ]).pipe(
   map(([document, index]) => {
-    const queueObjects = document.objects.filter(object => object.effects.some(effect => effect.index === index));
+    const queueObjects = document.objects.filter(object => {
+      const isDeleted = object.effects.some(effect => effect.type === 'delete' && effect.index < index);
+      if (isDeleted) {
+        return false;
+      }
+      const isCurrent = object.effects.some(effect => effect.index <= index);
+      return isCurrent;
+    });
     return {
       index: index,
       objects: queueObjects,

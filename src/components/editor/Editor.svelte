@@ -33,7 +33,7 @@
 
         return immutable;
       });
-
+      console.log(newState.objects);
       return newState;
     }),
     map(currentQueue => currentQueue.objects),

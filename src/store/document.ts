@@ -105,12 +105,17 @@ const documentSubject = new BehaviorSubject<DocumentState>({
         index: 0,
       },
       {
-        type: 'fade-in',
+        type: 'transition',
         index: 1,
+        x: 50,
+        y: 100,
+        width: 500
       },
       {
-        type: 'fade-in',
+        type: 'transition',
         index: 2,
+        x: 50,
+        y: 100,
       },
       {
         type: 'transition',
@@ -136,6 +141,44 @@ const documentSubject = new BehaviorSubject<DocumentState>({
       y: 200,
       width: 200,
       height: 100,
+      lineWidth: 1,
+      lineColor: '#000000',
+    },
+    position: {
+      x: 0,
+      y: 0,
+    },
+  }, {
+    type: 'rectangle',
+    effects: [
+      {
+        type: 'create',
+        index: 0,
+      },
+      {
+        type: 'transition',
+        index: 1,
+        x: 900,
+        y: 500,
+      },
+      {
+        type: 'transition',
+        index: 2,
+        x: 1000,
+        y: 300,
+        width: 300,
+        height: 200
+      },
+      {
+        type: 'delete',
+        index: 3,
+      },
+    ],
+    shape: {
+      x: 800,
+      y: 600,
+      width: 50,
+      height: 50,
       lineWidth: 1,
       lineColor: '#000000',
     },
