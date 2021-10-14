@@ -8,7 +8,7 @@
   <ol class="action-list">
     {#if $currentQueueObject}
       {#each $currentQueueObject.effects as effect}
-        <li class="action-list-item">#{effect.index} {effect.type}</li>
+        <li class="action-list-item">#{Number(effect.index) + 1} {effect.type}</li>
       {/each}
     {/if}
   </ol>

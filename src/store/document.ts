@@ -1,9 +1,30 @@
 import { BehaviorSubject } from 'rxjs';
 
-export interface QueueEffect {
+export interface QueueCreateEffect {
   index: number;
-  type: string;
+  type: 'create';
 }
+
+export interface QueueFadeInEffect {
+  index: number;
+  type: 'fade-in';
+}
+
+export interface QueueTransitionEffect {
+  index: number;
+  type: 'transition';
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+}
+
+export interface QueueDeleteEffect {
+  index: number;
+  type: 'delete';
+}
+
+export type QueueEffect = QueueCreateEffect | QueueFadeInEffect | QueueTransitionEffect | QueueDeleteEffect;
 
 /**
  * interface QueueAction
@@ -94,14 +115,20 @@ const documentSubject = new BehaviorSubject<DocumentState>({
       {
         type: 'transition',
         index: 3,
+        x: 50,
+        y: 100,
       },
       {
         type: 'transition',
-        index: 3,
+        index: 4,
+        x: 110,
+        y: 210,
+        width: 300,
+        height: 200
       },
       {
         type: 'delete',
-        index: 4,
+        index: 5,
       },
     ],
     shape: {

@@ -14,7 +14,7 @@
         return result > max ? result : max;
       }, 0);
       const start = Math.max(state.index - 3, 0);
-      const end = Math.min(state.index + 4, max);
+      const end = Math.min(state.index + 4, max + 1);
       const array = [];
       for (let i = start; i < end; i++) {
         array.push(i);
