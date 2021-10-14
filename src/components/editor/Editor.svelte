@@ -38,7 +38,36 @@
     }),
     map(currentQueue => currentQueue.objects),
   );
-  $: currentQueueObject = currentQueueObject$;
+
+  $: currentQueueObject = combineLatest([currentQueue$, currentQueueObject$]).pipe(
+    map(([currentQueue, object]) => {
+      if (!object) {
+        return null;
+      }
+
+      const immutable = { ...object };
+      const index = currentQueue.index;
+      const reversedEffects = object.effects.slice(0).reverse();
+
+      const lastTransition = reversedEffects.find(
+        effect => effect.index < index && effect.type === 'transition',
+      ) as QueueTransitionEffect;
+      const currentTransition = reversedEffects.find(
+        effect => effect.index === index && effect.type === 'transition',
+      ) as QueueTransitionEffect;
+
+      immutable.shape = {
+        ...object.shape,
+        x: currentTransition?.x || lastTransition?.x || object.shape.x,
+        y: currentTransition?.y || lastTransition?.y || object.shape.y,
+        width: currentTransition?.width || lastTransition?.width || object.shape.width,
+        height:
+          currentTransition?.height || lastTransition?.height || object.shape.height,
+      };
+
+      return immutable;
+    }),
+  );
 
   let scale = 0.6;
 
@@ -81,8 +110,17 @@
           {/each}
         {/if}
         {#if $currentQueueObject}
-          {$currentQueueObject.text}
-          <g />
+          <g>
+            <rect
+              stroke="red"
+              stroke-width="2"
+              fill="none"
+              x={$currentQueueObject.shape.x - 5}
+              y={$currentQueueObject.shape.y - 5}
+              width={$currentQueueObject.shape.width + 10}
+              height={$currentQueueObject.shape.height + 10}
+            />
+          </g>
         {/if}
       </svg>
     </div>
