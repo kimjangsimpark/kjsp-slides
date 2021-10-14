@@ -1,5 +1,5 @@
 import type { Position, QueueObject } from './document';
-import { ReducerFn, useReducer } from './reducible';
+import { BehaviorSubject } from 'rxjs';
 
 export interface CurrentQueueObjectChangeAction {
   type: 'changeCurrentQueueObject';
@@ -17,29 +17,32 @@ export interface CurrentQueueObjectResetAction {
 
 export type CurrentQueObjectAction = CurrentQueueObjectChangeAction | CurrentQueueObjectPositionChangeAction | CurrentQueueObjectResetAction;
 
-const reducer: ReducerFn<QueueObject | null, CurrentQueObjectAction> = (state, action) => {
+const currentQueueSubject = new BehaviorSubject<QueueObject | null>(null);
+
+export const currentQueueObjectReducer = (action: CurrentQueObjectAction): void => {
+  const current = currentQueueSubject.getValue();
   switch (action.type) {
     case 'changeCurrentQueueObject':
-      return {
-        ...action.state
-      };
+      currentQueueSubject.next({
+        ...action.state,
+      });
+      return;
     case 'changeCurrentQueueObjectPosition':
-      if (!state) {
+      if (!current) {
         throw new Error('Current Queue Object Not Detected');
       } else {
-        return {
-          ...state,
+        currentQueueSubject.next({
+          ...current,
           position: action.position,
-        }
+        });
+        return;
       }
     case 'resetCurrentQueueObject':
-      return null;
+      currentQueueSubject.next(null);
+      return;
     default:
       throw new Error('Not Supported Current Queue Object Action');
   }
 }
 
-export const [
-  currentQueObject$,
-  currentQueObjectReducer
-] = useReducer<QueueObject | null, CurrentQueObjectAction>(null, reducer);
+export const currentQueueObject$ = currentQueueSubject.asObservable();

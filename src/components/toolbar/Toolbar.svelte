@@ -1,11 +1,11 @@
 <script type="ts">
+  import { map } from 'rxjs/operators';
   import { document$ } from '@/store/document';
 
   import Tree from './Tree.svelte';
   import type { ToolbarModel } from './TreeModel';
 
-  let title: string;
-  document$.subscribe(document => (title = document.documentName));
+  $: title = document$.pipe(map(document => document.documentName));
 
   let currentActive: number | undefined;
   const items: ToolbarModel[] = [
@@ -141,7 +141,7 @@
   </div>
   <div id="toolbar-container">
     <div id="title-container">
-      <span id="title">{title || ''}</span>
+      <span id="title">{$title || ''}</span>
     </div>
     <div class="toolbar-root">
       {#each items as item, index}

@@ -1,5 +1,5 @@
-import { document$, DocumentState, Queue } from './document';
-import { ReducerFn, useReducer } from './reducible';
+import { BehaviorSubject } from 'rxjs';
+import { document$, Queue } from './document';
 
 export interface CurrentQueueState {
   queue: Queue;
@@ -12,33 +12,37 @@ export interface ChangeCurrentQueueAction {
 
 export type CurrentQueueAction = ChangeCurrentQueueAction;
 
-const reducer: ReducerFn<CurrentQueueState, CurrentQueueAction> = (state, action) => {
+const currentQueueSubject = new BehaviorSubject<CurrentQueueState>({
+  queue: {
+    index: 0,
+    objects: []
+  }
+});
+
+export function currentQueueReducer(
+  action: CurrentQueueAction,
+): void {
+  const document = document$.getValue();
+  const current = currentQueueSubject.getValue();
   switch (action.type) {
     case 'changeCurrentQueue':
-      return {
-        ...state,
-        queue: documentState.queues[action.index],
-      };
+      if (current?.queue === document.queues[action.index]) {
+        return;
+      }
+      currentQueueSubject.next({
+        queue: document.queues[action.index],
+      });
+      break;
     default:
       throw new Error('Not Supported Current Queue Action');
   }
 }
 
-export const [
-  currentQueue$,
-  currentQueueReducer
-] = useReducer<CurrentQueueState, CurrentQueueAction>({
-  queue: {
-    index: 0,
-    objects: [],
-  }
-}, reducer);
-
-let documentState: DocumentState;
-document$.subscribe(state => {
-  documentState = state;
+document$.subscribe(() => {
   currentQueueReducer({
     type: 'changeCurrentQueue',
-    index: 4
+    index: 0,
   });
 });
+
+export const currentQueue$ = currentQueueSubject.asObservable();

@@ -5,10 +5,8 @@
   import Editor from '@/components/editor/Editor.svelte';
   import PropertySidebar from '@/components/sidebar/PropertiesSidebar.svelte';
 
-  import { currentQueObject$ } from '@/store/queueObject';
-  import type { QueueObject } from '@/store/document';
-  let currentQueObject: QueueObject | null = null;
-  currentQueObject$.subscribe(state => (currentQueObject = state));
+  import { currentQueueObject$ } from '@/store/queueObject';
+  $: currentQueueObject = currentQueueObject$;
 </script>
 
 <div id="app-root">
@@ -25,7 +23,7 @@
     <div id="editor-root">
       <Editor />
     </div>
-    {#if currentQueObject}
+    {#if $currentQueueObject}
       <PropertySidebar />
     {/if}
   </div>

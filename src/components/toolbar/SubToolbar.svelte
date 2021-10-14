@@ -1,23 +1,21 @@
 <script type="ts">
-  import { document$, DocumentState, Queue } from '@/store/document';
-  import { currentQueue$, currentQueueReducer, CurrentQueueState } from '@/store/queue';
+  import { map } from 'rxjs/operators';
+  import { document$ } from '@/store/document';
+  import { currentQueue$, currentQueueReducer } from '@/store/queue';
 
-  let documentState: DocumentState;
-  document$.subscribe(state => {
-    documentState = state;
-  });
+  $: documentState = document$;
+  $: currentQueueState = currentQueue$;
 
-  let currentQueueState: CurrentQueueState;
-  let ranges: Queue[] = [];
-  currentQueue$.subscribe(state => {
-    currentQueueState = state;
-    const start = Math.max(state.queue.index - 3, 0);
-    const end = Math.min(state.queue.index + 4, documentState.queues.length);
-    ranges = documentState.queues.slice(start, end);
-  });
+  $: ranges = currentQueue$.pipe(
+    map(state => {
+      const start = Math.max(state.queue.index - 3, 0);
+      const end = Math.min(state.queue.index + 4, $documentState.queues.length);
+      return $documentState.queues.slice(start, end);
+    }),
+  );
 
   const onPrevClicked = () => {
-    const pendingIndex = currentQueueState.queue.index - 1;
+    const pendingIndex = $currentQueueState.queue.index - 1;
     if (pendingIndex < 0) {
       return;
     }
@@ -28,8 +26,8 @@
   };
 
   const onNextClicked = () => {
-    const pendingIndex = currentQueueState.queue.index + 1;
-    if (pendingIndex >= documentState.queues.length - 1) {
+    const pendingIndex = $currentQueueState.queue.index + 1;
+    if (pendingIndex >= $documentState.queues.length - 1) {
       return;
     }
     currentQueueReducer({
@@ -43,8 +41,8 @@
   <div class="subtoolbar-item btn prev">
     <button on:click={onPrevClicked}>prev</button>
   </div>
-  {#each ranges as queue}
-    <div class="subtoolbar-item {queue === currentQueueState.queue ? 'current' : ''}">
+  {#each $ranges as queue}
+    <div class="subtoolbar-item {queue === $currentQueueState.queue ? 'current' : ''}">
       {Number(queue.index) + 1}
     </div>
   {/each}

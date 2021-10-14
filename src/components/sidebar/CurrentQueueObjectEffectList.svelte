@@ -1,18 +1,21 @@
 <script lang="ts">
-  import type { QueueEffect } from '@/store/document';
-  import { currentQueue$, CurrentQueueState } from '@/store/queue';
-  import { currentQueObject$ } from '@/store/queueObject';
+  import { combineLatest } from 'rxjs';
+  import { map, switchMap } from 'rxjs/operators';
+  import { onMount$ } from '@/misc/svelte-rx';
+  import { currentQueue$ } from '@/store/queue';
+  import { currentQueueObject$ } from '@/store/queueObject';
 
-  let currentQueue: CurrentQueueState;
-  currentQueue$.subscribe(state => (currentQueue = state));
-
-  let currentQueueObjectEffects: QueueEffect[] | undefined;
-  currentQueObject$.subscribe(state => {
-    const queueIndex = currentQueue.queue.index;
-    currentQueueObjectEffects = state?.effects.filter(
-      effect => effect.index === queueIndex,
-    );
-  });
+  $: currentQueueObjectEffects = onMount$.pipe(
+    switchMap(() => combineLatest([currentQueue$, currentQueueObject$])),
+    map(([currentQueue, currentQueueObject]) => {
+      if (currentQueueObject) {
+        const queueIndex = currentQueue.queue.index;
+        return currentQueueObject?.effects.filter(effect => effect.index === queueIndex);
+      } else {
+        return null;
+      }
+    }),
+  );
 </script>
 
 <article class="effect-list-wrapper">
@@ -21,8 +24,8 @@
     <button>+</button>
   </header>
   <ol class="effect-list">
-    {#if currentQueueObjectEffects}
-      {#each currentQueueObjectEffects as effect}
+    {#if $currentQueueObjectEffects}
+      {#each $currentQueueObjectEffects as effect}
         <li class="effect-list-item">{effect.type}</li>
       {/each}
     {/if}

@@ -1,18 +1,15 @@
 <script type="ts">
-  import { document$, DocumentState, QueueObject } from '@/store/document';
-  import { currentQueue$, CurrentQueueState } from '@/store/queue';
-  import { currentQueObjectReducer } from '@/store/queueObject';
+  import { document$, QueueObject } from '@/store/document';
+  import { currentQueue$ } from '@/store/queue';
+  import { currentQueueObjectReducer } from '@/store/queueObject';
 
-  let document: DocumentState;
-  document$.subscribe(state => (document = state));
-
-  let currentQueue: CurrentQueueState;
-  currentQueue$.subscribe(state => (currentQueue = state));
+  $: document = document$;
+  $: currentQueue = currentQueue$;
 
   let scale = 0.6;
 
   const onEmptySpaceClicked = () => {
-    currentQueObjectReducer({
+    currentQueueObjectReducer({
       type: 'resetCurrentQueueObject',
     });
   };
@@ -20,7 +17,7 @@
   const onObjectClicked = (e: MouseEvent, obj: QueueObject) => {
     e.preventDefault();
     e.stopPropagation();
-    currentQueObjectReducer({
+    currentQueueObjectReducer({
       type: 'changeCurrentQueueObject',
       state: obj,
     });
@@ -32,11 +29,11 @@
     <div id="frame">
       <svg
         class="page"
-        style="width: {document.rect.width}px; height: {document.rect.height}px;"
+        style="width: {$document.rect.width}px; height: {$document.rect.height}px;"
         on:click={() => onEmptySpaceClicked()}
       >
-        {#if currentQueue.queue.objects}
-          {#each currentQueue.queue.objects as object}
+        {#if $currentQueue.queue.objects}
+          {#each $currentQueue.queue.objects as object}
             {#if object.type === 'rectangle'}
               <g on:click={e => onObjectClicked(e, object)}>
                 <rect

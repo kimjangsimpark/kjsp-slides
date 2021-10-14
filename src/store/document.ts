@@ -1,4 +1,4 @@
-import { ReducerFn, useReducer } from './reducible';
+import { BehaviorSubject } from 'rxjs';
 
 export interface QueueEffect {
   index: number;
@@ -68,23 +68,7 @@ export interface DocumentState {
   queues: Queue[];
 }
 
-const documentReducer: ReducerFn<DocumentState, DocumentAction> = (state, action) => {
-  switch (action.type) {
-    case 'changeName':
-      return {
-        ...state,
-        documentName: action.documentName,
-      }
-    case 'changeDocument':
-      return {
-        ...action.state,
-      }
-    default:
-      throw new Error('Unsupported DocumentState Action');
-  }
-}
-
-export const [document$, documenrReducer] = useReducer<DocumentState, DocumentAction>({
+const documentSubject = new BehaviorSubject<DocumentState>({
   documentName: 'Document Name',
   rect: {
     width: 1920,
@@ -138,4 +122,25 @@ export const [document$, documenrReducer] = useReducer<DocumentState, DocumentAc
       },
     }]
   })),
-}, documentReducer);
+});
+
+export const documentReducer = (action: DocumentAction): void => {
+  const current = documentSubject.getValue();
+  switch (action.type) {
+    case 'changeName':
+      documentSubject.next({
+        ...current,
+        documentName: action.documentName,
+      });
+      return;
+    case 'changeDocument':
+      documentSubject.next({
+        ...action.state,
+      });
+      return;
+    default:
+      throw new Error('Unsupported DocumentState Action');
+  }
+}
+
+export const document$ = documentSubject;
