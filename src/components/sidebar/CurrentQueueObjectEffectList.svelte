@@ -1,12 +1,10 @@
 <script lang="ts">
   import { combineLatest } from 'rxjs';
-  import { map, switchMap } from 'rxjs/operators';
-  import { onMount$ } from '@/misc/svelte-rx';
+  import { map } from 'rxjs/operators';
   import { currentQueue$ } from '@/store/queue';
   import { currentQueueObject$ } from '@/store/queueObject';
 
-  $: currentQueueObjectEffects = onMount$.pipe(
-    switchMap(() => combineLatest([currentQueue$, currentQueueObject$])),
+  $: currentQueueObjectEffects = combineLatest([currentQueue$, currentQueueObject$]).pipe(
     map(([currentQueue, currentQueueObject]) => {
       if (currentQueueObject) {
         const queueIndex = currentQueue.queue.index;
