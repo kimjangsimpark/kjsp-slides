@@ -2,7 +2,7 @@
   import type { QueueObject } from '@/store/document';
 
   import { currentQueObject$ } from '@/store/queueObject';
-  export let currentQueueObject: QueueObject | null;
+  let currentQueueObject: QueueObject | null;
   currentQueObject$.subscribe(state => (currentQueueObject = state));
 </script>
 
