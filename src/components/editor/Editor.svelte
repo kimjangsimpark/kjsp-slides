@@ -1,10 +1,11 @@
 <script type="ts">
   import { document$, QueueObject } from '@/store/document';
   import { currentQueue$ } from '@/store/queue';
-  import { currentQueueObjectReducer } from '@/store/queueObject';
+  import { currentQueueObject$, currentQueueObjectReducer } from '@/store/queueObject';
 
   $: document = document$;
   $: currentQueue = currentQueue$;
+  $: currentQueueObject = currentQueueObject$;
 
   let scale = 0.6;
 
@@ -32,19 +33,23 @@
         style="width: {$document.rect.width}px; height: {$document.rect.height}px;"
         on:click={() => onEmptySpaceClicked()}
       >
-        {#if $currentQueue.queue.objects}
-          {#each $currentQueue.queue.objects as object}
+        {#if $currentQueue.objects}
+          {#each $currentQueue.objects as object}
             {#if object.type === 'rectangle'}
               <g on:click={e => onObjectClicked(e, object)}>
                 <rect
-                  x={object.rect.x}
-                  y={object.rect.y}
-                  width={object.rect.width}
-                  height={object.rect.height}
+                  x={object.shape.x}
+                  y={object.shape.y}
+                  width={object.shape.width}
+                  height={object.shape.height}
                 />
               </g>
             {/if}
           {/each}
+        {/if}
+        {#if $currentQueueObject}
+          {$currentQueueObject.text}
+          <g />
         {/if}
       </svg>
     </div>

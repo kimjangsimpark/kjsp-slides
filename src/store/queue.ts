@@ -1,8 +1,10 @@
-import { BehaviorSubject } from 'rxjs';
-import { document$, Queue } from './document';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { document$, QueueObject } from './document';
 
 export interface CurrentQueueState {
-  queue: Queue;
+  index: number;
+  objects: QueueObject[];
 }
 
 export interface ChangeCurrentQueueAction {
@@ -12,26 +14,14 @@ export interface ChangeCurrentQueueAction {
 
 export type CurrentQueueAction = ChangeCurrentQueueAction;
 
-const currentQueueSubject = new BehaviorSubject<CurrentQueueState>({
-  queue: {
-    index: 0,
-    objects: []
-  }
-});
+const currentQueueSubject = new BehaviorSubject<number>(0);
 
 export function currentQueueReducer(
   action: CurrentQueueAction,
 ): void {
-  const document = document$.getValue();
-  const current = currentQueueSubject.getValue();
   switch (action.type) {
     case 'changeCurrentQueue':
-      if (current?.queue === document.queues[action.index]) {
-        return;
-      }
-      currentQueueSubject.next({
-        queue: document.queues[action.index],
-      });
+      currentQueueSubject.next(action.index);
       break;
     default:
       throw new Error('Not Supported Current Queue Action');
@@ -45,4 +35,12 @@ document$.subscribe(() => {
   });
 });
 
-export const currentQueue$ = currentQueueSubject.asObservable();
+export const currentQueue$: Observable<CurrentQueueState> = combineLatest([ document$, currentQueueSubject ]).pipe(
+  map(([document, index]) => {
+    const queueObjects = document.objects.filter(object => object.effects.some(effect => effect.index === index));
+    return {
+      index: index,
+      objects: queueObjects,
+    }
+  })
+);

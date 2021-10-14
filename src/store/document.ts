@@ -15,7 +15,9 @@ export interface QueueEffect {
  * #3 페이드 아웃
  */
 
- export interface Shape {
+export interface Shape {
+  x: number;
+  y: number;
   width: number;
   height: number;
   lineWidth: number;
@@ -65,7 +67,7 @@ export interface DocumentRect {
 export interface DocumentState {
   documentName: string;
   rect: DocumentRect;
-  queues: Queue[];
+  objects: QueueObject[];
 }
 
 const documentSubject = new BehaviorSubject<DocumentState>({
@@ -74,54 +76,47 @@ const documentSubject = new BehaviorSubject<DocumentState>({
     width: 1920,
     height: 1080
   },
-  queues: Array.from(new Array(100)).map((item, index) => ({
-    index: index,
-    objects: [{
-      type: 'rectangle',
-      identifier: 'dk3nfjk3hnbcj3jh434',
-      rect: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 300
+  objects: [{
+    type: 'rectangle',
+    effects: [
+      {
+        type: 'create',
+        index: 0,
       },
-      effects: [
-        {
-          type: 'create',
-          index: 1,
-        },
-        {
-          type: 'fade-in',
-          index: 1,
-        },
-        {
-          type: 'fade-in',
-          index: 2,
-        },
-        {
-          type: 'transition',
-          index: 3,
-        },
-        {
-          type: 'transition',
-          index: 3,
-        },
-        {
-          type: 'delete',
-          index: 4,
-        },
-      ],
-      shape: {
-        width: 200,
-        height: 100,
-        lineWidth: 1,
+      {
+        type: 'fade-in',
+        index: 1,
       },
-      position: {
-        x: 0,
-        y: 0,
+      {
+        type: 'fade-in',
+        index: 2,
       },
-    }]
-  })),
+      {
+        type: 'transition',
+        index: 3,
+      },
+      {
+        type: 'transition',
+        index: 3,
+      },
+      {
+        type: 'delete',
+        index: 4,
+      },
+    ],
+    shape: {
+      x: 100,
+      y: 200,
+      width: 200,
+      height: 100,
+      lineWidth: 1,
+      lineColor: '#000000',
+    },
+    position: {
+      x: 0,
+      y: 0,
+    },
+  }]
 });
 
 export const documentReducer = (action: DocumentAction): void => {

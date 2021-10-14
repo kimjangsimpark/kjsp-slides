@@ -7,7 +7,7 @@
   $: currentQueueObjectEffects = combineLatest([currentQueue$, currentQueueObject$]).pipe(
     map(([currentQueue, currentQueueObject]) => {
       if (currentQueueObject) {
-        const queueIndex = currentQueue.queue.index;
+        const queueIndex = currentQueue.index;
         return currentQueueObject?.effects.filter(effect => effect.index === queueIndex);
       } else {
         return null;
