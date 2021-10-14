@@ -6,7 +6,7 @@
   let currentQueue: CurrentQueueState;
   currentQueue$.subscribe(state => (currentQueue = state));
 
-  export let currentQueueObjectEffects: QueueEffect[] | undefined;
+  let currentQueueObjectEffects: QueueEffect[] | undefined;
   currentQueObject$.subscribe(state => {
     const queueIndex = currentQueue.queue.index;
     currentQueueObjectEffects = state?.effects.filter(
