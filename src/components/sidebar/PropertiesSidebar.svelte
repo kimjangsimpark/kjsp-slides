@@ -1,12 +1,13 @@
 <script type="ts">
   import CurrentQueueObjectActionList from './CurrentQueueObjectActionList.svelte';
   import CurrentQueueObjectEffectList from './CurrentQueueObjectEffectList.svelte';
+  import CurrentQueueObjectBorder from './CurrentQueueObjectBorder.svelte';
 </script>
 
 <aside id="property-bar-root">
   <CurrentQueueObjectActionList />
   <CurrentQueueObjectEffectList />
-  <article class="border-wrapper">border</article>
+  <CurrentQueueObjectBorder />
   <article class="fill-wrapper">fill</article>
 </aside>
 
