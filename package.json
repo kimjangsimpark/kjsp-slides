@@ -32,7 +32,7 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "webpack serve --content-base public",
+    "dev": "webpack serve --content-base docs",
     "validate": "svelte-check",
     "format": "prettier --write ./src/*.{svelte,ts}",
     "lint": "eslint './src/*.{ts,svelte}'",
