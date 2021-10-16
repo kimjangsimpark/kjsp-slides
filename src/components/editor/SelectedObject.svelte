@@ -1,7 +1,7 @@
 <script type="ts">
-  import type { Observable } from 'rxjs';
   import type { QueueObject } from '@/store/document';
-  import { currentQueueObject$ } from '@/store/queueObject';
+  export let previous: QueueObject | null = null;
+  export let selected: QueueObject;
 
   const strokeWidth = 8;
   const strokeMargin = 5;
@@ -10,8 +10,6 @@
     x: number;
     y: number;
   }
-
-  $: object = currentQueueObject$ as Observable<QueueObject>;
 
   let position: Position | null = null;
 
@@ -35,7 +33,6 @@
       x: e.clientX - position.x,
       y: e.clientY - position.y,
     };
-    console.log(updatedPosition);
   };
 
   const onMouseUp = (e: MouseEvent) => {
@@ -43,7 +40,7 @@
   };
 </script>
 
-{#if $object}
+{#if selected}
   <g
     on:click={onMouseClick}
     on:mousedown={onMouseDown}
@@ -55,85 +52,255 @@
       stroke-width="2"
       stroke-dasharray="5"
       fill="transparent"
-      x={$object.shape.x - strokeMargin}
-      y={$object.shape.y - strokeMargin}
-      width={$object.shape.width + strokeMargin * 2}
-      height={$object.shape.height + strokeMargin * 2}
+      x={selected.shape.x - strokeMargin}
+      y={selected.shape.y - strokeMargin}
+      width={selected.shape.width + strokeMargin * 2}
+      height={selected.shape.height + strokeMargin * 2}
     >
-      <!-- <animate
-        attributeName="height"
-        from="0"
-        to="27.5"
-        dur="3s"
-        fill="freeze"
-        restart="always"
-      />
-      <animate
-        attributeName="y"
-        from="190"
-        to="162.5"
-        dur="3s"
-        fill="freeze"
-        restart="always"
-      /> -->
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="height"
+          from={previous.shape.height + strokeMargin * 2}
+          to={selected.shape.height + strokeMargin * 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="width"
+          from={previous.shape.width + strokeMargin * 2}
+          to={selected.shape.width + strokeMargin * 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x - strokeMargin}
+          to={selected.shape.x - strokeMargin}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y - strokeMargin}
+          to={selected.shape.y - strokeMargin}
+          dur="0.5s"
+        />
+      {/if}
     </rect>
     <!-- top left -->
     <rect
       class="vertex"
-      x={$object.shape.x - strokeMargin - strokeWidth / 2}
-      y={$object.shape.y - strokeMargin - strokeWidth / 2}
+      x={selected.shape.x - strokeMargin - strokeWidth / 2}
+      y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width={strokeWidth}
       height={strokeWidth}
-    />
+    >
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x - strokeMargin - strokeWidth / 2}
+          to={selected.shape.x - strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y - strokeMargin - strokeWidth / 2}
+          to={selected.shape.y - strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+      {/if}
+    </rect>
     <!-- top middle -->
     <rect
-      x={$object.shape.x + $object.shape.width / 2 - strokeWidth / 2}
-      y={$object.shape.y - strokeMargin - strokeWidth / 2}
+      x={selected.shape.x + selected.shape.width / 2 - strokeWidth / 2}
+      y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width={strokeWidth}
       height={strokeWidth}
-    />
+    >
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x + previous.shape.width / 2 - strokeWidth / 2}
+          to={selected.shape.x + selected.shape.width / 2 - strokeWidth / 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y - strokeMargin - strokeWidth / 2}
+          to={selected.shape.y - strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+      {/if}
+    </rect>
     <!-- top right -->
     <rect
-      x={$object.shape.x + $object.shape.width + strokeMargin - strokeWidth / 2}
-      y={$object.shape.y - strokeMargin - strokeWidth / 2}
+      x={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
+      y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width="8"
       height="8"
-    />
+    >
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x + previous.shape.width + strokeMargin - strokeWidth / 2}
+          to={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y - strokeMargin - strokeWidth / 2}
+          to={selected.shape.y - strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+      {/if}
+    </rect>
     <!-- middle right -->
     <rect
-      x={$object.shape.x + $object.shape.width + strokeMargin - strokeWidth / 2}
-      y={$object.shape.y + $object.shape.height / 2 - strokeMargin / 2}
+      x={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
+      y={selected.shape.y + selected.shape.height / 2 - strokeMargin / 2}
       width="8"
       height="8"
-    />
+    >
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x + previous.shape.width + strokeMargin - strokeWidth / 2}
+          to={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y + previous.shape.height / 2 - strokeMargin / 2}
+          to={selected.shape.y + selected.shape.height / 2 - strokeMargin / 2}
+          dur="0.5s"
+        />
+      {/if}
+    </rect>
     <!-- bottom right -->
     <rect
-      x={$object.shape.x + $object.shape.width + strokeMargin - strokeWidth / 2}
-      y={$object.shape.y + $object.shape.height + strokeMargin - strokeWidth / 2}
+      x={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
+      y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width="8"
       height="8"
-    />
+    >
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x + previous.shape.width + strokeMargin - strokeWidth / 2}
+          to={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y + previous.shape.height + strokeMargin - strokeWidth / 2}
+          to={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+      {/if}
+    </rect>
     <!-- bottom middle -->
     <rect
-      x={$object.shape.x + $object.shape.width / 2 - strokeWidth / 2}
-      y={$object.shape.y + $object.shape.height + strokeMargin - strokeWidth / 2}
+      x={selected.shape.x + selected.shape.width / 2 - strokeWidth / 2}
+      y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width="8"
       height="8"
-    />
+    >
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x + previous.shape.width / 2 - strokeWidth / 2}
+          to={selected.shape.x + selected.shape.width / 2 - strokeWidth / 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y + previous.shape.height + strokeMargin - strokeWidth / 2}
+          to={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+      {/if}
+    </rect>
     <!-- bottom left -->
     <rect
-      x={$object.shape.x - strokeMargin - strokeWidth / 2}
-      y={$object.shape.y + $object.shape.height + strokeMargin - strokeWidth / 2}
+      x={selected.shape.x - strokeMargin - strokeWidth / 2}
+      y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width={strokeWidth}
       height={strokeWidth}
-    />
+    >
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x - strokeMargin - strokeWidth / 2}
+          to={selected.shape.x - strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y + previous.shape.height + strokeMargin - strokeWidth / 2}
+          to={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+      {/if}
+    </rect>
     <!-- bottom middle -->
     <rect
-      x={$object.shape.x - strokeMargin - strokeWidth / 2}
-      y={$object.shape.y + $object.shape.height / 2 - strokeMargin / 2}
+      x={selected.shape.x - strokeMargin - strokeWidth / 2}
+      y={selected.shape.y + selected.shape.height / 2 - strokeMargin / 2}
       width={strokeWidth}
       height={strokeWidth}
-    />
+    >
+      {#if previous}
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="x"
+          from={previous.shape.x - strokeMargin - strokeWidth / 2}
+          to={selected.shape.x - strokeMargin - strokeWidth / 2}
+          dur="0.5s"
+        />
+        <animate
+          class="queue-animator"
+          begin="indefinite"
+          attributeName="y"
+          from={previous.shape.y + previous.shape.height / 2 - strokeMargin / 2}
+          to={selected.shape.y + selected.shape.height / 2 - strokeMargin / 2}
+          dur="0.5s"
+        />
+      {/if}
+    </rect>
   </g>
 {/if}
 

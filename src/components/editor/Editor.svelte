@@ -1,13 +1,15 @@
 <script type="ts">
-  import { map, pairwise, startWith, tap } from 'rxjs/operators';
-  import { afterUpdate$ } from '@/misc/svelte-rx';
+  import { map, pairwise, startWith, switchMap, tap } from 'rxjs/operators';
+  import { afterUpdate$, onDestroy$ } from '@/misc/svelte-rx';
   import { document$, QueueObject } from '@/store/document';
   import { currentQueue$ } from '@/store/queue';
+  import { currentQueueObject$ } from '@/store/queueObject';
   import { currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
 
   let svgElement: SVGElement;
+  let queueChanged = false;
 
   const queue$ = currentQueue$.pipe(startWith(null), pairwise());
 
@@ -15,6 +17,7 @@
     [key: string]: QueueObject;
   }
 
+  $: selectedObject = currentQueueObject$;
   $: document = document$;
   $: previousObjects = queue$.pipe(
     map(([previousQueue]) => {
@@ -31,6 +34,7 @@
     map(([, currentQueue]) => {
       return currentQueue?.objects;
     }),
+    tap(() => (queueChanged = true)),
   );
   $: scale = scale$;
 
@@ -49,16 +53,22 @@
     });
   };
 
-  afterUpdate$
-    .pipe(
-      tap(() => {
+  const onQueueChangedSubscriber = afterUpdate$.subscribe({
+    next: () => {
+      if (queueChanged) {
         const animators =
           svgElement.querySelectorAll<SVGAnimateElement>('.queue-animator');
-        console.log(animators);
         animators.forEach(animator => animator.beginElement());
-      }),
-    )
-    .subscribe();
+        queueChanged = false;
+      }
+    },
+  });
+
+  onDestroy$.subscribe({
+    next: () => {
+      onQueueChangedSubscriber.unsubscribe();
+    },
+  });
 </script>
 
 <div id="editor">
@@ -88,7 +98,7 @@
                       attributeName="height"
                       from={$previousObjects[object.uuid].shape.height}
                       to={object.shape.height}
-                      dur="1s"
+                      dur="0.5s"
                     />
                     <animate
                       class="queue-animator"
@@ -96,7 +106,7 @@
                       attributeName="width"
                       from={$previousObjects[object.uuid].shape.width}
                       to={object.shape.width}
-                      dur="1s"
+                      dur="0.5s"
                     />
                     <animate
                       class="queue-animator"
@@ -104,7 +114,7 @@
                       attributeName="x"
                       from={$previousObjects[object.uuid].shape.x}
                       to={object.shape.x}
-                      dur="1s"
+                      dur="0.5s"
                     />
                     <animate
                       class="queue-animator"
@@ -112,7 +122,7 @@
                       attributeName="y"
                       from={$previousObjects[object.uuid].shape.y}
                       to={object.shape.y}
-                      dur="1s"
+                      dur="0.5s"
                     />
                   {/if}
                 </rect>
@@ -120,7 +130,12 @@
             {/if}
           {/each}
         {/if}
-        <SelectedObject />
+        {#if $selectedObject}
+          <SelectedObject
+            selected={$selectedObject}
+            previous={$previousObjects[$selectedObject.uuid]}
+          />
+        {/if}
       </svg>
     </div>
   </div>
