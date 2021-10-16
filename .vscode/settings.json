@@ -1,9 +1,4 @@
 {
-  "typescript.suggestionActions.enabled": false,
-  "javascript.suggestionActions.enabled": false,
-  "eslint.validate": [
-    "svelte"
-  ],
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },

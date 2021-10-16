@@ -35,7 +35,7 @@ document$.subscribe(() => {
   });
 });
 
-export const currentQueue$: Observable<CurrentQueueState> = combineLatest([ document$, currentQueueSubject ]).pipe(
+export const currentQueue$: Observable<CurrentQueueState> = combineLatest([document$, currentQueueSubject]).pipe(
   map(([document, index]) => {
     const currentVisibleObjects = document.objects.filter(object => {
       const isDeleted = object.effects.some(effect => effect.type === 'delete' && effect.index < index);

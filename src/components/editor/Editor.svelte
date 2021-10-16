@@ -1,21 +1,34 @@
 <script type="ts">
-  import { map, tap } from 'rxjs/operators';
+  import { map, pairwise, startWith, tap } from 'rxjs/operators';
   import { document$, QueueObject } from '@/store/document';
   import { currentQueue$ } from '@/store/queue';
-  import { currentQueueObject$, currentQueueObjectReducer } from '@/store/queueObject';
+  import { currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
 
+  const queue$ = currentQueue$.pipe(startWith(null), pairwise());
+
   $: document = document$;
-  $: objects = currentQueue$.pipe(map(currentQueue => currentQueue.objects));
-  $: currentQueueObject = currentQueueObject$;
+  $: previousObjects = queue$.pipe(
+    map(([previousQueue]) => {
+      return previousQueue?.objects;
+    }),
+  );
+  $: objects = queue$.pipe(
+    map(([, currentQueue]) => {
+      return currentQueue?.objects;
+    }),
+  );
   $: scale = scale$;
 
   const onEmptySpaceClicked = () => {
-    console.log('reset');
     currentQueueObjectReducer({
       type: 'resetCurrentQueueObject',
     });
+  };
+
+  const previous = (object: QueueObject): boolean => {
+    return false;
   };
 
   const onObjectClicked = (e: MouseEvent, obj: QueueObject) => {
@@ -46,7 +59,9 @@
                   y={object.shape.y}
                   width={object.shape.width}
                   height={object.shape.height}
-                />
+                >
+                  <!--  -->
+                </rect>
               </g>
             {/if}
           {/each}

@@ -59,7 +59,24 @@
       y={$object.shape.y - strokeMargin}
       width={$object.shape.width + strokeMargin * 2}
       height={$object.shape.height + strokeMargin * 2}
-    />
+    >
+      <!-- <animate
+        attributeName="height"
+        from="0"
+        to="27.5"
+        dur="3s"
+        fill="freeze"
+        restart="always"
+      />
+      <animate
+        attributeName="y"
+        from="190"
+        to="162.5"
+        dur="3s"
+        fill="freeze"
+        restart="always"
+      /> -->
+    </rect>
     <!-- top left -->
     <rect
       class="vertex"
