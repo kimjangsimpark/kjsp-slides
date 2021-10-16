@@ -4,12 +4,12 @@
   import { currentQueue$ } from '@/store/queue';
   import { currentQueueObject$, currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
+  import { scale$ } from '@/store/scale';
 
   $: document = document$;
   $: objects = currentQueue$.pipe(map(currentQueue => currentQueue.objects));
   $: currentQueueObject = currentQueueObject$;
-
-  let scale = 0.6;
+  $: scale = scale$;
 
   const onEmptySpaceClicked = () => {
     console.log('reset');
@@ -29,7 +29,7 @@
 </script>
 
 <div id="editor">
-  <div id="scaler" style="transform: scale({scale});">
+  <div id="scaler" style="transform: scale({$scale});">
     <div id="frame">
       <svg
         id="svg"

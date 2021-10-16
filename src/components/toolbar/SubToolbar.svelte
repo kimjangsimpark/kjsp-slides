@@ -3,8 +3,9 @@
   import { map } from 'rxjs/operators';
   import { document$ } from '@/store/document';
   import { currentQueue$, currentQueueReducer } from '@/store/queue';
+  import { scale$, scaleReducer } from '@/store/scale';
 
-  $: documentState = document$;
+  $: scale = scale$;
   $: currentQueueState = currentQueue$;
 
   $: ranges = combineLatest([document$, currentQueue$]).pipe(
@@ -44,6 +45,22 @@
       index: pendingIndex,
     });
   };
+
+  const onScaleDownClicked = () => {
+    const current = $scale;
+    scaleReducer({
+      type: 'scaleChange',
+      value: current - 0.1,
+    });
+  };
+
+  const onScaleUpClicked = () => {
+    const current = $scale;
+    scaleReducer({
+      type: 'scaleChange',
+      value: current + 0.1,
+    });
+  };
 </script>
 
 <div id="subtoolbar">
@@ -57,6 +74,11 @@
   {/each}
   <div class="subtoolbar-item btn prev">
     <button on:click={onNextClicked}>next</button>
+  </div>
+
+  <div>
+    <button on:click={onScaleDownClicked}>-</button>
+    <button on:click={onScaleUpClicked}>+</button>
   </div>
 </div>
 
