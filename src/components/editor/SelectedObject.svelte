@@ -3,6 +3,9 @@
   import type { QueueObject } from '@/store/document';
   import { currentQueueObject$ } from '@/store/queueObject';
 
+  const strokeWidth = 8;
+  const strokeMargin = 5;
+
   interface Position {
     x: number;
     y: number;
@@ -48,13 +51,77 @@
     on:mouseup={onMouseUp}
   >
     <rect
-      stroke="red"
+      stroke="black"
       stroke-width="2"
+      stroke-dasharray="5"
       fill="transparent"
-      x={$object.shape.x - 5}
-      y={$object.shape.y - 5}
-      width={$object.shape.width + 10}
-      height={$object.shape.height + 10}
+      x={$object.shape.x - strokeMargin}
+      y={$object.shape.y - strokeMargin}
+      width={$object.shape.width + strokeMargin * 2}
+      height={$object.shape.height + strokeMargin * 2}
+    />
+    <!-- top left -->
+    <rect
+      class="vertex"
+      x={$object.shape.x - strokeMargin - strokeWidth / 2}
+      y={$object.shape.y - strokeMargin - strokeWidth / 2}
+      width={strokeWidth}
+      height={strokeWidth}
+    />
+    <!-- top middle -->
+    <rect
+      x={$object.shape.x + $object.shape.width / 2 - strokeWidth / 2}
+      y={$object.shape.y - strokeMargin - strokeWidth / 2}
+      width={strokeWidth}
+      height={strokeWidth}
+    />
+    <!-- top right -->
+    <rect
+      x={$object.shape.x + $object.shape.width + strokeMargin - strokeWidth / 2}
+      y={$object.shape.y - strokeMargin - strokeWidth / 2}
+      width="8"
+      height="8"
+    />
+    <!-- middle right -->
+    <rect
+      x={$object.shape.x + $object.shape.width + strokeMargin - strokeWidth / 2}
+      y={$object.shape.y + $object.shape.height / 2 - strokeMargin / 2}
+      width="8"
+      height="8"
+    />
+    <!-- bottom right -->
+    <rect
+      x={$object.shape.x + $object.shape.width + strokeMargin - strokeWidth / 2}
+      y={$object.shape.y + $object.shape.height + strokeMargin - strokeWidth / 2}
+      width="8"
+      height="8"
+    />
+    <!-- bottom middle -->
+    <rect
+      x={$object.shape.x + $object.shape.width / 2 - strokeWidth / 2}
+      y={$object.shape.y + $object.shape.height + strokeMargin - strokeWidth / 2}
+      width="8"
+      height="8"
+    />
+    <!-- bottom left -->
+    <rect
+      x={$object.shape.x - strokeMargin - strokeWidth / 2}
+      y={$object.shape.y + $object.shape.height + strokeMargin - strokeWidth / 2}
+      width={strokeWidth}
+      height={strokeWidth}
+    />
+    <!-- bottom middle -->
+    <rect
+      x={$object.shape.x - strokeMargin - strokeWidth / 2}
+      y={$object.shape.y + $object.shape.height / 2 - strokeMargin / 2}
+      width={strokeWidth}
+      height={strokeWidth}
     />
   </g>
 {/if}
+
+<style>
+  .vertex {
+    color: red;
+  }
+</style>
