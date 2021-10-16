@@ -7,16 +7,11 @@ export interface CurrentQueueObjectChangeAction {
   state: QueueObject;
 }
 
-export interface CurrentQueueObjectPositionChangeAction {
-  type: 'changeCurrentQueueObjectPosition';
-  position: Position;
-}
-
 export interface CurrentQueueObjectResetAction {
   type: 'resetCurrentQueueObject';
 }
 
-export type CurrentQueObjectAction = CurrentQueueObjectChangeAction | CurrentQueueObjectPositionChangeAction | CurrentQueueObjectResetAction;
+export type CurrentQueObjectAction = CurrentQueueObjectChangeAction | CurrentQueueObjectResetAction;
 
 const currentQueueObjectSubject = new BehaviorSubject<QueueObject | null>(null);
 
@@ -28,18 +23,10 @@ export const currentQueueObjectReducer = (action: CurrentQueObjectAction): void 
         ...action.state,
       });
       return;
-    case 'changeCurrentQueueObjectPosition':
-      if (!current) {
-        throw new Error('Current Queue Object Not Detected');
-      } else {
-        currentQueueObjectSubject.next({
-          ...current,
-          position: action.position,
-        });
-        return;
-      }
     case 'resetCurrentQueueObject':
-      currentQueueObjectSubject.next(null);
+      if (current !== null) {
+        currentQueueObjectSubject.next(null);
+      }
       return;
     default:
       throw new Error('Not Supported Current Queue Object Action');
@@ -51,6 +38,7 @@ export const currentQueueObject$ = combineLatest([currentQueue$, currentQueueObj
     if (currentObject === null) {
       return null;
     }
-    return currentQueue.objects.find(object => object.uuid === currentObject.uuid) || null;
+    const found = currentQueue.objects.find(object => object.uuid === currentObject.uuid);
+    return found || null;
   }),
 )

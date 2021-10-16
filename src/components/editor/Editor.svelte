@@ -3,6 +3,7 @@
   import { document$, QueueObject } from '@/store/document';
   import { currentQueue$ } from '@/store/queue';
   import { currentQueueObject$, currentQueueObjectReducer } from '@/store/queueObject';
+  import SelectedObject from './SelectedObject.svelte';
 
   $: document = document$;
   $: objects = currentQueue$.pipe(map(currentQueue => currentQueue.objects));
@@ -11,6 +12,7 @@
   let scale = 0.6;
 
   const onEmptySpaceClicked = () => {
+    console.log('reset');
     currentQueueObjectReducer({
       type: 'resetCurrentQueueObject',
     });
@@ -30,6 +32,7 @@
   <div id="scaler" style="transform: scale({scale});">
     <div id="frame">
       <svg
+        id="svg"
         class="page"
         style="width: {$document.rect.width}px; height: {$document.rect.height}px;"
         on:click={() => onEmptySpaceClicked()}
@@ -48,19 +51,7 @@
             {/if}
           {/each}
         {/if}
-        {#if $currentQueueObject}
-          <g>
-            <rect
-              stroke="red"
-              stroke-width="2"
-              fill="none"
-              x={$currentQueueObject.shape.x - 5}
-              y={$currentQueueObject.shape.y - 5}
-              width={$currentQueueObject.shape.width + 10}
-              height={$currentQueueObject.shape.height + 10}
-            />
-          </g>
-        {/if}
+        <SelectedObject />
       </svg>
     </div>
   </div>
