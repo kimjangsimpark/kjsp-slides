@@ -1,5 +1,6 @@
 import type { Position, QueueObject } from './document';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, map } from 'rxjs';
+import { currentQueue$ } from './queue';
 
 export interface CurrentQueueObjectChangeAction {
   type: 'changeCurrentQueueObject';
@@ -17,13 +18,13 @@ export interface CurrentQueueObjectResetAction {
 
 export type CurrentQueObjectAction = CurrentQueueObjectChangeAction | CurrentQueueObjectPositionChangeAction | CurrentQueueObjectResetAction;
 
-const currentQueueSubject = new BehaviorSubject<QueueObject | null>(null);
+const currentQueueObjectSubject = new BehaviorSubject<QueueObject | null>(null);
 
 export const currentQueueObjectReducer = (action: CurrentQueObjectAction): void => {
-  const current = currentQueueSubject.getValue();
+  const current = currentQueueObjectSubject.getValue();
   switch (action.type) {
     case 'changeCurrentQueueObject':
-      currentQueueSubject.next({
+      currentQueueObjectSubject.next({
         ...action.state,
       });
       return;
@@ -31,18 +32,25 @@ export const currentQueueObjectReducer = (action: CurrentQueObjectAction): void 
       if (!current) {
         throw new Error('Current Queue Object Not Detected');
       } else {
-        currentQueueSubject.next({
+        currentQueueObjectSubject.next({
           ...current,
           position: action.position,
         });
         return;
       }
     case 'resetCurrentQueueObject':
-      currentQueueSubject.next(null);
+      currentQueueObjectSubject.next(null);
       return;
     default:
       throw new Error('Not Supported Current Queue Object Action');
   }
 }
 
-export const currentQueueObject$ = currentQueueSubject.asObservable();
+export const currentQueueObject$ = combineLatest([currentQueue$, currentQueueObjectSubject]).pipe(
+  map(([currentQueue, currentObject]) => {
+    if (currentObject === null) {
+      return null;
+    }
+    return currentQueue.objects.find(object => object.uuid === currentObject.uuid) || null;
+  }),
+)

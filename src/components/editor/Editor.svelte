@@ -1,73 +1,12 @@
 <script type="ts">
-  import { combineLatest } from 'rxjs';
-  import { filter, map } from 'rxjs/operators';
-  import { document$, QueueObject, QueueTransitionEffect } from '@/store/document';
+  import { map, tap } from 'rxjs/operators';
+  import { document$, QueueObject } from '@/store/document';
   import { currentQueue$ } from '@/store/queue';
   import { currentQueueObject$, currentQueueObjectReducer } from '@/store/queueObject';
 
   $: document = document$;
-  $: objects = currentQueue$.pipe(
-    map(currentQueue => {
-      const newState = { ...currentQueue };
-
-      newState.objects = currentQueue.objects.map(object => {
-        const immutable = { ...object };
-        const index = currentQueue.index;
-        const reversedEffects = object.effects.slice(0).reverse();
-
-        const lastTransition = reversedEffects.find(
-          effect => effect.index < index && effect.type === 'transition',
-        ) as QueueTransitionEffect;
-        const currentTransition = reversedEffects.find(
-          effect => effect.index === index && effect.type === 'transition',
-        ) as QueueTransitionEffect;
-
-        immutable.shape = {
-          ...object.shape,
-          x: currentTransition?.x || lastTransition?.x || object.shape.x,
-          y: currentTransition?.y || lastTransition?.y || object.shape.y,
-          width: currentTransition?.width || lastTransition?.width || object.shape.width,
-          height:
-            currentTransition?.height || lastTransition?.height || object.shape.height,
-        };
-
-        return immutable;
-      });
-      console.log(newState.objects);
-      return newState;
-    }),
-    map(currentQueue => currentQueue.objects),
-  );
-
-  $: currentQueueObject = combineLatest([currentQueue$, currentQueueObject$]).pipe(
-    map(([currentQueue, object]) => {
-      if (!object) {
-        return null;
-      }
-
-      const immutable = { ...object };
-      const index = currentQueue.index;
-      const reversedEffects = object.effects.slice(0).reverse();
-
-      const lastTransition = reversedEffects.find(
-        effect => effect.index < index && effect.type === 'transition',
-      ) as QueueTransitionEffect;
-      const currentTransition = reversedEffects.find(
-        effect => effect.index === index && effect.type === 'transition',
-      ) as QueueTransitionEffect;
-
-      immutable.shape = {
-        ...object.shape,
-        x: currentTransition?.x || lastTransition?.x || object.shape.x,
-        y: currentTransition?.y || lastTransition?.y || object.shape.y,
-        width: currentTransition?.width || lastTransition?.width || object.shape.width,
-        height:
-          currentTransition?.height || lastTransition?.height || object.shape.height,
-      };
-
-      return immutable;
-    }),
-  );
+  $: objects = currentQueue$.pipe(map(currentQueue => currentQueue.objects));
+  $: currentQueueObject = currentQueueObject$;
 
   let scale = 0.6;
 

@@ -57,6 +57,7 @@ export interface Text {
 
 export interface QueueObject {
   type: string; // 개체 타입 (모양)
+  uuid: string;
   effects: QueueEffect[];
   shape: Shape, // 가로, 세로, 테두리, 테두리 색상, 배경 색상
   position: Position, // (x, y) 포지션
@@ -99,6 +100,7 @@ const documentSubject = new BehaviorSubject<DocumentState>({
   },
   objects: [{
     type: 'rectangle',
+    uuid: 'asdkfl3n3',
     effects: [
       {
         type: 'create',
@@ -150,6 +152,7 @@ const documentSubject = new BehaviorSubject<DocumentState>({
     },
   }, {
     type: 'rectangle',
+    uuid: 'asdf3d3g',
     effects: [
       {
         type: 'create',
