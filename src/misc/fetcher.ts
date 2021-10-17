@@ -72,3 +72,5 @@ export class Fetcher {
     );
   }
 }
+
+export const fetcher = new Fetcher();
