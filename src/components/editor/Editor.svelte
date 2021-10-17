@@ -84,7 +84,7 @@
         {#if $objects}
           {#each $objects as object}
             {#if object.type === 'rectangle'}
-              <g on:click={e => onObjectClicked(e, object)}>
+              <g class="object" on:click={e => onObjectClicked(e, object)}>
                 <rect
                   x={object.shape.x}
                   y={object.shape.y}
@@ -156,6 +156,10 @@
   #frame {
     display: inline-block;
     padding: 20px;
+  }
+
+  .object {
+    cursor: move;
   }
 
   .page {

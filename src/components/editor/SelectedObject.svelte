@@ -3,7 +3,7 @@
   export let previous: QueueObject | null = null;
   export let selected: QueueObject;
 
-  const strokeWidth = 10;
+  const strokeWidth = 8;
   const strokeMargin = 5;
 
   interface Position {
