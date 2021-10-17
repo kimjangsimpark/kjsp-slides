@@ -44,17 +44,20 @@ export class Fetcher {
   }
 
   public fetch<R>(
-    input: RequestInfo,
-    init?: FetcherRequestInit | undefined
+    url: string,
+    request?: FetcherRequestInit | undefined
   ): Observable<R> {
-    if (!init) {
-      init = {};
+    if (this.baseUrl) {
+      url = `${this.baseUrl}${url}`;
+    }
+    if (!request) {
+      request = {};
     }
     if (this.defaultHeader) {
-      init.headers = Object.assign({}, this.defaultHeader, init.headers);
+      request.headers = Object.assign({}, this.defaultHeader, request.headers);
     }
-    this.requestInterceptors.forEach(interceptor => interceptor(input, init));
-    const promise = fetch(input, init);
+    this.requestInterceptors.forEach(interceptor => interceptor(url, request));
+    const promise = fetch(url, request);
     return from(promise).pipe(
       tap(response => {
         if (response.status < 200 || response.status > 299) {
