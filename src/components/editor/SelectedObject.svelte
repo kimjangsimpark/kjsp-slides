@@ -3,7 +3,7 @@
   export let previous: QueueObject | null = null;
   export let selected: QueueObject;
 
-  const strokeWidth = 8;
+  const strokeWidth = 10;
   const strokeMargin = 5;
 
   interface Position {
@@ -48,6 +48,7 @@
     on:mouseup={onMouseUp}
   >
     <rect
+      class="mover"
       stroke="black"
       stroke-width="2"
       stroke-dasharray="5"
@@ -94,7 +95,7 @@
     </rect>
     <!-- top left -->
     <rect
-      class="vertex"
+      class="vertex top-left"
       x={selected.shape.x - strokeMargin - strokeWidth / 2}
       y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width={strokeWidth}
@@ -121,6 +122,7 @@
     </rect>
     <!-- top middle -->
     <rect
+      class="vertex top-middle"
       x={selected.shape.x + selected.shape.width / 2 - strokeWidth / 2}
       y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width={strokeWidth}
@@ -147,6 +149,7 @@
     </rect>
     <!-- top right -->
     <rect
+      class="vertex top-right"
       x={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
       y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width="8"
@@ -173,6 +176,7 @@
     </rect>
     <!-- middle right -->
     <rect
+      class="vertex middle-right"
       x={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
       y={selected.shape.y + selected.shape.height / 2 - strokeMargin / 2}
       width="8"
@@ -199,6 +203,7 @@
     </rect>
     <!-- bottom right -->
     <rect
+      class="vertex bottom-right"
       x={selected.shape.x + selected.shape.width + strokeMargin - strokeWidth / 2}
       y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width="8"
@@ -225,6 +230,7 @@
     </rect>
     <!-- bottom middle -->
     <rect
+      class="vertex bottom-middle"
       x={selected.shape.x + selected.shape.width / 2 - strokeWidth / 2}
       y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width="8"
@@ -251,6 +257,7 @@
     </rect>
     <!-- bottom left -->
     <rect
+      class="vertex bottom-left"
       x={selected.shape.x - strokeMargin - strokeWidth / 2}
       y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width={strokeWidth}
@@ -275,8 +282,9 @@
         />
       {/if}
     </rect>
-    <!-- bottom middle -->
+    <!-- middle left -->
     <rect
+      class="vertex middle-left"
       x={selected.shape.x - strokeMargin - strokeWidth / 2}
       y={selected.shape.y + selected.shape.height / 2 - strokeMargin / 2}
       width={strokeWidth}
@@ -304,8 +312,28 @@
   </g>
 {/if}
 
-<style>
+<style type="scss">
+  .mover {
+    cursor: move;
+  }
   .vertex {
-    color: red;
+    &.top-left,
+    &.bottom-right {
+      cursor: nwse-resize;
+    }
+    &.top-middle,
+    &.bottom-middle {
+      cursor: ns-resize;
+    }
+
+    &.top-right,
+    &.bottom-left {
+      cursor: nesw-resize;
+    }
+
+    &.middle-left,
+    &.middle-right {
+      cursor: ew-resize;
+    }
   }
 </style>
