@@ -1,4 +1,4 @@
-import { from, map, Observable, throwError } from 'rxjs';
+import { from, Observable, switchMap, tap, throwError } from 'rxjs';
 
 export type HttpClientHeader = Record<string, string>;
 export type RequestInterceptor = (input: RequestInfo, init?: RequestInit | undefined) => void;
@@ -10,9 +10,17 @@ export interface FetcherRequestInit extends RequestInit {
 
 export class Fetcher {
 
+  private baseUrl: string | undefined;
   private defaultHeader: Record<string, string> | undefined;
   private readonly requestInterceptors: RequestInterceptor[] = [];
   private readonly responseInterceptors: ResponseInterceptor[] = [];
+
+  public setBaseUrl(
+    url: string
+  ): Fetcher {
+    this.baseUrl = url;
+    return this;
+  }
 
   public setDefaultHeader(
     headers: Record<string, string>,
@@ -35,10 +43,10 @@ export class Fetcher {
     return this;
   }
 
-  public fetch(
+  public fetch<R>(
     input: RequestInfo,
     init?: FetcherRequestInit | undefined
-  ): Observable<Response> {
+  ): Observable<R> {
     if (!init) {
       init = {};
     }
@@ -46,14 +54,17 @@ export class Fetcher {
       init.headers = Object.assign({}, this.defaultHeader, init.headers);
     }
     this.requestInterceptors.forEach(interceptor => interceptor(input, init));
-    const promise = window.fetch(input, init);
+    const promise = fetch(input, init);
     return from(promise).pipe(
-      map(response => {
+      tap(response => {
         if (response.status < 200 || response.status > 299) {
-          throwError(() => new Error());
+          return throwError(() => new Error());
         }
         this.responseInterceptors.forEach(interceptor => interceptor(response));
-        return response;
+      }),
+      switchMap(response => {
+        const promise = response.json();
+        return from(promise) as Observable<R>;
       })
     );
   }
