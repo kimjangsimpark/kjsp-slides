@@ -2,11 +2,12 @@ import '@/styles/global.scss';
 import App from '@/App.svelte';
 import { fetcher } from './misc/fetcher';
 
-fetcher.setBaseUrl('https://some/url/to/start');
+fetcher.setBaseUrl('https://slide.preandero.com');
 fetcher.setDefaultHeader({
-  'Authorization': 'SOME TOKEN TO USE',
+  'Content-Type': 'application/json',
+  Authorization: 'SOME TOKEN TO USE',
 });
-fetcher.addResponseInterceptor((response) => {
+fetcher.addResponseInterceptor(response => {
   if (response.status === 401) {
     console.log('Unauthorized Reqeust, Please Redirect to login page');
   }

@@ -74,7 +74,7 @@
     </ul>
     {#if $userInfo}
       <div class="user-info" on:click={handleProfileClick}>
-        <div class:active={showsSubMenu}>{$userInfo.username}</div>
+        <div class:active={showsSubMenu}>{$userInfo.userName}</div>
         <div class="more-icon">=</div>
         <ul class="user-info-sub-menu" class:show={showsSubMenu}>
           <li><a href="/my/setting">Setting</a></li>

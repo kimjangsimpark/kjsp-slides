@@ -1,23 +1,32 @@
 <script lang="ts">
-  const handleFormSubmit = () => null;
+  export let isSignin: boolean;
+  export let hadleFormSubmit: svelte.JSX.FormEventHandler<HTMLFormElement> | undefined;
 </script>
 
-<form on:submit|preventDefault={handleFormSubmit}>
+<form on:submit|preventDefault={hadleFormSubmit}>
   <slot name="formTitle">
     <h2 class="form-title">Form title is <b>requried</b></h2>
   </slot>
+  {#if !isSignin}
+    <div class="input-box">
+      <slot name="userName" />
+      <label for="name">UserName</label>
+    </div>
+  {/if}
   <div class="input-box">
-    <slot name="username" />
-    <label for="name">Username</label>
+    <slot name="userEmail" />
+    <label for="userEmail">Email</label>
   </div>
   <div class="input-box">
-    <slot name="email" />
-    <label for="email">Email</label>
+    <slot name="userPassword" />
+    <label for="userPassword">Password</label>
   </div>
-  <div class="input-box">
-    <slot name="password" />
-    <label for="password">Password</label>
-  </div>
+  {#if !isSignin}
+    <div class="input-box">
+      <slot name="userPhone" />
+      <label for="userPhone">PhoneNumber</label>
+    </div>
+  {/if}
   <slot name="submitButton" />
 </form>
 

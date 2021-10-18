@@ -1,55 +1,74 @@
 <script lang="ts">
   import AccountForm from '@/components/AccountForm.svelte';
-  import { userInfo } from '@/store/user';
+  import { userInfo, IUserInfo } from '@/store/user';
   import { push } from 'svelte-spa-router';
   import AuthObserver from '@/components/auth/AuthObserver.svelte';
+  import { fetcher } from '@/misc/fetcher';
 
-  let email: string;
-  let password: string;
+  let userEmail: string;
+  let userPassword: string;
 
-  const handleClickSignInButton = () => {
+  userEmail = 'test@gmail.com';
+  userPassword = 'test1234';
+
+  const hadleFormSubmit = () => {
     signIn();
   };
 
   const signIn = () => {
-    // @todo 서버와 통신
-    userInfo.set({
-      username: 'Tim Cook',
-      email,
+    const requestBody = JSON.stringify({ userEmail, userPassword });
+
+    const signInResponse = fetcher.fetch('/api/user/signin', {
+      method: 'POST',
+      body: requestBody,
     });
-    localStorage.setItem('accessToken', 'aaa.bbb.ccc1');
-    void push('/home');
+
+    signInResponse.subscribe({
+      next: response => {
+        console.log(response);
+
+        localStorage.setItem('refreshToken', response.refreshToken);
+        localStorage.setItem('accessToken', response.accessToken);
+
+        userInfo.set(response.userInfo);
+
+        push('/');
+      },
+    });
+
+    // // @todo 서버와 통신
+    // userInfo.set({
+    //   username: 'Tim Cook',
+    //   email: userEmail,
+    // });
+    // localStorage.setItem('accessToken', 'aaa.bbb.ccc1');
   };
 
-  $: disablesSubmitButton = !(email && password);
+  $: disablesSubmitButton = !(userEmail && userPassword);
 </script>
 
 <AuthObserver isPublic={true} allowsAuthoriedUser={true} />
 
 <main>
-  <AccountForm>
+  <AccountForm {hadleFormSubmit} isSignin={true}>
     <h2 slot="formTitle">Sign in</h2>
     <input
       type="text"
-      name="email"
-      id="email"
-      slot="email"
+      name="userEmail"
+      id="userEmail"
+      slot="userEmail"
       placeholder=" "
-      bind:value={email}
+      bind:value={userEmail}
     />
     <input
       type="password"
-      name="password"
-      id="password"
-      slot="password"
+      name="userPassword"
+      id="userPassword"
+      slot="userPassword"
       placeholder=" "
-      bind:value={password}
+      bind:value={userPassword}
     />
-    <button
-      slot="submitButton"
-      disabled={disablesSubmitButton}
-      on:click={handleClickSignInButton}>Sign in</button
-    >
+    <button slot="submitButton" disabled={disablesSubmitButton}>Sign in</button>
   </AccountForm>
 </main>
 
