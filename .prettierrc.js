@@ -6,7 +6,6 @@ module.exports = {
   trailingComma: 'all',
   svelteSortOrder: 'options-scripts-markup-styles',
   tabWidth: 2,
-  plugins: ['prettier-plugin-svelte'],
   override: [{
     files: '*.svelte'
   }]
