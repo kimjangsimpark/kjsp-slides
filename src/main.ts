@@ -4,8 +4,8 @@ import { fetcher } from './misc/fetcher';
 
 fetcher.setBaseUrl('https://slide.preandero.com');
 fetcher.setDefaultHeader({
+  // Authorization: 'SOME TOKEN TO USE',
   'Content-Type': 'application/json',
-  Authorization: 'SOME TOKEN TO USE',
 });
 fetcher.addResponseInterceptor(response => {
   if (response.status === 401) {

@@ -1,6 +1,6 @@
 <script lang="ts">
   export let isSignin: boolean;
-  export let hadleFormSubmit: svelte.JSX.FormEventHandler<HTMLFormElement> | undefined;
+  export let hadleFormSubmit: () => void;
 </script>
 
 <form on:submit|preventDefault={hadleFormSubmit}>

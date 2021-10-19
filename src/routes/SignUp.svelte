@@ -1,42 +1,79 @@
 <script lang="ts">
   import AuthObserver from '@/components/auth/AuthObserver.svelte';
   import AccountForm from '@/components/AccountForm.svelte';
+  import { UserServices } from '@/misc/userServices';
+  import { fetcher } from '@/misc/fetcher';
+  const userServices = UserServices.getInstance();
 
-  let name: string;
-  let email: string;
-  let password: string;
+  let userName: string;
+  let userEmail: string;
+  let userPassword: string;
+  let userPhone: string;
 
-  $: disablesSubmitButton = !(name && email && password);
+  userName = '김두치';
+  userEmail = 'test@test.com';
+  userPassword = '1234qwer';
+  userPhone = '0112221111';
+
+  const hadleFormSubmit = (): void => {
+    const s = JSON.stringify({
+      userName,
+      userEmail,
+      userPassword,
+      userPhone,
+    });
+    const a = fetcher.fetch('/api/user/auth/signup', {
+      method: 'POST',
+      body: s,
+    });
+
+    // const signupResponse = userServices.signup({
+    //   userName,
+    //   userEmail,
+    //   userPassword,
+    //   userPhone,
+    // });
+  };
+
+  $: disablesSubmitButton = !(userName && userEmail && userPassword && userPhone);
 </script>
 
 <AuthObserver isPublic={true} allowsAuthoriedUser={true} />
 
 <main>
-  <AccountForm>
+  <AccountForm {hadleFormSubmit} isSignin={false}>
     <h2 slot="formTitle">Sign up with <b>Email</b></h2>
     <input
-      slot="username"
+      slot="userName"
       type="text"
-      name="name"
-      id="name"
+      name="userName"
+      id="userName"
       placeholder=" "
-      bind:value={name}
+      bind:value={userName}
     />
     <input
-      slot="email"
+      slot="userEmail"
       type="email"
-      name="email"
-      id="email"
+      name="userEmail"
+      id="userEmail"
       placeholder=" "
-      bind:value={email}
+      bind:value={userEmail}
     />
     <input
-      slot="password"
+      slot="userPassword"
       type="password"
-      name="password"
-      id="password"
+      name="userPassword"
+      id="userPassword"
       placeholder=" "
-      bind:value={password}
+      bind:value={userPassword}
+    />
+    <input
+      slot="userPhone"
+      type="tel"
+      name="userPhone"
+      id="userPhone"
+      placeholder=" "
+      bind:value={userPhone}
     />
     <button slot="submitButton" disabled={disablesSubmitButton}>Sign up</button>
   </AccountForm>
