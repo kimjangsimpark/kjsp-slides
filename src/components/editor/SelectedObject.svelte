@@ -1,52 +1,20 @@
 <script type="ts">
   import type { QueueObject } from '@/store/document';
+
   export let previous: QueueObject | null = null;
   export let selected: QueueObject;
 
   const strokeWidth = 8;
   const strokeMargin = 5;
 
-  interface Position {
-    x: number;
-    y: number;
-  }
-
-  let position: Position | null = null;
-
   const onMouseClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
   };
-
-  const onMouseDown = (e: MouseEvent) => {
-    position = {
-      x: e.clientX,
-      y: e.clientY,
-    };
-  };
-
-  const onMouseMove = (e: MouseEvent) => {
-    if (!position) {
-      return;
-    }
-    const updatedPosition: Position = {
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
-    };
-  };
-
-  const onMouseUp = (e: MouseEvent) => {
-    position = null;
-  };
 </script>
 
 {#if selected}
-  <g
-    on:click={onMouseClick}
-    on:mousedown={onMouseDown}
-    on:mousemove={onMouseMove}
-    on:mouseup={onMouseUp}
-  >
+  <g on:click={onMouseClick} on:mousedown>
     <rect
       class="mover"
       stroke="black"
