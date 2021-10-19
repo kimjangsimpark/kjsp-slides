@@ -1,4 +1,4 @@
-import { from, Observable, switchMap, tap, throwError } from 'rxjs';
+import { from, Observable, of, switchMap, tap, throwError } from 'rxjs';
 
 export type HttpClientHeader = Record<string, string>;
 export type RequestInterceptor = (input: RequestInfo, init?: RequestInit | undefined) => void;
@@ -43,7 +43,7 @@ export class Fetcher {
     return this;
   }
 
-  public fetch<R>(
+  public fetch<R = null>(
     url: string,
     request?: FetcherRequestInit | undefined
   ): Observable<R> {
@@ -66,8 +66,12 @@ export class Fetcher {
         this.responseInterceptors.forEach(interceptor => interceptor(response));
       }),
       switchMap(response => {
-        const promise = response.json();
-        return from(promise) as Observable<R>;
+        if (!response.body) {
+          return of(response.body as unknown as R);
+        } else {
+          const promise = response.json();
+          return from(promise) as Observable<R>;
+        }
       })
     );
   }
