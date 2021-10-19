@@ -1,9 +1,14 @@
-import type { Position, QueueObject } from './document';
+import type { QueueObject } from './document';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { currentQueue$ } from './queue';
 
 export interface CurrentQueueObjectChangeAction {
   type: 'changeCurrentQueueObject';
+  state: QueueObject;
+}
+
+export interface UpdateQueueObjectAction {
+  type: 'updateQueueObjectAction';
   state: QueueObject;
 }
 

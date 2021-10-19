@@ -1,5 +1,5 @@
 <script type="ts">
-  import { map, pairwise, startWith, switchMap, tap } from 'rxjs/operators';
+  import { map, pairwise, startWith, tap } from 'rxjs/operators';
   import { afterUpdate$, onDestroy$ } from '@/misc/svelte-rx';
   import { document$, QueueObject } from '@/store/document';
   import { currentQueue$ } from '@/store/queue';
@@ -51,6 +51,28 @@
       type: 'changeCurrentQueueObject',
       state: obj,
     });
+  };
+
+  const onSelectedObjectMouseDown = (e: MouseEvent) => {
+    if (!$selectedObject) return;
+    const object = $selectedObject as QueueObject;
+    const positionX = e.clientX;
+    const positionY = e.clientY;
+    const captureX = object.shape.x;
+    const captureY = object.shape.y;
+
+    const onSelectedObjectMouseMove = (e: MouseEvent) => {
+      object.shape.x = captureX + e.clientX - positionX;
+      object.shape.y = captureY + e.clientY - positionY;
+    };
+
+    const onSelectedObjectMouseUp = (e: MouseEvent) => {
+      svgElement.removeEventListener('mousemove', onSelectedObjectMouseMove);
+      svgElement.removeEventListener('mouseup', onSelectedObjectMouseUp);
+    };
+
+    svgElement.addEventListener('mousemove', onSelectedObjectMouseMove);
+    svgElement.addEventListener('mouseup', onSelectedObjectMouseUp);
   };
 
   const onQueueChangedSubscriber = afterUpdate$.subscribe({
@@ -134,6 +156,7 @@
           <SelectedObject
             selected={$selectedObject}
             previous={$previousObjects[$selectedObject.uuid]}
+            on:mousedown={onSelectedObjectMouseDown}
           />
         {/if}
       </svg>
