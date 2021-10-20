@@ -9,7 +9,7 @@ export interface SignInRequest {
 export interface SignInResponse {
   accessToken: string;
   refreshToken: string;
-  tokenType: 'Bearer',
+  tokenType: 'Bearer';
   userInfo: {
     userName: string;
     userEmail: string;
@@ -17,10 +17,22 @@ export interface SignInResponse {
   };
 }
 
-export function signIn(
-  params: SignInRequest,
-): Observable<SignInResponse> {
+export interface SignUpRequest {
+  userName: string;
+  userEmail: string;
+  userPassword: string;
+  userPhone: string;
+}
+
+export function signIn(params: SignInRequest): Observable<SignInResponse> {
   return fetcher.fetch<SignInResponse>('/api/user/signin', {
+    method: 'post',
+    body: JSON.stringify(params),
+  });
+}
+
+export function signUp(params: SignUpRequest): Observable<null> {
+  return fetcher.fetch<null>('/api/user/signup', {
     method: 'post',
     body: JSON.stringify(params),
   });

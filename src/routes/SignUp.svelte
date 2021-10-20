@@ -1,38 +1,49 @@
 <script lang="ts">
   import AuthObserver from '@/components/auth/AuthObserver.svelte';
   import AccountForm from '@/components/AccountForm.svelte';
-  import { UserServices } from '@/misc/userServices';
-  import { fetcher } from '@/misc/fetcher';
-  const userServices = UserServices.getInstance();
+  import { signUp } from '@/http/auth';
+  import { catchError, throwError } from 'rxjs';
+  import { push } from 'svelte-spa-router';
 
   let userName: string;
   let userEmail: string;
   let userPassword: string;
   let userPhone: string;
 
-  userName = '김두치';
-  userEmail = 'test@test.com';
+  userName = '테스트 네임';
+  userEmail = '@test.com';
   userPassword = '1234qwer';
   userPhone = '0112221111';
 
   const hadleFormSubmit = (): void => {
-    const s = JSON.stringify({
+    signUp({
       userName,
       userEmail,
       userPassword,
       userPhone,
-    });
-    const a = fetcher.fetch('/api/user/auth/signup', {
-      method: 'POST',
-      body: s,
-    });
+    })
+      .pipe(
+        catchError(error => {
+          if (error instanceof Response) {
+            if (error.status === 400) {
+              alert('이미 가입된 이메일입니다.');
+            } else if (error.status === 500) {
+              alert('통신 오류입니다. 잠시 후 다시 시도하세요.');
+            }
+          } else {
+            // console.error(error);
+            alert('뭔가 잘못됨');
+          }
 
-    // const signupResponse = userServices.signup({
-    //   userName,
-    //   userEmail,
-    //   userPassword,
-    //   userPhone,
-    // });
+          return throwError(() => error);
+        }),
+      )
+      .subscribe({
+        next: () => {
+          alert('회원가입이 완료되었습니다.');
+          push('/home/sign-in');
+        },
+      });
   };
 
   $: disablesSubmitButton = !(userName && userEmail && userPassword && userPhone);
