@@ -1,17 +1,16 @@
 <script lang="ts">
   import AccountForm from '@/components/AccountForm.svelte';
-  import { userInfo, IUserInfo } from '@/store/user';
+  import { userInfo } from '@/store/user';
   import { push } from 'svelte-spa-router';
   import AuthObserver from '@/components/auth/AuthObserver.svelte';
-  import { fetcher } from '@/misc/fetcher';
   import { signIn } from '@/http/auth';
   import { catchError, throwError } from 'rxjs';
 
   let userEmail: string;
   let userPassword: string;
 
-  userEmail = 'test@gmail.com';
-  userPassword = 'test1234';
+  userEmail = '@test.com';
+  userPassword = '1234qwer';
 
   const hadleFormSubmit = () => {
     onSignInClick();
@@ -24,7 +23,14 @@
     })
       .pipe(
         catchError(error => {
-          alert('오류났어!');
+          if (error instanceof Response) {
+            if (error.status === 500) {
+              alert('email/password를 확인해주세요');
+            }
+          } else {
+            alert('서버 오류났어!');
+          }
+
           return throwError(() => error);
         }),
       )
