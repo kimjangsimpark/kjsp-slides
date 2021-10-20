@@ -61,16 +61,18 @@ export class Fetcher {
     return from(promise).pipe(
       tap(response => {
         if (response.status < 200 || response.status > 299) {
-          return throwError(() => new Error());
+          throw response;
         }
         this.responseInterceptors.forEach(interceptor => interceptor(response));
       }),
       switchMap(response => {
-        if (!response.body) {
-          return of(response.body as unknown as R);
-        } else {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.indexOf('application/json') !== -1) {
           const promise = response.json();
           return from(promise) as Observable<R>;
+        } else {
+          const promise = response.text();
+          return from(promise) as unknown as Observable<R>;
         }
       }),
       take(1),
