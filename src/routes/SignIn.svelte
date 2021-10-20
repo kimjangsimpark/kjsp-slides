@@ -4,6 +4,8 @@
   import { push } from 'svelte-spa-router';
   import AuthObserver from '@/components/auth/AuthObserver.svelte';
   import { fetcher } from '@/misc/fetcher';
+  import { signIn } from '@/http/auth';
+  import { catchError, throwError } from 'rxjs';
 
   let userEmail: string;
   let userPassword: string;
@@ -12,37 +14,28 @@
   userPassword = 'test1234';
 
   const hadleFormSubmit = () => {
-    signIn();
+    onSignInClick();
   };
 
-  const signIn = () => {
-    const requestBody = JSON.stringify({ userEmail, userPassword });
-
-    const signInResponse = fetcher.fetch('/api/user/signin', {
-      method: 'POST',
-      body: requestBody,
-    });
-
-    signInResponse.subscribe({
-      next: response => {
-        console.log(response);
-
-        localStorage.setItem('refreshToken', response.refreshToken);
-        localStorage.setItem('accessToken', response.accessToken);
-
-        userInfo.set(response.userInfo);
-
-        push('/');
-      },
-    });
-
-    // // @todo 서버와 통신
-    // userInfo.set({
-    //   username: 'Tim Cook',
-    //   email: userEmail,
-    // });
-    // localStorage.setItem('accessToken', 'aaa.bbb.ccc1');
-  };
+  const onSignInClick = () =>
+    signIn({
+      userEmail: userEmail,
+      userPassword: userPassword,
+    })
+      .pipe(
+        catchError(error => {
+          alert('오류났어!');
+          return throwError(() => error);
+        }),
+      )
+      .subscribe({
+        next: res => {
+          localStorage.setItem('refreshToken', res.refreshToken);
+          localStorage.setItem('accessToken', res.accessToken);
+          userInfo.set(res.userInfo);
+          push('/');
+        },
+      });
 
   $: disablesSubmitButton = !(userEmail && userPassword);
 </script>
