@@ -1,7 +1,10 @@
-import { from, Observable, of, switchMap, take, tap, throwError } from 'rxjs';
+import { from, Observable, of, switchMap, take, tap } from 'rxjs';
 
 export type HttpClientHeader = Record<string, string>;
-export type RequestInterceptor = (input: RequestInfo, init?: RequestInit | undefined) => void;
+export type RequestInterceptor = (
+  input: RequestInfo,
+  init?: RequestInit | undefined,
+) => void;
 export type ResponseInterceptor = (response: Response) => void;
 
 export interface FetcherRequestInit extends RequestInit {
@@ -9,43 +12,34 @@ export interface FetcherRequestInit extends RequestInit {
 }
 
 export class Fetcher {
-
   private baseUrl: string | undefined;
   private defaultHeader: Record<string, string> | undefined;
   private readonly requestInterceptors: RequestInterceptor[] = [];
   private readonly responseInterceptors: ResponseInterceptor[] = [];
 
-  public setBaseUrl(
-    url: string
-  ): Fetcher {
+  public setBaseUrl(url: string): Fetcher {
     this.baseUrl = url;
     return this;
   }
 
-  public setDefaultHeader(
-    headers: Record<string, string>,
-  ): Fetcher {
+  public setDefaultHeader(headers: Record<string, string>): Fetcher {
     this.defaultHeader = headers;
     return this;
   }
 
-  public addRequestInterceptor(
-    interceptor: RequestInterceptor,
-  ): Fetcher {
+  public addRequestInterceptor(interceptor: RequestInterceptor): Fetcher {
     this.requestInterceptors.push(interceptor);
     return this;
   }
 
-  public addResponseInterceptor(
-    interceptor: ResponseInterceptor
-  ): Fetcher {
+  public addResponseInterceptor(interceptor: ResponseInterceptor): Fetcher {
     this.responseInterceptors.push(interceptor);
     return this;
   }
 
   public fetch<R = null>(
     url: string,
-    request?: FetcherRequestInit | undefined
+    request?: FetcherRequestInit | undefined,
   ): Observable<R> {
     if (this.baseUrl) {
       url = `${this.baseUrl}${url}`;
