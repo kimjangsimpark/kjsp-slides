@@ -1,73 +1,5 @@
+import type { DocumentResponse } from '@/http/document';
 import { BehaviorSubject } from 'rxjs';
-
-export interface QueueCreateEffect {
-  index: number;
-  type: 'create';
-}
-
-export interface QueueFadeInEffect {
-  index: number;
-  type: 'fade-in';
-}
-
-export interface QueueTransitionEffect {
-  index: number;
-  type: 'transition';
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-}
-
-export interface QueueDeleteEffect {
-  index: number;
-  type: 'delete';
-}
-
-export type QueueEffect = QueueCreateEffect | QueueFadeInEffect | QueueTransitionEffect | QueueDeleteEffect;
-
-/**
- * interface QueueAction
- * queueIndex / actionType
- * #1 생성
- * #1 페이드 인
- * #2 건들이지 않음
- * #3 삭제
- * #3 페이드 아웃
- */
-
-export interface Shape {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  lineWidth: number;
-  lineColor?: string;
-}
-
-export interface Position {
-  x: number;
-  y: number;
-}
-
-export interface Text {
-  innerText: string;
-  textColor: string;
-}
-
-export interface QueueObject {
-  type: string; // 개체 타입 (모양)
-  uuid: string;
-  effects: QueueEffect[];
-  shape: Shape, // 가로, 세로, 테두리, 테두리 색상, 배경 색상
-  position: Position, // (x, y) 포지션
-  text?: Text, // innerText, textColor
-}
-
-export interface Queue {
-  index: number;
-  objects: QueueObject[];
-}
 
 export type DocumentAction = DocumentNameChangeAction | DocumentChangeAction;
 
@@ -81,16 +13,7 @@ export interface DocumentChangeAction {
   state: DocumentState;
 }
 
-export interface DocumentRect {
-  width: number;
-  height: number;
-}
-
-export interface DocumentState {
-  documentName: string;
-  rect: DocumentRect;
-  objects: QueueObject[];
-}
+export type DocumentState = DocumentResponse;
 
 const documentSubject = new BehaviorSubject<DocumentState>({
   documentName: 'Document Name',
@@ -146,10 +69,6 @@ const documentSubject = new BehaviorSubject<DocumentState>({
       lineWidth: 1,
       lineColor: '#000000',
     },
-    position: {
-      x: 0,
-      y: 0,
-    },
   }, {
     type: 'rectangle',
     uuid: 'asdf3d3g',
@@ -184,10 +103,6 @@ const documentSubject = new BehaviorSubject<DocumentState>({
       height: 50,
       lineWidth: 1,
       lineColor: '#000000',
-    },
-    position: {
-      x: 0,
-      y: 0,
     },
   }]
 });

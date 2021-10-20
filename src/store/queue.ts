@@ -1,10 +1,11 @@
+import type { DocumentObject, ObjectTransitionEffect } from '@/http/document';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { document$, QueueObject, QueueTransitionEffect } from './document';
+import { document$ } from './document';
 
 export interface CurrentQueueState {
   index: number;
-  objects: QueueObject[];
+  objects: DocumentObject[];
 }
 
 export interface ChangeCurrentQueueAction {
@@ -60,11 +61,11 @@ export const currentQueue$: Observable<CurrentQueueState> = combineLatest([docum
 
       const lastTransition = reversedEffects.find(
         effect => effect.index < index && effect.type === 'transition',
-      ) as QueueTransitionEffect;
+      ) as ObjectTransitionEffect;
 
       const currentTransition = reversedEffects.find(
         effect => effect.index === index && effect.type === 'transition',
-      ) as QueueTransitionEffect;
+      ) as ObjectTransitionEffect;
 
       immutable.shape = {
         ...object.shape,
