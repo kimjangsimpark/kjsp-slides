@@ -8,12 +8,12 @@
   import { params } from 'svelte-spa-router';
   import { getDocument } from '@/http/document';
   import { document$, documentReducer } from '@/store/document';
-  import { onMount$ } from '@/misc/svelte-rx';
+  import { onDestroy$ } from '@/misc/svelte-rx';
   import { take } from 'rxjs';
 
   const document = document$;
 
-  params.subscribe(params => {
+  const subscriber = params.subscribe(params => {
     if (!params || !params.documentId) {
       documentReducer({
         type: 'changeDocument',
@@ -25,12 +25,19 @@
       .pipe(take(1))
       .subscribe({
         next: document => {
+          console.log('data received');
           documentReducer({
             type: 'changeDocument',
             state: document,
           });
         },
       });
+  });
+
+  onDestroy$.subscribe({
+    next: () => {
+      subscriber();
+    },
   });
 
   $: currentQueueObject = currentQueueObject$;

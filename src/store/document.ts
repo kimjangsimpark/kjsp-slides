@@ -38,6 +38,4 @@ export const documentReducer = (action: DocumentAction): void => {
   }
 }
 
-export const document$ = documentSubject.asObservable().pipe(
-  tap(d => console.log(d))
-);
+export const document$ = documentSubject.asObservable();
