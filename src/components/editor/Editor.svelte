@@ -1,12 +1,13 @@
 <script type="ts">
   import { map, pairwise, startWith, tap } from 'rxjs/operators';
   import { afterUpdate$, onDestroy$ } from '@/misc/svelte-rx';
-  import { document$, QueueObject } from '@/store/document';
+  import { document$ } from '@/store/document';
   import { currentQueue$ } from '@/store/queue';
   import { currentQueueObject$ } from '@/store/queueObject';
   import { currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
+  import type { DocumentObject } from '@/http/document';
 
   let svgElement: SVGElement;
   let queueChanged = false;
@@ -14,7 +15,7 @@
   const queue$ = currentQueue$.pipe(startWith(null), pairwise());
 
   interface PreviousQueue {
-    [key: string]: QueueObject;
+    [key: string]: DocumentObject;
   }
 
   $: selectedObject = currentQueueObject$;
@@ -44,7 +45,7 @@
     });
   };
 
-  const onObjectClicked = (e: MouseEvent, obj: QueueObject) => {
+  const onObjectClicked = (e: MouseEvent, obj: DocumentObject) => {
     e.preventDefault();
     e.stopPropagation();
     currentQueueObjectReducer({
@@ -55,7 +56,7 @@
 
   const onSelectedObjectMouseDown = (e: MouseEvent) => {
     if (!$selectedObject) return;
-    const object = $selectedObject as QueueObject;
+    const object = $selectedObject as DocumentObject;
     const positionX = e.clientX;
     const positionY = e.clientY;
     const captureX = object.shape.x;
@@ -96,70 +97,72 @@
 <div id="editor">
   <div id="scaler" style="transform: scale({$scale});">
     <div id="frame">
-      <svg
-        bind:this={svgElement}
-        id="svg"
-        class="page"
-        style="width: {$document.rect.width}px; height: {$document.rect.height}px;"
-        on:click={() => onEmptySpaceClicked()}
-      >
-        {#if $objects}
-          {#each $objects as object}
-            {#if object.type === 'rectangle'}
-              <g class="object" on:click={e => onObjectClicked(e, object)}>
-                <rect
-                  x={object.shape.x}
-                  y={object.shape.y}
-                  width={object.shape.width}
-                  height={object.shape.height}
-                >
-                  {#if $previousObjects[object.uuid]}
-                    <animate
-                      class="queue-animator"
-                      begin="indefinite"
-                      attributeName="height"
-                      from={$previousObjects[object.uuid].shape.height}
-                      to={object.shape.height}
-                      dur="0.5s"
-                    />
-                    <animate
-                      class="queue-animator"
-                      begin="indefinite"
-                      attributeName="width"
-                      from={$previousObjects[object.uuid].shape.width}
-                      to={object.shape.width}
-                      dur="0.5s"
-                    />
-                    <animate
-                      class="queue-animator"
-                      begin="indefinite"
-                      attributeName="x"
-                      from={$previousObjects[object.uuid].shape.x}
-                      to={object.shape.x}
-                      dur="0.5s"
-                    />
-                    <animate
-                      class="queue-animator"
-                      begin="indefinite"
-                      attributeName="y"
-                      from={$previousObjects[object.uuid].shape.y}
-                      to={object.shape.y}
-                      dur="0.5s"
-                    />
-                  {/if}
-                </rect>
-              </g>
-            {/if}
-          {/each}
-        {/if}
-        {#if $selectedObject}
-          <SelectedObject
-            selected={$selectedObject}
-            previous={$previousObjects[$selectedObject.uuid]}
-            on:mousedown={onSelectedObjectMouseDown}
-          />
-        {/if}
-      </svg>
+      {#if $document}
+        <svg
+          bind:this={svgElement}
+          id="svg"
+          class="page"
+          style="width: {$document.rect.width}px; height: {$document.rect.height}px;"
+          on:click={() => onEmptySpaceClicked()}
+        >
+          {#if $objects}
+            {#each $objects as object}
+              {#if object.type === 'rectangle'}
+                <g class="object" on:click={e => onObjectClicked(e, object)}>
+                  <rect
+                    x={object.shape.x}
+                    y={object.shape.y}
+                    width={object.shape.width}
+                    height={object.shape.height}
+                  >
+                    {#if $previousObjects[object.uuid]}
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="height"
+                        from={$previousObjects[object.uuid].shape.height}
+                        to={object.shape.height}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="width"
+                        from={$previousObjects[object.uuid].shape.width}
+                        to={object.shape.width}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="x"
+                        from={$previousObjects[object.uuid].shape.x}
+                        to={object.shape.x}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="y"
+                        from={$previousObjects[object.uuid].shape.y}
+                        to={object.shape.y}
+                        dur="0.5s"
+                      />
+                    {/if}
+                  </rect>
+                </g>
+              {/if}
+            {/each}
+          {/if}
+          {#if $selectedObject}
+            <SelectedObject
+              selected={$selectedObject}
+              previous={$previousObjects[$selectedObject.uuid]}
+              on:mousedown={onSelectedObjectMouseDown}
+            />
+          {/if}
+        </svg>
+      {/if}
     </div>
   </div>
 </div>

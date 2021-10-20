@@ -1,11 +1,14 @@
 <script type="ts">
-  import { map } from 'rxjs/operators';
+  import { filter, map } from 'rxjs/operators';
   import { document$ } from '@/store/document';
 
   import Tree from './Tree.svelte';
   import type { ToolbarModel } from './TreeModel';
 
-  $: title = document$.pipe(map(document => document.documentName));
+  $: title = document$.pipe(
+    filter(Boolean),
+    map(document => document.documentName),
+  );
 
   let currentActive: number | undefined;
   const items: ToolbarModel[] = [

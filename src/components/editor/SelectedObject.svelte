@@ -1,8 +1,7 @@
 <script type="ts">
-  import type { QueueObject } from '@/store/document';
-
-  export let previous: QueueObject | null = null;
-  export let selected: QueueObject;
+  import type { DocumentObject } from '@/http/document';
+  export let previous: DocumentObject | null = null;
+  export let selected: DocumentObject;
 
   const strokeWidth = 8;
   const strokeMargin = 5;

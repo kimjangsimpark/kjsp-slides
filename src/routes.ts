@@ -18,8 +18,9 @@ export const rootRoute = {
   }),
   '/home': Web,
   '/home/*': Web,
-  '/app': App,
-  '/app/*': App,
+  '/app': App, // empty editor
+  '/app/:documentId': App, // viewer
+  '/app/:documentId/edit': App, // editor
   '*': NotFound,
 };
 
@@ -29,4 +30,3 @@ export const webRoutes = {
   '/sign-in': SignIn,
   '/edit': Edit,
 }
-

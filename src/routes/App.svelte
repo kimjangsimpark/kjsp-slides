@@ -4,9 +4,37 @@
   import Sidebar from '@/components/sidebar/Sidebar.svelte';
   import Editor from '@/components/editor/Editor.svelte';
   import PropertySidebar from '@/components/sidebar/PropertiesSidebar.svelte';
-
   import { currentQueueObject$ } from '@/store/queueObject';
+  import { params } from 'svelte-spa-router';
+  import { getDocument } from '@/http/document';
+  import { document$, documentReducer } from '@/store/document';
+  import { onMount$ } from '@/misc/svelte-rx';
+  import { take } from 'rxjs';
+
+  const document = document$;
+
+  params.subscribe(params => {
+    if (!params || !params.documentId) {
+      documentReducer({
+        type: 'changeDocument',
+        state: null,
+      });
+      return;
+    }
+    getDocument({ documentId: params.documentId })
+      .pipe(take(1))
+      .subscribe({
+        next: document => {
+          documentReducer({
+            type: 'changeDocument',
+            state: document,
+          });
+        },
+      });
+  });
+
   $: currentQueueObject = currentQueueObject$;
+  $: console.log($document);
 </script>
 
 <div id="app-root">
@@ -14,15 +42,19 @@
     <Toolbar />
   </div>
   <div id="subtoolbar-root">
-    <SubToolbar />
+    {#if $document}
+      <SubToolbar />
+    {/if}
   </div>
   <div id="app-body">
-    <div id="side-bar-root">
-      <Sidebar />
-    </div>
-    <div id="editor-root">
-      <Editor />
-    </div>
+    {#if $document}
+      <div id="side-bar-root">
+        <Sidebar />
+      </div>
+      <div id="editor-root">
+        <Editor />
+      </div>
+    {/if}
     {#if $currentQueueObject}
       <PropertySidebar />
     {/if}

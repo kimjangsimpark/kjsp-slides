@@ -10,6 +10,9 @@
 
   $: ranges = combineLatest([document$, currentQueue$]).pipe(
     map(([document, state]) => {
+      if (!document) {
+        return null;
+      }
       const max = document.objects.reduce((result, current) => {
         const max = current.effects.reduce((r, c) => (r > c.index ? r : c.index), 0);
         return result > max ? result : max;
@@ -67,11 +70,13 @@
   <div class="subtoolbar-item btn prev">
     <button on:click={onPrevClicked}>prev</button>
   </div>
-  {#each $ranges as index}
-    <div class="subtoolbar-item {index === $currentQueueState.index ? 'current' : ''}">
-      {index + 1}
-    </div>
-  {/each}
+  {#if $ranges}
+    {#each $ranges as index}
+      <div class="subtoolbar-item {index === $currentQueueState.index ? 'current' : ''}">
+        {index + 1}
+      </div>
+    {/each}
+  {/if}
   <div class="subtoolbar-item btn prev">
     <button on:click={onNextClicked}>next</button>
   </div>
