@@ -1,5 +1,4 @@
 <script lang="ts">
-  import AuthObserver from '@/components/auth/AuthObserver.svelte';
   import AccountForm from '@/components/AccountForm.svelte';
   import { signUp } from '@/http/auth';
   import { catchError, throwError } from 'rxjs';
@@ -48,8 +47,6 @@
 
   $: disablesSubmitButton = !(userName && userEmail && userPassword && userPhone);
 </script>
-
-<AuthObserver isPublic={true} allowsAuthoriedUser={true} />
 
 <main>
   <AccountForm {hadleFormSubmit} isSignin={false}>

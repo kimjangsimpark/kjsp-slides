@@ -11,10 +11,12 @@ import { replace } from 'svelte-spa-router';
 export const rootRoute = {
   '/': wrap({
     component: NotFound,
-    conditions: [() => {
-      void replace('/home');
-      return true;
-    },]
+    conditions: [
+      () => {
+        void replace('/home');
+        return true;
+      },
+    ],
   }),
   '/home': Web,
   '/home/*': Web,
@@ -29,4 +31,7 @@ export const webRoutes = {
   '/sign-up': SignUp,
   '/sign-in': SignIn,
   '/edit': Edit,
-}
+};
+
+// 로그인한 사용자는 진입할 수 없는 페이지
+export const allowsAuthoriedUserRouteList = ['/home/sign-up', '/home/sign-in'];

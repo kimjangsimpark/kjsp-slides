@@ -2,29 +2,42 @@
   import { onMount } from 'svelte';
   import { userInfo } from '@/store/user';
   import { push } from 'svelte-spa-router';
+  import { getUserInfo } from '@/http/auth';
+  import { catchError, throwError } from 'rxjs';
 
-  export let isPublic: boolean;
-  export let allowsAuthoriedUser = false;
+  export let allowsAuthoriedUser: boolean;
 
   onMount(() => {
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (!$userInfo || !accessToken) {
-      userInfo.set(null);
-      localStorage.removeItem('accessToken');
-
-      return isPublic ? null : push('/home/sign-in');
-    } else if (accessToken) {
+    if ($userInfo) {
       // 이미 로그인한 사용자는 진입할 수 없는 페이지
       if (allowsAuthoriedUser) return push('/home');
-      // accessToken가지고 call GET userInfo
-      // token으로 get userInfo 실패시 -> 홈화면 || 로그인화면으로 리다이렉트
-      userInfo.set(null);
-      // 성공시 userInfo 채워주기 -> 로그인 풀려서 왔던곳으로 리다이렉트
-      userInfo.set({
-        username: 'Tim Cook',
-        email: 'test@test.com',
-      });
+      // 그게아니면 아무일도 안함
+      return;
+    }
+
+    const userEmail = localStorage.getItem('userEmail');
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (accessToken && userEmail) {
+      getUserInfo(userEmail, accessToken)
+        .pipe(
+          catchError(error => {
+            if (error instanceof Response) {
+              // 토큰 재발급 요청
+            } else {
+              console.error('Get User Info ERROR!!', error);
+              alert('뭔가.. 잘못됐다..!');
+            }
+
+            return throwError(() => error);
+          }),
+        )
+        .subscribe({
+          next: res => {
+            localStorage.setItem('userEmail', res.userEmail);
+            userInfo.set(res);
+          },
+        });
     }
   });
 </script>

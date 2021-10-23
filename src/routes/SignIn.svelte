@@ -2,7 +2,6 @@
   import AccountForm from '@/components/AccountForm.svelte';
   import { userInfo } from '@/store/user';
   import { push } from 'svelte-spa-router';
-  import AuthObserver from '@/components/auth/AuthObserver.svelte';
   import { signIn } from '@/http/auth';
   import { catchError, throwError } from 'rxjs';
 
@@ -38,6 +37,7 @@
         next: res => {
           localStorage.setItem('refreshToken', res.refreshToken);
           localStorage.setItem('accessToken', res.accessToken);
+          localStorage.setItem('userEmail', res.userInfo.userEmail);
           userInfo.set(res.userInfo);
           push('/');
         },
@@ -45,8 +45,6 @@
 
   $: disablesSubmitButton = !(userEmail && userPassword);
 </script>
-
-<AuthObserver isPublic={true} allowsAuthoriedUser={true} />
 
 <main>
   <AccountForm {hadleFormSubmit} isSignin={true}>

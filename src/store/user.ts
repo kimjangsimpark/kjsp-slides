@@ -1,9 +1,9 @@
 import { Writable, writable } from 'svelte/store';
 
-export interface IUserInfo {
-  userEmail: string;
+export interface UserInfo {
   userName: string;
+  userEmail: string;
   userPhone: string;
 }
 
-export const userInfo: Writable<IUserInfo | null> = writable(null);
+export const userInfo: Writable<UserInfo | null> = writable(null);
