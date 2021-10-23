@@ -59,16 +59,16 @@
     if (!$selectedObject) return;
     const queueIndex = $queue$[1]?.index as number;
     const object = { ...$selectedObject };
-    const positionX = e.clientX;
-    const positionY = e.clientY;
+    const positionX = e.offsetX;
+    const positionY = e.offsetY;
     const captureX = object.shape.x;
     const captureY = object.shape.y;
     const shape = { ...object.shape };
-    const scale = $scale$;
+    const scale = $scale$ / 1;
 
     const onSelectedObjectMouseMove = (e: MouseEvent) => {
-      const diffX = e.clientX - positionX;
-      const diffY = e.clientY - positionY;
+      const diffX = e.offsetX - positionX;
+      const diffY = e.offsetY - positionY;
       shape.x = captureX + diffX;
       shape.y = captureY + diffY;
 
