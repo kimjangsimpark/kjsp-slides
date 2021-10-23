@@ -8,6 +8,7 @@
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
   import type { DocumentObject } from '@/http/document';
+  import { objectReducer } from '@/store/object';
 
   let svgElement: SVGElement;
   let queueChanged = false;
@@ -56,7 +57,7 @@
 
   const onSelectedObjectMouseDown = (e: MouseEvent) => {
     if (!$selectedObject) return;
-    const object = $selectedObject as DocumentObject;
+    const object = { ...$selectedObject } as DocumentObject;
     const positionX = e.clientX;
     const positionY = e.clientY;
     const captureX = object.shape.x;
@@ -65,6 +66,11 @@
     const onSelectedObjectMouseMove = (e: MouseEvent) => {
       object.shape.x = captureX + e.clientX - positionX;
       object.shape.y = captureY + e.clientY - positionY;
+
+      objectReducer({
+        type: 'objectUpdate',
+        state: object,
+      });
     };
 
     const onSelectedObjectMouseUp = (e: MouseEvent) => {
@@ -106,7 +112,7 @@
           on:click={() => onEmptySpaceClicked()}
         >
           {#if $objects}
-            {#each $objects as object}
+            {#each $objects as object (object.uuid)}
               {#if object.type === 'rectangle'}
                 <g class="object" on:click={e => onObjectClicked(e, object)}>
                   <rect

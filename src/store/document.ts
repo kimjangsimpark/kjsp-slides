@@ -1,5 +1,5 @@
 import type { DocumentResponse } from '@/http/document';
-import { BehaviorSubject, filter, Observable, tap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 export type DocumentAction = DocumentNameChangeAction | DocumentChangeAction;
 

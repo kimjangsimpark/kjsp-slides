@@ -2,6 +2,7 @@ import type { DocumentObject, ObjectTransitionEffect } from '@/http/document';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { document$ } from './document';
+import { object$ } from './object';
 
 export interface CurrentQueueState {
   index: number;
@@ -36,15 +37,15 @@ document$.subscribe(() => {
   });
 });
 
-export const currentQueue$: Observable<CurrentQueueState> = combineLatest([document$, currentQueueSubject]).pipe(
-  map(([document, index]) => {
-    if (!document) {
+export const currentQueue$: Observable<CurrentQueueState> = combineLatest([object$, currentQueueSubject]).pipe(
+  map(([objects, index]) => {
+    if (!objects) {
       return {
         index: 0,
         objects: [],
       };
     }
-    const currentVisibleObjects = document.objects.filter(object => {
+    const currentVisibleObjects = objects.filter(object => {
       const isDeleted = object.effects.some(effect => effect.type === 'delete' && effect.index < index);
       if (isDeleted) {
         return false;

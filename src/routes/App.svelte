@@ -11,6 +11,7 @@
   import { document$, documentReducer } from '@/store/document';
   import { catchError, of, switchMap, tap, throwError } from 'rxjs';
   import { params$ } from '@/misc/svelte-router.rx';
+  import { objectReducer } from '@/store/object';
 
   const document = document$;
 
@@ -31,12 +32,16 @@
               console.log(error);
               return throwError(() => error);
             }),
-            tap(document =>
+            tap(document => {
               documentReducer({
                 type: 'changeDocument',
                 state: document,
-              }),
-            ),
+              });
+              objectReducer({
+                type: 'documentChange',
+                state: document.objects,
+              });
+            }),
           );
         }
       }),
