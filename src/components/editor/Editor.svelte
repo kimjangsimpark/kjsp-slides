@@ -57,19 +57,26 @@
 
   const onSelectedObjectMouseDown = (e: MouseEvent) => {
     if (!$selectedObject) return;
-    const object = { ...$selectedObject } as DocumentObject;
+    const queueIndex = $queue$[1]?.index as number;
+    const object = { ...$selectedObject };
     const positionX = e.clientX;
     const positionY = e.clientY;
     const captureX = object.shape.x;
     const captureY = object.shape.y;
+    const shape = { ...object.shape };
+    const scale = $scale$;
 
     const onSelectedObjectMouseMove = (e: MouseEvent) => {
-      object.shape.x = captureX + e.clientX - positionX;
-      object.shape.y = captureY + e.clientY - positionY;
+      const diffX = e.clientX - positionX;
+      const diffY = e.clientY - positionY;
+      shape.x = captureX + diffX;
+      shape.y = captureY + diffY;
 
       objectReducer({
-        type: 'objectUpdate',
-        state: object,
+        type: 'objectTransitionUpdate',
+        uuid: object.uuid,
+        queueIndex: queueIndex,
+        shape: shape,
       });
     };
 

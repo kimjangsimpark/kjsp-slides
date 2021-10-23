@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import type { DocumentObject } from '@/http/document';
+import type { DocumentObject, ObjectRect } from '@/http/document';
 import { BehaviorSubject } from 'rxjs';
 
 export interface ObjectDocumentChangeAction {
@@ -8,8 +8,10 @@ export interface ObjectDocumentChangeAction {
 }
 
 export interface ObjectUpdateAction {
-  type: 'objectUpdate';
-  state: DocumentObject;
+  type: 'objectTransitionUpdate';
+  queueIndex: number;
+  uuid: string;
+  shape: ObjectRect;
 }
 
 export type ObjectAction = ObjectDocumentChangeAction | ObjectUpdateAction;
@@ -48,13 +50,24 @@ export function objectReducer(
     case 'documentChange':
       objectSubject.next(action.state);
       break;
-    case 'objectUpdate':
+    case 'objectTransitionUpdate':
       if (!current || !objectByUUID) {
         throw new Error('Object not found');
       }
-      const target = objectByUUID[action.state.uuid];
+      const target = objectByUUID[action.uuid];
+      const targetTransitionEffectIndex = target.object.effects.findIndex(effect => effect.index === action.queueIndex);
+      
       const newState = [...current];
-      newState[target.index] = action.state;
+      newState[target.index] = target.object;
+      if (targetTransitionEffectIndex === -1) {
+        newState[target.index].shape = action.shape;
+      } else {
+        newState[target.index].effects[targetTransitionEffectIndex] = {
+          type: 'transition',
+          index: targetTransitionEffectIndex,
+          ...action.shape
+        };
+      }
       objectSubject.next(newState);
       break;
     default:
