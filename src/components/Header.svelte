@@ -24,6 +24,8 @@
     if (!acceptLogout) return;
 
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userEmail');
     userInfo.set(null);
     void push('/home');
   };
