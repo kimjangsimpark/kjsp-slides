@@ -64,7 +64,6 @@ export function objectReducer(
       }
       const target = objectByUUID[action.uuid];
       const existTransitionEffect = target.object.effects.findIndex(effect => effect.type === 'transition' && effect.index === action.queueIndex);
-      console.log(existTransitionEffect);
       const isCreateQueue = target.object.effects.some(effect => effect.index === action.queueIndex && effect.type === 'create');
 
       const newState = [...current];
@@ -84,7 +83,6 @@ export function objectReducer(
         if (effectTargetIndex === -1) {
           effectTargetIndex = newObject.effects.length - 1;
         }
-        console.log(effectTargetIndex);
         newObject.effects.splice(effectTargetIndex, 0, {
           type: 'transition',
           index: action.queueIndex,
