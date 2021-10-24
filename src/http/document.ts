@@ -170,11 +170,11 @@ export function getDocument(
       effects: [
         {
           type: 'create',
-          index: 0,
+          index: 1,
         },
         {
           type: 'transition',
-          index: 1,
+          index: 2,
           x: 500,
           y: 300,
           width: 200,
@@ -182,7 +182,7 @@ export function getDocument(
         },
         {
           type: 'delete',
-          index: 4,
+          index: 5,
         },
       ],
       shape: {

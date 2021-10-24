@@ -45,9 +45,11 @@ export const currentQueue$: Observable<CurrentQueueState> = combineLatest([objec
         objects: [],
       };
     }
+
     const currentVisibleObjects = objects.filter(object => {
+      const isCreated = object.effects.find(effect => effect.type === 'create' && effect.index <= index);
       const isDeleted = object.effects.some(effect => effect.type === 'delete' && effect.index < index);
-      return !isDeleted;
+      return isCreated && !isDeleted;
     });
 
     return {

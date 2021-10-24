@@ -7,6 +7,11 @@ export interface ObjectDocumentChangeAction {
   state: DocumentObject[];
 }
 
+export interface InsertObjectAction {
+  type: 'insertObject',
+  state: DocumentObject;
+}
+
 export interface ObjectUpdateAction {
   type: 'objectTransitionUpdate';
   queueIndex: number;
@@ -14,7 +19,7 @@ export interface ObjectUpdateAction {
   shape: ObjectRect;
 }
 
-export type ObjectAction = ObjectDocumentChangeAction | ObjectUpdateAction;
+export type ObjectAction = ObjectDocumentChangeAction | InsertObjectAction | ObjectUpdateAction;
 
 interface ObjectByIndex {
   [uuid: string]: {
@@ -50,12 +55,16 @@ export function objectReducer(
     case 'documentChange':
       objectSubject.next(action.state);
       break;
+    case 'insertObject':
+
+      break;
     case 'objectTransitionUpdate':
       if (!current || !objectByUUID) {
         throw new Error('Object not found');
       }
       const target = objectByUUID[action.uuid];
-      const targetTransitionEffectIndex = target.object.effects.findIndex(effect => effect.index === action.queueIndex);
+      const existTransitionEffect = target.object.effects.findIndex(effect => effect.type === 'transition' && effect.index === action.queueIndex);
+      console.log(existTransitionEffect);
       const isCreateQueue = target.object.effects.some(effect => effect.index === action.queueIndex && effect.type === 'create');
 
       const newState = [...current];
@@ -64,10 +73,10 @@ export function objectReducer(
 
       if (isCreateQueue) {
         newObject.shape = action.shape;
-      } else if (targetTransitionEffectIndex !== -1) {
-        newObject.effects[targetTransitionEffectIndex] = {
+      } else if (existTransitionEffect !== -1) {
+        newObject.effects[existTransitionEffect] = {
           type: 'transition',
-          index: targetTransitionEffectIndex,
+          index: newObject.effects[existTransitionEffect].index,
           ...action.shape
         };
       } else {
@@ -75,9 +84,10 @@ export function objectReducer(
         if (effectTargetIndex === -1) {
           effectTargetIndex = newObject.effects.length - 1;
         }
+        console.log(effectTargetIndex);
         newObject.effects.splice(effectTargetIndex, 0, {
           type: 'transition',
-          index: effectTargetIndex,
+          index: action.queueIndex,
           ...action.shape
         });
       }
