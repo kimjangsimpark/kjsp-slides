@@ -1,8 +1,10 @@
 <script type="ts">
   import type { DocumentObject } from '@/http/document';
+  import { createEventDispatcher } from 'svelte';
   export let previous: DocumentObject | null = null;
   export let selected: DocumentObject;
 
+  const dispatcher = createEventDispatcher();
   const strokeWidth = 8;
   const strokeMargin = 5;
 
@@ -10,10 +12,27 @@
     e.preventDefault();
     e.stopPropagation();
   };
+
+  const onVertexMousedown = (position: string, e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatcher('vertex-mousedown', {
+      position: position,
+      event: e,
+    });
+  };
+
+  const onRectMouseDown = (e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    dispatcher('rect-mousedown', {
+      event: e,
+    });
+  };
 </script>
 
 {#if selected}
-  <g on:click={onMouseClick} on:mousedown>
+  <g on:click={onMouseClick} on:mousedown={onRectMouseDown}>
     <rect
       class="mover"
       stroke="black"
@@ -67,6 +86,8 @@
       y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width={strokeWidth}
       height={strokeWidth}
+      on:click={onMouseClick}
+      on:mousedown={e => onVertexMousedown('top-left', e)}
     >
       {#if previous}
         <animate
@@ -94,6 +115,8 @@
       y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width={strokeWidth}
       height={strokeWidth}
+      on:click={onMouseClick}
+      on:mousedown={e => onVertexMousedown('top-middle', e)}
     >
       {#if previous}
         <animate
@@ -121,6 +144,8 @@
       y={selected.shape.y - strokeMargin - strokeWidth / 2}
       width="8"
       height="8"
+      on:click={onMouseClick}
+      on:mousedown={e => onVertexMousedown('top-right', e)}
     >
       {#if previous}
         <animate
@@ -148,6 +173,8 @@
       y={selected.shape.y + selected.shape.height / 2 - strokeMargin / 2}
       width="8"
       height="8"
+      on:click={onMouseClick}
+      on:mousedown={e => onVertexMousedown('middle-right', e)}
     >
       {#if previous}
         <animate
@@ -175,6 +202,8 @@
       y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width="8"
       height="8"
+      on:click={onMouseClick}
+      on:mousedown={e => onVertexMousedown('bottom-right', e)}
     >
       {#if previous}
         <animate
@@ -202,6 +231,8 @@
       y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width="8"
       height="8"
+      on:click={onMouseClick}
+      on:mousedown={e => onVertexMousedown('bottom-middle', e)}
     >
       {#if previous}
         <animate
@@ -229,6 +260,8 @@
       y={selected.shape.y + selected.shape.height + strokeMargin - strokeWidth / 2}
       width={strokeWidth}
       height={strokeWidth}
+      on:click={onMouseClick}
+      on:mousedown={e => onVertexMousedown('bottom-left', e)}
     >
       {#if previous}
         <animate
@@ -256,6 +289,8 @@
       y={selected.shape.y + selected.shape.height / 2 - strokeMargin / 2}
       width={strokeWidth}
       height={strokeWidth}
+      on:click={onMouseClick}
+      on:mousedown={e => onVertexMousedown('middle-left', e)}
     >
       {#if previous}
         <animate

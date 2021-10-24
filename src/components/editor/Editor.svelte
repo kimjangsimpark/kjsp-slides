@@ -55,7 +55,8 @@
     });
   };
 
-  const onSelectedObjectMouseDown = (e: MouseEvent) => {
+  const onSelectedObjectMouseDown = (customEvent: CustomEvent<{ event: MouseEvent }>) => {
+    const e = customEvent.detail.event;
     if (!$selectedObject) return;
     const queueIndex = $queue$[1]?.index as number;
     const object = { ...$selectedObject };
@@ -64,7 +65,6 @@
     const captureX = object.shape.x;
     const captureY = object.shape.y;
     const shape = { ...object.shape };
-    const scale = $scale$ / 1;
 
     const onSelectedObjectMouseMove = (e: MouseEvent) => {
       const diffX = e.offsetX - positionX;
@@ -87,6 +87,78 @@
 
     svgElement.addEventListener('mousemove', onSelectedObjectMouseMove);
     svgElement.addEventListener('mouseup', onSelectedObjectMouseUp);
+  };
+
+  const onSelectedObjectVertextMouseDown = (
+    e: CustomEvent<{
+      position: string;
+      event: MouseEvent;
+    }>,
+  ) => {
+    if (!$selectedObject) return;
+    const queueIndex = $queue$[1]?.index as number;
+    const position = e.detail.position;
+    const object = { ...$selectedObject };
+    const positionX = e.detail.event.offsetX;
+    const positionY = e.detail.event.offsetY;
+    const capture = { ...object.shape };
+    const shape = { ...object.shape };
+    const scale = $scale$ / 1;
+
+    const onMouseMove = (e: MouseEvent) => {
+      const diffX = e.offsetX - positionX;
+      const diffY = e.offsetY - positionY;
+      switch (position) {
+        case 'top-left':
+          shape.x = capture.x + diffX;
+          shape.y = capture.y + diffY;
+          shape.width = capture.width + -diffX;
+          shape.height = capture.height + -diffY;
+          break;
+        case 'top-middle':
+          shape.y = capture.y + diffY;
+          shape.height = capture.height + -diffY;
+          break;
+        case 'top-right':
+          shape.width = capture.width + diffX;
+          shape.y = capture.y + diffY;
+          shape.height = capture.height + -diffY;
+          break;
+        case 'middle-right':
+          shape.width = capture.width + diffX;
+          break;
+        case 'bottom-right':
+          shape.width = capture.width + diffX;
+          shape.height = capture.height + diffY;
+          break;
+        case 'bottom-middle':
+          shape.height = capture.height + diffY;
+          break;
+        case 'bottom-left':
+          shape.x = capture.x + diffX;
+          shape.width = capture.width + -diffX;
+          shape.height = capture.height + diffY;
+          break;
+        case 'middle-left':
+          shape.x = capture.x + diffX;
+          shape.width = capture.width + -diffX;
+          break;
+      }
+      objectReducer({
+        type: 'objectTransitionUpdate',
+        uuid: object.uuid,
+        queueIndex: queueIndex,
+        shape: shape,
+      });
+    };
+
+    const onMouseUp = (e: MouseEvent) => {
+      svgElement.removeEventListener('mousemove', onMouseMove);
+      svgElement.removeEventListener('mouseup', onMouseUp);
+    };
+
+    svgElement.addEventListener('mousemove', onMouseMove);
+    svgElement.addEventListener('mouseup', onMouseUp);
   };
 
   const onQueueChangedSubscriber = afterUpdate$.subscribe({
@@ -171,7 +243,8 @@
             <SelectedObject
               selected={$selectedObject}
               previous={$previousObjects[$selectedObject.uuid]}
-              on:mousedown={onSelectedObjectMouseDown}
+              on:rect-mousedown={e => onSelectedObjectMouseDown(e)}
+              on:vertex-mousedown={e => onSelectedObjectVertextMouseDown(e)}
             />
           {/if}
         </svg>
