@@ -56,7 +56,12 @@ export function objectReducer(
       objectSubject.next(action.state);
       break;
     case 'insertObject':
-
+      if (!current || !objectByUUID) {
+        throw new Error('Object array not found');
+      }
+      const objects = [...current];
+      objects.push(action.state);
+      objectSubject.next(objects);
       break;
     case 'objectTransitionUpdate':
       if (!current || !objectByUUID) {
