@@ -1,6 +1,12 @@
 import { fetcher } from '@/misc/fetcher';
 import type { Observable } from 'rxjs';
 
+export interface UserInfo {
+  userName: string;
+  userEmail: string;
+  userPhone: string;
+}
+
 export interface SignInRequest {
   userEmail: string;
   userPassword: string;
@@ -10,11 +16,7 @@ export interface SignInResponse {
   accessToken: string;
   refreshToken: string;
   tokenType: 'Bearer';
-  userInfo: {
-    userName: string;
-    userEmail: string;
-    userPhone: string;
-  };
+  userInfo: UserInfo;
 }
 
 export interface SignUpRequest {
@@ -29,11 +31,7 @@ export interface GetUserInfoRequest {
   accessToken: string;
 }
 
-export interface GetUserInfoResponse {
-  userName: string;
-  userEmail: string;
-  userPhone: string;
-}
+export type GetUserInfoResponse = UserInfo;
 
 export function signIn(params: SignInRequest): Observable<SignInResponse> {
   return fetcher.fetch<SignInResponse>('/api/user/signin', {
