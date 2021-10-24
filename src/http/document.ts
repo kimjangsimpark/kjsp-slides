@@ -164,6 +164,35 @@ export function getDocument(
         lineWidth: 1,
         lineColor: '#000000',
       },
+    }, {
+      type: 'rectangle',
+      uuid: 'asdf3d3d3d',
+      effects: [
+        {
+          type: 'create',
+          index: 0,
+        },
+        {
+          type: 'transition',
+          index: 1,
+          x: 500,
+          y: 300,
+          width: 200,
+          height: 200,
+        },
+        {
+          type: 'delete',
+          index: 4,
+        },
+      ],
+      shape: {
+        x: 600,
+        y: 400,
+        width: 100,
+        height: 100,
+        lineWidth: 1,
+        lineColor: '#000000',
+      },
     }]
   });
 }

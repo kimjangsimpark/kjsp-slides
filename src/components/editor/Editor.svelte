@@ -103,7 +103,6 @@
     const positionY = e.detail.event.offsetY;
     const capture = { ...object.shape };
     const shape = { ...object.shape };
-    const scale = $scale$ / 1;
 
     const onMouseMove = (e: MouseEvent) => {
       const diffX = e.offsetX - positionX;

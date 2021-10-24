@@ -56,18 +56,32 @@ export function objectReducer(
       }
       const target = objectByUUID[action.uuid];
       const targetTransitionEffectIndex = target.object.effects.findIndex(effect => effect.index === action.queueIndex);
-      
+      const isCreateQueue = target.object.effects.some(effect => effect.index === action.queueIndex && effect.type === 'create');
+
       const newState = [...current];
-      newState[target.index] = target.object;
-      if (targetTransitionEffectIndex === -1) {
-        newState[target.index].shape = action.shape;
-      } else {
-        newState[target.index].effects[targetTransitionEffectIndex] = {
+      newState[target.index] = { ...target.object };
+      const newObject = newState[target.index];
+
+      if (isCreateQueue) {
+        newObject.shape = action.shape;
+      } else if (targetTransitionEffectIndex !== -1) {
+        newObject.effects[targetTransitionEffectIndex] = {
           type: 'transition',
           index: targetTransitionEffectIndex,
           ...action.shape
         };
+      } else {
+        let effectTargetIndex = newObject.effects.findIndex(effect => effect.index > action.queueIndex);
+        if (effectTargetIndex === -1) {
+          effectTargetIndex = newObject.effects.length - 1;
+        }
+        newObject.effects.splice(effectTargetIndex, 0, {
+          type: 'transition',
+          index: effectTargetIndex,
+          ...action.shape
+        });
       }
+
       objectSubject.next(newState);
       break;
     default:
