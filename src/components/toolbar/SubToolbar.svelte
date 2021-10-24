@@ -1,29 +1,13 @@
 <script type="ts">
-  import { combineLatest } from 'rxjs';
-  import { map } from 'rxjs/operators';
-  import { document$ } from '@/store/document';
   import { currentQueue$, currentQueueReducer } from '@/store/queue';
   import { scale$, scaleReducer } from '@/store/scale';
+  import { map } from 'rxjs';
 
   $: scale = scale$;
   $: currentQueueState = currentQueue$;
-
-  $: ranges = combineLatest([document$, currentQueue$]).pipe(
-    map(([document, state]) => {
-      if (!document) {
-        return null;
-      }
-      const max = document.objects.reduce((result, current) => {
-        const max = current.effects.reduce((r, c) => (r > c.index ? r : c.index), 0);
-        return result > max ? result : max;
-      }, 0);
-      const start = Math.max(state.index - 3, 0);
-      const end = Math.min(state.index + 4, max + 1);
-      const array = [];
-      for (let i = start; i < end; i++) {
-        array.push(i);
-      }
-      return array;
+  $: ranges = currentQueueState.pipe(
+    map(({ index }) => {
+      return [index - 2, index - 1, index, index + 1, index + 2];
     }),
   );
 
@@ -40,9 +24,6 @@
 
   const onNextClicked = () => {
     const pendingIndex = $currentQueueState.index + 1;
-    if (pendingIndex > $ranges[$ranges.length - 1]) {
-      return;
-    }
     currentQueueReducer({
       type: 'changeCurrentQueue',
       index: pendingIndex,
@@ -73,7 +54,7 @@
   {#if $ranges}
     {#each $ranges as index}
       <div class="subtoolbar-item {index === $currentQueueState.index ? 'current' : ''}">
-        {index + 1}
+        {index > -1 ? index + 1 : ''}
       </div>
     {/each}
   {/if}

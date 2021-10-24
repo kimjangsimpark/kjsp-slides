@@ -1,9 +1,10 @@
 <script type="ts">
   import { filter, map } from 'rxjs/operators';
-  import { document$ } from '@/store/document';
+  import { document$, documentReducer } from '@/store/document';
 
   import Tree from './Tree.svelte';
   import type { ToolbarModel } from './TreeModel';
+  import { objectReducer } from '@/store/object';
 
   $: title = document$.pipe(
     filter(Boolean),
@@ -15,6 +16,25 @@
     {
       title: 'File',
       children: [
+        {
+          title: 'New Document',
+          onClick: () => {
+            documentReducer({
+              type: 'changeDocument',
+              state: {
+                documentName: 'Document Name',
+                rect: {
+                  width: 1920,
+                  height: 1080,
+                },
+              },
+            });
+            objectReducer({
+              type: 'documentChange',
+              state: [],
+            });
+          },
+        },
         {
           title: 'item',
           children: [

@@ -7,53 +7,10 @@
   import Editor from '@/components/editor/Editor.svelte';
   import PropertySidebar from '@/components/sidebar/PropertiesSidebar.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
-  import { getDocument } from '@/http/document';
   import { document$, documentReducer } from '@/store/document';
-  import { catchError, of, switchMap, tap, throwError } from 'rxjs';
-  import { params$ } from '@/misc/svelte-router.rx';
-  import { objectReducer } from '@/store/object';
 
   const document = document$;
-
-  params$
-    .pipe(
-      switchMap(params => {
-        const empty = !params || !params.documentId;
-        if (empty) {
-          return of(
-            documentReducer({
-              type: 'changeDocument',
-              state: null,
-            }),
-          );
-        } else {
-          return getDocument({ documentId: params.documentId }).pipe(
-            catchError(error => {
-              console.log(error);
-              return throwError(() => error);
-            }),
-            tap(document => {
-              documentReducer({
-                type: 'changeDocument',
-                state: document,
-              });
-              objectReducer({
-                type: 'documentChange',
-                state: document.objects,
-              });
-            }),
-          );
-        }
-      }),
-    )
-    .subscribe({
-      next: p => {
-        console.log('params changed', p);
-      },
-    });
-
   $: currentQueueObject = currentQueueObject$;
-  $: console.log($document);
 </script>
 
 <div id="app-root">

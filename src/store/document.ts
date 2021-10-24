@@ -15,7 +15,8 @@ export interface DocumentChangeAction {
 
 export type DocumentState = DocumentMetadata;
 
-let documentState: DocumentState | null = null;
+let documentState: DocumentState
+  | null = null;
 const documentSubject = new BehaviorSubject<DocumentState | null>(null);
 
 export const documentReducer = (action: DocumentAction): void => {
