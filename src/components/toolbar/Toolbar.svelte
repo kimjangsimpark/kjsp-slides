@@ -1,10 +1,9 @@
 <script type="ts">
   import { filter, map } from 'rxjs/operators';
   import { document$, documentReducer } from '@/store/document';
-
   import Tree from './Tree.svelte';
   import type { ToolbarModel } from './TreeModel';
-  import { objectReducer } from '@/store/object';
+  import { object$, objectReducer } from '@/store/object';
 
   $: title = document$.pipe(
     filter(Boolean),
@@ -32,6 +31,58 @@
             objectReducer({
               type: 'documentChange',
               state: [],
+            });
+          },
+        },
+        {
+          title: 'Save Document',
+          onClick: () => {
+            if (!$document$ || !$object$) return;
+            const metadata = { ...$document$ };
+            const objects = [...$object$];
+            const documentObject = Object.assign({}, metadata, {
+              objects: objects,
+            });
+            const stringified = JSON.stringify(documentObject);
+            const blob = new Blob([stringified], { type: 'octet/stream' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${metadata.documentName}.que`;
+            a.click();
+            URL.revokeObjectURL(url);
+          },
+        },
+        {
+          title: 'Open Document',
+          onClick: () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.click();
+            input.addEventListener('change', e => {
+              try {
+                if (!input.files) {
+                  return;
+                }
+                const file = input.files[0];
+                if (!file) {
+                  return;
+                }
+                const fileReader = new FileReader();
+                fileReader.onload = e => {
+                  const result = e.target?.result as string;
+                  const document = JSON.parse(result);
+                  documentReducer({
+                    type: 'changeDocument',
+                    state: document,
+                  });
+                  objectReducer({
+                    type: 'documentChange',
+                    state: document.objects,
+                  });
+                };
+                fileReader.readAsText(file);
+              } catch (e) {}
             });
           },
         },
