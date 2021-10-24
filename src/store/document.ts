@@ -1,4 +1,4 @@
-import type { DocumentResponse } from '@/http/document';
+import type { DocumentMetadata } from '@/http/document';
 import { BehaviorSubject } from 'rxjs';
 
 export type DocumentAction = DocumentNameChangeAction | DocumentChangeAction;
@@ -13,7 +13,7 @@ export interface DocumentChangeAction {
   state: DocumentState | null;
 }
 
-export type DocumentState = DocumentResponse;
+export type DocumentState = DocumentMetadata;
 
 let documentState: DocumentState | null = null;
 const documentSubject = new BehaviorSubject<DocumentState | null>(null);
