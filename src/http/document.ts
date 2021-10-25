@@ -55,12 +55,20 @@ export interface ObjectText {
 
 export type ObjectEffect = ObjectCreateEffect | ObjectFadeInEffect | ObjectTransitionEffect | ObjectDeleteEffect;
 
-export interface DocumentObject {
+export interface RectangleObject {
+  type: 'rectangle'; // 개체 타입 (모양)
   uuid: string; // 개체 고유 아이디 (문서 내에서 중복 X)
-  type: string; // 개체 타입 (모양)
   shape: ObjectRect, // 가로, 세로, 테두리, 테두리 색상, 배경 색상
   effects: ObjectEffect[];
   text?: ObjectText, // innerText, textColor
+}
+
+export interface CircleObject {
+  type: 'circle',
+  uuid: string;
+  shape: ObjectRect;
+  effects: ObjectEffect[];
+  text?: ObjectText;
 }
 
 export interface DocumentRequest {
@@ -68,7 +76,7 @@ export interface DocumentRequest {
 }
 
 export interface DocumentResponse extends DocumentMetadata {
-  objects: DocumentObject[];
+  objects: RectangleObject[];
 }
 
 export function getDocument(

@@ -1,15 +1,15 @@
 /* eslint-disable no-case-declarations */
-import type { DocumentObject, ObjectRect } from '@/http/document';
+import type { RectangleObject, ObjectRect } from '@/http/document';
 import { BehaviorSubject } from 'rxjs';
 
 export interface ObjectDocumentChangeAction {
   type: 'documentChange';
-  state: DocumentObject[];
+  state: RectangleObject[];
 }
 
 export interface InsertObjectAction {
   type: 'insertObject',
-  state: DocumentObject;
+  state: RectangleObject;
 }
 
 export interface ObjectUpdateAction {
@@ -24,11 +24,11 @@ export type ObjectAction = ObjectDocumentChangeAction | InsertObjectAction | Obj
 interface ObjectByIndex {
   [uuid: string]: {
     index: number;
-    object: DocumentObject;
+    object: RectangleObject;
   };
 }
 
-const objectSubject = new BehaviorSubject<DocumentObject[] | null>(null);
+const objectSubject = new BehaviorSubject<RectangleObject[] | null>(null);
 let objectByUUID: ObjectByIndex | null = null;
 
 objectSubject.subscribe({

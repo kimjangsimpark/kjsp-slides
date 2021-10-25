@@ -7,7 +7,7 @@
   import { currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
-  import type { DocumentObject } from '@/http/document';
+  import type { RectangleObject } from '@/http/document';
   import { objectReducer } from '@/store/object';
 
   let svgElement: SVGElement;
@@ -16,7 +16,7 @@
   const queue$ = currentQueue$.pipe(startWith(null), pairwise());
 
   interface PreviousQueue {
-    [key: string]: DocumentObject;
+    [key: string]: RectangleObject;
   }
 
   $: selectedObject = currentQueueObject$;
@@ -46,7 +46,7 @@
     });
   };
 
-  const onObjectClicked = (e: MouseEvent, obj: DocumentObject) => {
+  const onObjectClicked = (e: MouseEvent, obj: RectangleObject) => {
     e.preventDefault();
     e.stopPropagation();
     currentQueueObjectReducer({
