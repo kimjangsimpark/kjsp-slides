@@ -8,7 +8,7 @@ export interface ObjectDocumentChangeAction {
 }
 
 export interface InsertObjectAction {
-  type: 'insertObject',
+  type: 'insertObject';
   state: RectangleObject;
 }
 
@@ -19,7 +19,17 @@ export interface ObjectUpdateAction {
   shape: ObjectRect;
 }
 
-export type ObjectAction = ObjectDocumentChangeAction | InsertObjectAction | ObjectUpdateAction;
+export interface ObjectShapeUpdateAction {
+  type: 'objectShapeUpdateAction';
+  uuid: string;
+  shape: ObjectRect;
+}
+
+export type ObjectAction =
+  | ObjectDocumentChangeAction
+  | InsertObjectAction
+  | ObjectUpdateAction
+  | ObjectShapeUpdateAction;
 
 interface ObjectByIndex {
   [uuid: string]: {
@@ -44,12 +54,10 @@ objectSubject.subscribe({
         return result;
       }, {});
     }
-  }
-})
+  },
+});
 
-export function objectReducer(
-  action: ObjectAction
-): void {
+export function objectReducer(action: ObjectAction): void {
   const current = objectSubject.getValue();
   switch (action.type) {
     case 'documentChange':
@@ -68,8 +76,12 @@ export function objectReducer(
         throw new Error('Object not found');
       }
       const target = objectByUUID[action.uuid];
-      const existTransitionEffect = target.object.effects.findIndex(effect => effect.type === 'transition' && effect.index === action.queueIndex);
-      const isCreateQueue = target.object.effects.some(effect => effect.index === action.queueIndex && effect.type === 'create');
+      const existTransitionEffect = target.object.effects.findIndex(
+        effect => effect.type === 'transition' && effect.index === action.queueIndex,
+      );
+      const isCreateQueue = target.object.effects.some(
+        effect => effect.index === action.queueIndex && effect.type === 'create',
+      );
 
       const newState = [...current];
       newState[target.index] = { ...target.object };
@@ -81,22 +93,42 @@ export function objectReducer(
         newObject.effects[existTransitionEffect] = {
           type: 'transition',
           index: newObject.effects[existTransitionEffect].index,
-          ...action.shape
+          ...action.shape,
         };
       } else {
-        let effectTargetIndex = newObject.effects.findIndex(effect => effect.index > action.queueIndex);
+        let effectTargetIndex = newObject.effects.findIndex(
+          effect => effect.index > action.queueIndex,
+        );
         if (effectTargetIndex === -1) {
           effectTargetIndex = newObject.effects.length - 1;
         }
         newObject.effects.splice(effectTargetIndex, 0, {
           type: 'transition',
           index: action.queueIndex,
-          ...action.shape
+          ...action.shape,
         });
       }
 
       objectSubject.next(newState);
       break;
+    case 'objectShapeUpdateAction': {
+      if (!current || !objectByUUID) {
+        throw new Error('Object not found');
+      }
+
+      const target = objectByUUID[action.uuid];
+      const newState = [...current];
+      newState[target.index] = { ...target.object };
+      const newObject = newState[target.index];
+
+      newObject.shape = {
+        ...newObject,
+        ...action.shape,
+      };
+
+      objectSubject.next(newState);
+      break;
+    }
     default:
       throw new Error('Not supported action');
   }

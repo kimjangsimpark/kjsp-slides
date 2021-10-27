@@ -198,6 +198,9 @@
                     y={object.shape.y}
                     width={object.shape.width}
                     height={object.shape.height}
+                    stroke="#4fbe9f"
+                    stroke-width={object.shape.lineWidth}
+                    fill="transparent"
                   >
                     {#if $previousObjects[object.uuid]}
                       <animate
