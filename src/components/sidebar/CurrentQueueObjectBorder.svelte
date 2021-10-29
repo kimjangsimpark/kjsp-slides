@@ -1,9 +1,61 @@
 <script lang="ts">
-  // 테두리를 바꾸는 액션을 추가하는 것임..
+  import { currentQueueObject$ } from '@/store/queueObject';
+  import { objectReducer } from '@/store/object';
+  import { onMount } from 'svelte';
+
+  $: selectedObject = currentQueueObject$;
+
+  let lineWidth = 1;
+
+  const handleDecreaseButtonClick = () => {
+    lineWidth--;
+    updateObjectLineWidth();
+  };
+
+  const handleIncreaseButtonClick = () => {
+    lineWidth++;
+    updateObjectLineWidth();
+  };
+
+  const handleLineWdithInputChange = () => {
+    console.log('change!');
+    updateObjectLineWidth();
+  };
+
+  const updateObjectLineWidth = () => {
+    if (!$selectedObject) return;
+
+    objectReducer({
+      type: 'objectShapeUpdateAction',
+      uuid: $selectedObject.uuid,
+      shape: { ...$selectedObject.shape, lineWidth },
+    });
+  };
+
+  onMount(() => {
+    if (!$selectedObject) return;
+    lineWidth = $selectedObject?.shape.lineWidth;
+  });
 </script>
 
 <article>
-  <header>Border</header>
+  <header>Line</header>
+  <div>
+    <div>
+      <label for="lineWidth" />
+    </div>
+    <div>
+      <button on:click={handleDecreaseButtonClick}>&nbsp;-&nbsp;</button>
+      <input
+        type="number"
+        name="lineWidth"
+        id="lineWidth"
+        bind:value={lineWidth}
+        on:input={handleLineWdithInputChange}
+      />
+      <button on:click={handleIncreaseButtonClick}>&nbsp;+&nbsp;</button>
+    </div>
+  </div>
   <ul>
     <li>
       <button>

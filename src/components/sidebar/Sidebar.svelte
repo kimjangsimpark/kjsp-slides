@@ -26,6 +26,7 @@
           y: $document$.rect.height / 2 - 50,
           width: 100,
           height: 100,
+          lineType: 'solid',
           lineWidth: 1,
           lineColor: '#000000',
         },
