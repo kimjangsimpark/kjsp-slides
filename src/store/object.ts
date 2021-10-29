@@ -115,15 +115,15 @@ export function objectReducer(action: ObjectAction): void {
       if (!current || !objectByUUID) {
         throw new Error('Object not found');
       }
-
+      // current -> 현재 문서의 객체 리스트[]
       const target = objectByUUID[action.uuid];
-      const newState = [...current];
-      newState[target.index] = { ...target.object };
-      const newObject = newState[target.index];
-
-      newObject.shape = {
-        ...newObject,
-        ...action.shape,
+      const newState = [...current]; // 새로만든 문서의 객체 리스트[] (복사한거)
+      newState[target.index] = {
+        ...target.object,
+        shape: {
+          ...target.object.shape,
+          ...action.shape,
+        },
       };
 
       objectSubject.next(newState);
