@@ -11,7 +11,7 @@
   <CurrentQueueObjectActionList />
   <CurrentQueueObjectEffectList />
   <button on:click={() => console.log($selectedObject)}>123123</button>
-  {#if $selectedObject?.type}
+  {#if $selectedObject?.type === 'rectangle'}
     <CurrentQueueObjectBorder />
   {/if}
   <article class="fill-wrapper">fill</article>

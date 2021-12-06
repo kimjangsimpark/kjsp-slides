@@ -18,12 +18,6 @@ export const onDestroy$ = defer(() => {
 	return subject.asObservable().pipe(take(1))
 })
 
-const selectedObjectChangesSrc = new Subject<any>();
-export const selectedObjectChanges$ = selectedObjectChangesSrc.asObservable();
-export const publishSelectedObject = (value: any) => {
-	selectedObjectChangesSrc.next(value);
-}
-
 export const beforeUpdate$ = defer(() => {
 	const subject = new Subject<void>()
 	beforeUpdate(() => {

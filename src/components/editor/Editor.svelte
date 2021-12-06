@@ -9,7 +9,6 @@
   import { scale$ } from '@/store/scale';
   import type { DocumentObject, RectangleObject } from '@/http/document';
   import { objectReducer } from '@/store/object';
-  import { Rect, Shape } from '@/components/sidebar/type';
 
   let svgElement: SVGElement;
   let queueChanged = false;
@@ -175,25 +174,6 @@
     animators.forEach(animator => animator.beginElement());
   };
 
-  const getRect = (object: RectangleObject): Rect => {
-    if (object.type === Shape.TEXT) {
-      console.log(object.shape.width, object.shape.height);
-      return {
-        x: object.shape.x + (object.shape.width / 2),
-        y: object.shape.y + (object.shape.height / 2),
-        width: object.shape.width,
-        height: object.shape.height,
-      }
-    }
-
-    return {
-      x: object.shape.x,
-      y: object.shape.y,
-      width: object.shape.width,
-      height: object.shape.height,
-    }
-  }
-
   onDestroy$.subscribe({
     next: () => {
       onQueueChangedSubscriber.unsubscribe();
@@ -214,21 +194,18 @@
         >
           {#if $objects}
             {#each $objects as object (object.uuid)}
-              {#if object.type }
+              {#if object.type === 'rectangle'}
                 <g class="object" on:click={e => onObjectClicked(e, object)}>
-                  {#if object.type !== 'text'}
-                    <rect
-                      x={getRect(object).x}
-                      y={getRect(object).y}
-                      width={getRect(object).width}
-                      height={getRect(object).height}
-                      fill="transparent"
-                      stroke="{object.type !== 'text' ? '#4fbe9f' : undefined}"
-                      stroke-width={object.type !== 'text' ? object.shape.lineWidth : undefined}
-                      rx={object.type === 'oval' ? '100' : undefined}
-                      ry={object.type === 'oval' ? '50' : undefined}
-                    >
-                      {#if $previousObjects[object.uuid]}
+                  <rect
+                    x={object.shape.x}
+                    y={object.shape.y}
+                    width={object.shape.width}
+                    height={object.shape.height}
+                    stroke="#4fbe9f"
+                    stroke-width={object.shape.lineWidth}
+                    fill="transparent"
+                  >
+                    {#if $previousObjects[object.uuid]}
                       <animate
                         class="queue-animator"
                         begin="indefinite"
@@ -403,12 +380,6 @@
   .page {
     border: 1px solid gray;
     background: white;
-  }
-
-  text {
-    width: 200px;
-    height: 40px;
-    font-size: 35px;
   }
 
   .object-textarea {
