@@ -76,12 +76,22 @@ export interface CircleObject {
   text?: ObjectText;
 }
 
+export interface TextObject {
+  type: 'text';
+  uuid: string;
+  shape: ObjectRect;
+  effects: ObjectEffect[];
+  text: ObjectText;
+}
+
+export type DocumentObject = RectangleObject | TextObject;
+
 export interface DocumentRequest {
   documentId: string;
 }
 
 export interface DocumentResponse extends DocumentMetadata {
-  objects: RectangleObject[];
+  objects: DocumentObject[];
 }
 
 export function getDocument(params: DocumentRequest): Observable<DocumentResponse> {

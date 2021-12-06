@@ -1,8 +1,8 @@
 <script type="ts">
-  import type { RectangleObject } from '@/http/document';
+  import type { DocumentObject } from '@/http/document';
   import { createEventDispatcher } from 'svelte';
-  export let previous: RectangleObject | null = null;
-  export let selected: RectangleObject;
+  export let previous: DocumentObject | null = null;
+  export let selected: DocumentObject;
 
   const dispatcher = createEventDispatcher();
   const strokeWidth = 8;

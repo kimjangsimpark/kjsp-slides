@@ -7,7 +7,7 @@
   import { currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
-  import type { RectangleObject } from '@/http/document';
+  import type { DocumentObject, RectangleObject } from '@/http/document';
   import { objectReducer } from '@/store/object';
 
   let svgElement: SVGElement;
@@ -46,7 +46,7 @@
     });
   };
 
-  const onObjectClicked = (e: MouseEvent, obj: RectangleObject) => {
+  const onObjectClicked = (e: MouseEvent, obj: DocumentObject) => {
     e.preventDefault();
     e.stopPropagation();
     currentQueueObjectReducer({
@@ -242,6 +242,67 @@
                   </rect>
                 </g>
               {/if}
+
+              {#if object.type === 'text'}
+                <g class="object" on:click={e => onObjectClicked(e, object)}>
+                  <foreignObject
+                    x={object.shape.x}
+                    y={object.shape.y}
+                    width={object.shape.width}
+                    height={object.shape.height}
+                  >
+                    <textarea
+                      class="object-textarea"
+                      style="height: 100%; width: 100%;"
+                      bind:value={object.text.innerText}
+                    />
+                  </foreignObject>
+                  <rect
+                    x={object.shape.x}
+                    y={object.shape.y}
+                    width={object.shape.width}
+                    height={object.shape.height}
+                    stroke="#4fbe9f"
+                    stroke-width={object.shape.lineWidth}
+                    fill="transparent"
+                  >
+                    {#if $previousObjects[object.uuid]}
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="height"
+                        from={$previousObjects[object.uuid].shape.height}
+                        to={object.shape.height}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="width"
+                        from={$previousObjects[object.uuid].shape.width}
+                        to={object.shape.width}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="x"
+                        from={$previousObjects[object.uuid].shape.x}
+                        to={object.shape.x}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="y"
+                        from={$previousObjects[object.uuid].shape.y}
+                        to={object.shape.y}
+                        dur="0.5s"
+                      />
+                    {/if}
+                  </rect>
+                </g>
+              {/if}
             {/each}
           {/if}
           {#if $selectedObject}
@@ -252,10 +313,6 @@
               on:vertex-mousedown={e => onSelectedObjectVertextMouseDown(e)}
             />
           {/if}
-
-          <foreignObject x="10" y="10" width="100" height="40">
-            <textarea class="object-textarea" style="height: 100%; width: 100%;" />
-          </foreignObject>
         </svg>
       {/if}
     </div>
@@ -290,5 +347,7 @@
 
   .object-textarea {
     resize: none;
+    border: none;
+    overflow: hidden;
   }
 </style>

@@ -1,4 +1,4 @@
-import type { RectangleObject, ObjectTransitionEffect } from '@/http/document';
+import type { DocumentObject, ObjectTransitionEffect } from '@/http/document';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { document$ } from './document';
@@ -6,7 +6,7 @@ import { object$ } from './object';
 
 export interface CurrentQueueState {
   index: number;
-  objects: RectangleObject[];
+  objects: DocumentObject[];
 }
 
 export interface ChangeCurrentQueueAction {
