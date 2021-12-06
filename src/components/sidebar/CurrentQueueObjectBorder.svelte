@@ -1,7 +1,7 @@
 <script lang="ts">
   import { currentQueueObject$ } from '@/store/queueObject';
   import { objectReducer } from '@/store/object';
-  import { onMount } from 'svelte';
+  import { afterUpdate, onMount } from 'svelte';
 
   $: selectedObject = currentQueueObject$;
 
@@ -32,10 +32,22 @@
     });
   };
 
+  const init = () => {
+    if (!$selectedObject) {
+      return;
+    }
+
+    lineWidth = $selectedObject.shape.lineWidth;
+  }
+
   onMount(() => {
-    if (!$selectedObject) return;
-    lineWidth = $selectedObject?.shape.lineWidth;
+    init();
   });
+
+  afterUpdate(() => {
+    init();
+  })
+
 </script>
 
 <article>

@@ -1,6 +1,7 @@
 import type { DocumentObject } from '@/http/document';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { currentQueue$ } from './queue';
+import { publishSelectedObject } from '@/misc/svelte-rx';
 
 export interface CurrentQueueObjectChangeAction {
   type: 'changeCurrentQueueObject';
@@ -44,6 +45,7 @@ export const currentQueueObject$ = combineLatest([currentQueue$, currentQueueObj
       return null;
     }
     const found = currentQueue.objects.find(object => object.uuid === currentObject.uuid);
+    publishSelectedObject(found);
     return found || null;
   }),
 )
