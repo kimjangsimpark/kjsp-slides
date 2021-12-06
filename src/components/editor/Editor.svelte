@@ -16,7 +16,7 @@
   const queue$ = currentQueue$.pipe(startWith(null), pairwise());
 
   interface PreviousQueue {
-    [key: string]: RectangleObject;
+    [key: string]: DocumentObject;
   }
 
   $: selectedObject = currentQueueObject$;
@@ -245,18 +245,6 @@
 
               {#if object.type === 'text'}
                 <g class="object" on:click={e => onObjectClicked(e, object)}>
-                  <foreignObject
-                    x={object.shape.x}
-                    y={object.shape.y}
-                    width={object.shape.width}
-                    height={object.shape.height}
-                  >
-                    <textarea
-                      class="object-textarea"
-                      style="height: 100%; width: 100%;"
-                      bind:value={object.text.innerText}
-                    />
-                  </foreignObject>
                   <rect
                     x={object.shape.x}
                     y={object.shape.y}
@@ -301,6 +289,55 @@
                       />
                     {/if}
                   </rect>
+                  <foreignObject
+                    x={object.shape.x}
+                    y={object.shape.y}
+                    width={object.shape.width}
+                    height={object.shape.height}
+                    stroke="#4fbe9f"
+                    stroke-width={object.shape.lineWidth}
+                    fill="transparent"
+                  >
+                    <textarea
+                      class="object-textarea"
+                      style="height: 100%; width: 100%;"
+                      value={object.text.innerText}
+                    />
+                    {#if $previousObjects[object.uuid]}
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="height"
+                        from={$previousObjects[object.uuid].shape.height}
+                        to={object.shape.height}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="width"
+                        from={$previousObjects[object.uuid].shape.width}
+                        to={object.shape.width}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="x"
+                        from={$previousObjects[object.uuid].shape.x}
+                        to={object.shape.x}
+                        dur="0.5s"
+                      />
+                      <animate
+                        class="queue-animator"
+                        begin="indefinite"
+                        attributeName="y"
+                        from={$previousObjects[object.uuid].shape.y}
+                        to={object.shape.y}
+                        dur="0.5s"
+                      />
+                    {/if}
+                  </foreignObject>
                 </g>
               {/if}
             {/each}
