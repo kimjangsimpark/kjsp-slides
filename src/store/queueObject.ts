@@ -1,15 +1,15 @@
-import type { RectangleObject } from '@/http/document';
+import type { DocumentObject } from '@/http/document';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { currentQueue$ } from './queue';
 
 export interface CurrentQueueObjectChangeAction {
   type: 'changeCurrentQueueObject';
-  state: RectangleObject;
+  state: DocumentObject;
 }
 
 export interface UpdateQueueObjectAction {
   type: 'updateQueueObjectAction';
-  state: RectangleObject;
+  state: DocumentObject;
 }
 
 export interface CurrentQueueObjectResetAction {
@@ -18,7 +18,7 @@ export interface CurrentQueueObjectResetAction {
 
 export type CurrentQueObjectAction = CurrentQueueObjectChangeAction | CurrentQueueObjectResetAction;
 
-const currentQueueObjectSubject = new BehaviorSubject<RectangleObject | null>(null);
+const currentQueueObjectSubject = new BehaviorSubject<DocumentObject | null>(null);
 
 export const currentQueueObjectReducer = (action: CurrentQueObjectAction): void => {
   const current = currentQueueObjectSubject.getValue();
