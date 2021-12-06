@@ -1,13 +1,13 @@
 <svelte:options immutable={true} />
 
 <script type="ts">
-  import Toolbar from '@/components/toolbar/Toolbar.svelte';
+  import Toolbar from '@/main-toolbar/MainToolbar.svelte';
   import SubToolbar from '@/components/toolbar/SubToolbar.svelte';
   import Sidebar from '@/components/sidebar/Sidebar.svelte';
   import Editor from '@/components/editor/Editor.svelte';
   import PropertySidebar from '@/components/sidebar/PropertiesSidebar.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
-  import { document$, documentReducer } from '@/store/document';
+  import { document$ } from '@/store/document';
 
   const document = document$;
   $: currentQueueObject = currentQueueObject$;

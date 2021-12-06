@@ -1,9 +1,26 @@
+<script type="ts" context="module">
+  export interface ToolbarModel {
+    title: string;
+    active?: boolean;
+    children: TreeModel[];
+  }
+
+  export interface TreeModel {
+    title: string;
+    description?: string;
+    onClick?: (event: MouseEvent) => void;
+    children?: TreeModel[];
+  }
+</script>
+
 <script type="ts">
   import { filter, map } from 'rxjs/operators';
   import { document$, documentReducer } from '@/store/document';
-  import Tree from './Tree.svelte';
-  import type { ToolbarModel } from './TreeModel';
+  import Tree from '../components/toolbar/Tree.svelte';
   import { object$, objectReducer } from '@/store/object';
+  import TreeGroup from '@/tree/TreeGroup.svelte';
+  import TreeList from '@/tree/TreeList.svelte';
+  import TreeItem from '@/tree/TreeItem.svelte';
 
   $: title = document$.pipe(
     filter(Boolean),
@@ -233,6 +250,12 @@
         </div>
       {/each}
     </div>
+
+    <TreeGroup>
+      <TreeList>
+        <TreeItem>asdfsadf</TreeItem>
+      </TreeList>
+    </TreeGroup>
   </div>
 </div>
 
