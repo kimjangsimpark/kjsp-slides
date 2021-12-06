@@ -163,13 +163,16 @@
   const onQueueChangedSubscriber = afterUpdate$.subscribe({
     next: () => {
       if (queueChanged) {
-        const animators =
-          svgElement.querySelectorAll<SVGAnimateElement>('.queue-animator');
-        animators.forEach(animator => animator.beginElement());
+        executeQueueAnimation();
         queueChanged = false;
       }
     },
   });
+
+  const executeQueueAnimation = () => {
+    const animators = svgElement.querySelectorAll<SVGAnimateElement>('.queue-animator');
+    animators.forEach(animator => animator.beginElement());
+  };
 
   onDestroy$.subscribe({
     next: () => {
@@ -249,6 +252,10 @@
               on:vertex-mousedown={e => onSelectedObjectVertextMouseDown(e)}
             />
           {/if}
+
+          <foreignObject x="10" y="10" width="100" height="40">
+            <textarea class="object-textarea" style="height: 100%; width: 100%;" />
+          </foreignObject>
         </svg>
       {/if}
     </div>
@@ -279,5 +286,9 @@
   .page {
     border: 1px solid gray;
     background: white;
+  }
+
+  .object-textarea {
+    resize: none;
   }
 </style>
