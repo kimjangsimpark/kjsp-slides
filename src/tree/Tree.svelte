@@ -1,5 +1,5 @@
 <script type="ts">
-  import type { TreeModel } from '../../main-toolbar/MainToolbar.svelte';
+  import type { TreeModel } from '../main-toolbar/MainToolbar.svelte';
 
   let clazz = '';
   export let models: TreeModel[];

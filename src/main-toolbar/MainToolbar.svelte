@@ -16,7 +16,7 @@
 <script type="ts">
   import { filter, map } from 'rxjs/operators';
   import { document$, documentReducer } from '@/store/document';
-  import Tree from '../components/toolbar/Tree.svelte';
+  import Tree from '../tree/Tree.svelte';
   import { object$, objectReducer } from '@/store/object';
   import TreeGroup from '@/tree/TreeGroup.svelte';
   import TreeList from '@/tree/TreeList.svelte';
@@ -250,12 +250,6 @@
         </div>
       {/each}
     </div>
-
-    <TreeGroup>
-      <TreeList>
-        <TreeItem>asdfsadf</TreeItem>
-      </TreeList>
-    </TreeGroup>
   </div>
 </div>
 
