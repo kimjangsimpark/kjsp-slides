@@ -1,5 +1,11 @@
 import { Observable, of } from 'rxjs';
 
+export enum ObjectType {
+  TEXTAREA = 'textrea',
+  CIRCLE = 'circle',
+  RECTANGLE = 'rectangle',
+}
+
 export interface DocumentMetadata {
   documentName: string;
   rect: DocumentRect;
@@ -61,7 +67,7 @@ export type ObjectEffect =
   | ObjectDeleteEffect;
 
 export interface RectangleObject {
-  type: 'rectangle'; // 개체 타입 (모양)
+  type: ObjectType.RECTANGLE; // 개체 타입 (모양)
   uuid: string; // 개체 고유 아이디 (문서 내에서 중복 X)
   shape: ObjectRect; // 가로, 세로, 테두리, 테두리 색상, 배경 색상
   effects: ObjectEffect[];
@@ -69,7 +75,7 @@ export interface RectangleObject {
 }
 
 export interface CircleObject {
-  type: 'circle';
+  type: ObjectType.CIRCLE;
   uuid: string;
   shape: ObjectRect;
   effects: ObjectEffect[];
@@ -77,7 +83,7 @@ export interface CircleObject {
 }
 
 export interface TextareaObject {
-  type: 'text';
+  type: ObjectType.TEXTAREA;
   uuid: string;
   shape: ObjectRect;
   effects: ObjectEffect[];
@@ -104,7 +110,7 @@ export function getDocument(params: DocumentRequest): Observable<DocumentRespons
     },
     objects: [
       {
-        type: 'rectangle',
+        type: ObjectType.RECTANGLE,
         uuid: 'asdkfl3n3',
         effects: [
           {
@@ -154,7 +160,7 @@ export function getDocument(params: DocumentRequest): Observable<DocumentRespons
         },
       },
       {
-        type: 'rectangle',
+        type: ObjectType.RECTANGLE,
         uuid: 'asdf3d3g',
         effects: [
           {
@@ -191,7 +197,7 @@ export function getDocument(params: DocumentRequest): Observable<DocumentRespons
         },
       },
       {
-        type: 'rectangle',
+        type: ObjectType.RECTANGLE,
         uuid: 'asdf3d3d3d',
         effects: [
           {

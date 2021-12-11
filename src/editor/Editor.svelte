@@ -14,7 +14,7 @@
   import { currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
-  import type { DocumentObject } from '@/http/document';
+  import { DocumentObject, ObjectType } from '@/http/document';
   import { objectReducer } from '@/store/object';
   import { setContext } from 'svelte';
   import Rectangle from './objects/rectangle.svelte';
@@ -213,7 +213,7 @@
         >
           {#if $objects}
             {#each $objects as object (object.uuid)}
-              {#if object.type === 'rectangle'}
+              {#if object.type === ObjectType.RECTANGLE}
                 <g class="object" on:click={e => onObjectClicked(e, object)}>
                   <Rectangle
                     currentObject={object}
@@ -221,7 +221,7 @@
                   />
                 </g>
               {/if}
-              {#if object.type === 'text'}
+              {#if object.type === ObjectType.TEXTAREA}
                 <g class="object" on:click={e => onObjectClicked(e, object)}>
                   <Textarea
                     currentObject={object}
