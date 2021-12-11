@@ -3,9 +3,9 @@
 <script type="ts">
   import Toolbar from '@/main-toolbar/MainToolbar.svelte';
   import SubToolbar from '@/sub-toolbar/SubToolbar.svelte';
-  import Sidebar from '@/sidebar/Sidebar.svelte';
+  import Sidebar from '@/left-sidebar/LeftSidebar.svelte';
   import Editor from '@/editor/Editor.svelte';
-  import PropertySidebar from '@/sidebar/PropertiesSidebar.svelte';
+  import PropertySidebar from '@/right-sidebar/PropertiesSidebar.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
   import { document$ } from '@/store/document';
 

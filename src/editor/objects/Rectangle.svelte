@@ -1,3 +1,30 @@
+<script type="ts" context="module">
+  export function create(index: number, x: number, y: number): RectangleObject {
+    return {
+      type: 'rectangle',
+      uuid: Math.random()
+        .toString(36)
+        .replace(/[^a-z]+/g, '')
+        .substr(0, 5),
+      effects: [
+        {
+          type: 'create',
+          index: index,
+        },
+      ],
+      shape: {
+        x: x,
+        y: y,
+        width: 100,
+        height: 100,
+        lineType: 'solid',
+        lineWidth: 1,
+        lineColor: '#000000',
+      },
+    };
+  }
+</script>
+
 <script type="ts">
   import type { DocumentObject, RectangleObject } from '@/http/document';
   export let currentObject: RectangleObject;

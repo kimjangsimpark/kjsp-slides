@@ -54,9 +54,7 @@
     }),
   );
   $: objects = queue$.pipe(
-    map(([, currentQueue]) => {
-      return currentQueue?.objects;
-    }),
+    map(([, currentQueue]) => currentQueue?.objects),
     tap(() => (queueChanged = true)),
   );
   $: scale = scale$;
@@ -215,7 +213,7 @@
         >
           {#if $objects}
             {#each $objects as object (object.uuid)}
-              {#if object.type === 'rectangle' && $previousObjects[object.uuid]?.type === 'rectangle'}
+              {#if object.type === 'rectangle'}
                 <g class="object" on:click={e => onObjectClicked(e, object)}>
                   <Rectangle
                     currentObject={object}
