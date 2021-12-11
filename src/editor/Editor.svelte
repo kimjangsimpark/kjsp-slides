@@ -1,3 +1,10 @@
+<script type="ts" context="module">
+  export const EDITOR_CONTEXT_KEY = 'editor-context-key';
+  export interface EditorContext {
+    onObjectClicked: (e: MouseEvent, obj: DocumentObject) => void;
+  }
+</script>
+
 <script type="ts">
   import { map, pairwise, startWith, tap } from 'rxjs/operators';
   import { afterUpdate$, onDestroy$ } from '@/misc/svelte-rx';
@@ -7,8 +14,11 @@
   import { currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
-  import type { DocumentObject, RectangleObject } from '@/http/document';
+  import type { DocumentObject } from '@/http/document';
   import { objectReducer } from '@/store/object';
+  import { setContext } from 'svelte';
+  import Rectangle from './objects/rectangle.svelte';
+  import Textarea from './objects/Textarea.svelte';
 
   let svgElement: SVGElement;
   let queueChanged = false;
@@ -18,6 +28,17 @@
   interface PreviousQueue {
     [key: string]: DocumentObject;
   }
+
+  setContext<EditorContext>(EDITOR_CONTEXT_KEY, {
+    onObjectClicked: (e: MouseEvent, obj: DocumentObject) => {
+      e.preventDefault();
+      e.stopPropagation();
+      currentQueueObjectReducer({
+        type: 'changeCurrentQueueObject',
+        state: obj,
+      });
+    },
+  });
 
   $: selectedObject = currentQueueObject$;
   $: document = document$;
@@ -194,150 +215,20 @@
         >
           {#if $objects}
             {#each $objects as object (object.uuid)}
-              {#if object.type === 'rectangle'}
+              {#if object.type === 'rectangle' && $previousObjects[object.uuid]?.type === 'rectangle'}
                 <g class="object" on:click={e => onObjectClicked(e, object)}>
-                  <rect
-                    x={object.shape.x}
-                    y={object.shape.y}
-                    width={object.shape.width}
-                    height={object.shape.height}
-                    stroke="#4fbe9f"
-                    stroke-width={object.shape.lineWidth}
-                    fill="transparent"
-                  >
-                    {#if $previousObjects[object.uuid]}
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="height"
-                        from={$previousObjects[object.uuid].shape.height}
-                        to={object.shape.height}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="width"
-                        from={$previousObjects[object.uuid].shape.width}
-                        to={object.shape.width}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="x"
-                        from={$previousObjects[object.uuid].shape.x}
-                        to={object.shape.x}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="y"
-                        from={$previousObjects[object.uuid].shape.y}
-                        to={object.shape.y}
-                        dur="0.5s"
-                      />
-                    {/if}
-                  </rect>
+                  <Rectangle
+                    currentObject={object}
+                    previousObject={$previousObjects[object.uuid]}
+                  />
                 </g>
               {/if}
-
               {#if object.type === 'text'}
                 <g class="object" on:click={e => onObjectClicked(e, object)}>
-                  <rect
-                    x={object.shape.x}
-                    y={object.shape.y}
-                    width={object.shape.width}
-                    height={object.shape.height}
-                    stroke="#4fbe9f"
-                    stroke-width={object.shape.lineWidth}
-                    fill="transparent"
-                  >
-                    {#if $previousObjects[object.uuid]}
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="height"
-                        from={$previousObjects[object.uuid].shape.height}
-                        to={object.shape.height}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="width"
-                        from={$previousObjects[object.uuid].shape.width}
-                        to={object.shape.width}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="x"
-                        from={$previousObjects[object.uuid].shape.x}
-                        to={object.shape.x}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="y"
-                        from={$previousObjects[object.uuid].shape.y}
-                        to={object.shape.y}
-                        dur="0.5s"
-                      />
-                    {/if}
-                  </rect>
-                  <foreignObject
-                    x={object.shape.x}
-                    y={object.shape.y}
-                    width={object.shape.width}
-                    height={object.shape.height}
-                    stroke="#4fbe9f"
-                    stroke-width={object.shape.lineWidth}
-                    fill="transparent"
-                  >
-                    <textarea
-                      class="object-textarea"
-                      style="height: 100%; width: 100%;"
-                      value={object.text.innerText}
-                    />
-                    {#if $previousObjects[object.uuid]}
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="height"
-                        from={$previousObjects[object.uuid].shape.height}
-                        to={object.shape.height}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="width"
-                        from={$previousObjects[object.uuid].shape.width}
-                        to={object.shape.width}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="x"
-                        from={$previousObjects[object.uuid].shape.x}
-                        to={object.shape.x}
-                        dur="0.5s"
-                      />
-                      <animate
-                        class="queue-animator"
-                        begin="indefinite"
-                        attributeName="y"
-                        from={$previousObjects[object.uuid].shape.y}
-                        to={object.shape.y}
-                        dur="0.5s"
-                      />
-                    {/if}
-                  </foreignObject>
+                  <Textarea
+                    currentObject={object}
+                    previousObject={$previousObjects[object.uuid]}
+                  />
                 </g>
               {/if}
             {/each}
@@ -380,11 +271,5 @@
   .page {
     border: 1px solid gray;
     background: white;
-  }
-
-  .object-textarea {
-    resize: none;
-    border: none;
-    overflow: hidden;
   }
 </style>

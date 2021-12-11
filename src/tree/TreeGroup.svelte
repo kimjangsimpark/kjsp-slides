@@ -1,16 +1,16 @@
 <script type="ts" context="module">
   export const TREE_GROUP_CONTEXT_KEY = `tree-group-context`;
-  export enum PreferedPosition {
-    TOP = 'top',
-    RIGHT = 'right',
-    BOTTOM = 'bottom',
-    LEFT = 'left',
-  }
-  export enum PerferedAlign {
-    FORWARD = 'forward',
-    CENTER = 'center',
-    REVERSE = 'reverse',
-  }
+  // export enum PreferedPosition {
+  //   TOP = 'top',
+  //   RIGHT = 'right',
+  //   BOTTOM = 'bottom',
+  //   LEFT = 'left',
+  // }
+  // export enum PerferedAlign {
+  //   FORWARD = 'forward',
+  //   CENTER = 'center',
+  //   REVERSE = 'reverse',
+  // }
   export interface TreeGroupContext {
     open(): void;
   }

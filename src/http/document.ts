@@ -76,7 +76,7 @@ export interface CircleObject {
   text?: ObjectText;
 }
 
-export interface TextObject {
+export interface TextareaObject {
   type: 'text';
   uuid: string;
   shape: ObjectRect;
@@ -84,7 +84,7 @@ export interface TextObject {
   text: ObjectText;
 }
 
-export type DocumentObject = RectangleObject | TextObject;
+export type DocumentObject = RectangleObject | TextareaObject;
 
 export interface DocumentRequest {
   documentId: string;
