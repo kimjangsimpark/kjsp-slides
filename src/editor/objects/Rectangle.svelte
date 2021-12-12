@@ -1,7 +1,7 @@
 <script type="ts" context="module">
   export function create(index: number, x: number, y: number): RectangleObject {
     return {
-      type: 'rectangle',
+      type: ObjectType.RECTANGLE,
       uuid: Math.random()
         .toString(36)
         .replace(/[^a-z]+/g, '')
@@ -26,7 +26,7 @@
 </script>
 
 <script type="ts">
-  import type { DocumentObject, RectangleObject } from '@/http/document';
+  import { DocumentObject, ObjectType, RectangleObject } from '@/http/document';
   export let currentObject: RectangleObject;
   export let previousObject: DocumentObject | RectangleObject | null;
 </script>
