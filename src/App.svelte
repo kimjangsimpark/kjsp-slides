@@ -1,7 +1,7 @@
 <script type="ts">
   import Toolbar from '@/main-toolbar/MainToolbar.svelte';
   import SubToolbar from '@/sub-toolbar/SubToolbar.svelte';
-  import Sidebar from '@/left-sidebar/LeftSidebar.svelte';
+  import ObjectPanel from '@/object-panel/ObjectPanel.svelte';
   import Editor from '@/editor/Editor.svelte';
   import PropertySidebar from '@/right-sidebar/PropertiesSidebar.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
@@ -23,7 +23,7 @@
   <div id="app-body">
     {#if $document}
       <div id="side-bar-root">
-        <Sidebar />
+        <ObjectPanel />
       </div>
       <div id="editor-root">
         <Editor />

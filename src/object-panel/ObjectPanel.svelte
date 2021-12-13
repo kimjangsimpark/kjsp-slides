@@ -3,16 +3,16 @@
   import circlePreview from './previews/circle.svg';
   import textareaPreview from './previews/textarea.svg';
 
-  interface ObjectModel {
+  interface PanelItem {
     key: ObjectType;
     previewUrl: string;
     alt: string;
   }
 
-  interface GroupModel {
+  interface PanelGroup {
     name: string;
     opened: boolean;
-    objects: ObjectModel[];
+    objects: PanelItem[];
   }
 </script>
 
@@ -20,7 +20,7 @@
   import { ObjectType } from '@/http/document';
   import { leftSidebarReducer } from './LeftSidebar.store';
 
-  const models: GroupModel[] = [
+  const models: PanelGroup[] = [
     {
       name: 'object',
       opened: true,
@@ -50,7 +50,7 @@
     },
   ];
 
-  function toggleGroup(model: GroupModel) {
+  function toggleGroup(model: PanelGroup) {
     const index = models.indexOf(model);
     const newModel = { ...model };
     newModel.opened = !newModel.opened;
