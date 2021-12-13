@@ -9,13 +9,18 @@
     alt: string;
   }
 
-  interface TreeModel {
+  interface GroupModel {
     name: string;
     opened: boolean;
     objects: ObjectModel[];
   }
+</script>
 
-  const models: TreeModel[] = [
+<script type="ts">
+  import { ObjectType } from '@/http/document';
+  import { leftSidebarReducer } from './LeftSidebar.store';
+
+  const models: GroupModel[] = [
     {
       name: 'object',
       opened: true,
@@ -44,11 +49,13 @@
       ],
     },
   ];
-</script>
 
-<script type="ts">
-  import { ObjectType } from '@/http/document';
-  import { leftSidebarReducer } from './LeftSidebar.store';
+  function toggleGroup(model: GroupModel) {
+    const index = models.indexOf(model);
+    const newModel = { ...model };
+    newModel.opened = !newModel.opened;
+    models[index] = newModel;
+  }
 
   const onClick = (type: ObjectType) => {
     leftSidebarReducer({
@@ -59,17 +66,17 @@
 </script>
 
 <div id="object-panel-root">
-  {#each models as model (model.name)}
-    <div class="object-group">{model.name}</div>
-    <div class="object-list">
-      {#each model.objects as object (object.key)}
-        {#if model.opened}
-          <div class="object-preview-container">
+  {#each models as model}
+    <div class="object-group" on:click={() => toggleGroup(model)}>{model.name}</div>
+    {#if model.opened}
+      <div class="object-list">
+        {#each model.objects as object}
+          <div class="object-preview-container" on:click={() => onClick(object.key)}>
             <img class="object-preview-image" src={object.previewUrl} alt={object.alt} />
           </div>
-        {/if}
-      {/each}
-    </div>
+        {/each}
+      </div>
+    {/if}
   {/each}
 </div>
 

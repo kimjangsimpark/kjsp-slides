@@ -1,5 +1,3 @@
-<svelte:options immutable={true} />
-
 <script type="ts">
   import Toolbar from '@/main-toolbar/MainToolbar.svelte';
   import SubToolbar from '@/sub-toolbar/SubToolbar.svelte';
