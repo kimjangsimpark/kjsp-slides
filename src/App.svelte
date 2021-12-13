@@ -3,7 +3,7 @@
   import SubToolbar from '@/sub-toolbar/SubToolbar.svelte';
   import ObjectPanel from '@/object-panel/ObjectPanel.svelte';
   import Editor from '@/editor/Editor.svelte';
-  import PropertySidebar from '@/right-sidebar/PropertiesSidebar.svelte';
+  import ObjectContolPanel from '@/object-control-panel/ObjectContolPanel.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
   import { document$ } from '@/store/document';
   import Provider from './provider/Provider.svelte';
@@ -34,7 +34,7 @@
         </div>
       {/if}
       {#if $currentQueueObject}
-        <PropertySidebar />
+        <ObjectContolPanel />
       {/if}
     </div>
   </div>
