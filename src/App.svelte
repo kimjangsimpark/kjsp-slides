@@ -6,34 +6,39 @@
   import PropertySidebar from '@/right-sidebar/PropertiesSidebar.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
   import { document$ } from '@/store/document';
+  import Provider from './provider/Provider.svelte';
+  import { configureAppStore } from './store';
 
+  const store = configureAppStore();
   const document = document$;
   $: currentQueueObject = currentQueueObject$;
 </script>
 
-<div id="app-root">
-  <div id="toolbar-root">
-    <Toolbar />
+<Provider {store}>
+  <div id="app-root">
+    <div id="toolbar-root">
+      <Toolbar />
+    </div>
+    <div id="subtoolbar-root">
+      {#if $document}
+        <SubToolbar />
+      {/if}
+    </div>
+    <div id="app-body">
+      {#if $document}
+        <div id="side-bar-root">
+          <ObjectPanel />
+        </div>
+        <div id="editor-root">
+          <Editor />
+        </div>
+      {/if}
+      {#if $currentQueueObject}
+        <PropertySidebar />
+      {/if}
+    </div>
   </div>
-  <div id="subtoolbar-root">
-    {#if $document}
-      <SubToolbar />
-    {/if}
-  </div>
-  <div id="app-body">
-    {#if $document}
-      <div id="side-bar-root">
-        <ObjectPanel />
-      </div>
-      <div id="editor-root">
-        <Editor />
-      </div>
-    {/if}
-    {#if $currentQueueObject}
-      <PropertySidebar />
-    {/if}
-  </div>
-</div>
+</Provider>
 
 <style lang="scss">
   #app-root {

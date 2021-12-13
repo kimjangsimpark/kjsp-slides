@@ -1,22 +1,19 @@
-import { ActionCreatorWithoutPayload, configureStore, createAction } from '@reduxjs/toolkit';
+import { configureStore, createSelector, createSlice, Store } from '@reduxjs/toolkit';
 
-const increment = createAction('INCREMENT');
-const decrement = createAction('DECREMENT');
-
-export const reducer = (
-  state = 0,
-  action: ActionCreatorWithoutPayload,
-): number => {
-  switch (action.type) {
-    case increment.type:
-      return state + 1;
-    case decrement.type:
-      return state - 1;
-    default:
-      return state;
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: 0,
+  reducers: {
+    increment: state => state + 1,
+    decrement: state => state - 1
   }
-}
-
-export const store = configureStore({
-  reducer: reducer
 });
+
+export function configureAppStore(): Store {
+  const store: Store = configureStore({
+    reducer: counterSlice.reducer,
+  });
+
+  createSelector
+  return store;
+}

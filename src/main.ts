@@ -1,7 +1,6 @@
 import '@/styles/global.scss';
 import App from '@/App.svelte';
 import { fetcher } from './misc/fetcher';
-import { store } from './store';
 
 fetcher.setBaseUrl('https://slide.preandero.com');
 fetcher.setDefaultHeader({

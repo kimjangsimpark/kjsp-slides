@@ -18,8 +18,6 @@
 
 <script type="ts">
   import { ObjectType } from '@/http/document';
-  import { leftSidebarReducer } from './LeftSidebar.store';
-
   const models: PanelGroup[] = [
     {
       name: 'object',
@@ -58,10 +56,10 @@
   }
 
   const onClick = (type: ObjectType) => {
-    leftSidebarReducer({
-      type: 'create',
-      objectType: type,
-    });
+    // leftSidebarReducer({
+    //   type: 'create',
+    //   objectType: type,
+    // });
   };
 </script>
 
