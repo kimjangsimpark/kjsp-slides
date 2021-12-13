@@ -49,7 +49,11 @@ module.exports = {
 				resolve: {
 					fullySpecified: false
 				}
-			}
+			},
+			{
+				test: /\.svg$/,
+				loader: "file-loader",
+			},
 		]
 	},
 	mode,
