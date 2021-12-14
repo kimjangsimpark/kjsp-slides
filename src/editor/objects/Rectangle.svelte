@@ -36,7 +36,7 @@
   y={currentObject.shape.y}
   width={currentObject.shape.width}
   height={currentObject.shape.height}
-  stroke="#4fbe9f"
+  stroke={currentObject.shape.lineColor}
   stroke-width={currentObject.shape.lineWidth}
   fill="transparent"
 >

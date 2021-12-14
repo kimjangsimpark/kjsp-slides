@@ -1,12 +1,15 @@
+<script type="ts" context="module">
+</script>
+
 <script type="ts">
   import { onMount } from 'svelte';
-  import { combineLatest } from 'rxjs';
+  import { combineLatest, Subscription } from 'rxjs';
   import { map } from 'rxjs/operators';
+  import { onDestroy$ } from '@/misc/svelte-rx';
   import { objectReducer } from '@/store/object';
   import { currentQueue$ } from '@/store/queue';
   import { currentQueueObject$ } from '@/store/queueObject';
 
-  $: currentQueueObject = currentQueueObject$;
   $: selectedObject = currentQueueObject$;
   $: currentQueueObjectEffects = combineLatest([currentQueue$, currentQueueObject$]).pipe(
     map(([currentQueue, currentQueueObject]) => {
@@ -20,6 +23,8 @@
   );
 
   let lineWidth = 1;
+  let lineColor = '';
+  let selectedObjectSubscription: Subscription;
 
   const handleDecreaseButtonClick = () => {
     lineWidth--;
@@ -46,9 +51,36 @@
     });
   };
 
-  onMount(() => {
+  const onColorPickerInput = () => {
     if (!$selectedObject) return;
-    lineWidth = $selectedObject?.shape.lineWidth;
+
+    objectReducer({
+      type: 'objectShapeUpdateAction',
+      uuid: $selectedObject.uuid,
+      shape: { ...$selectedObject.shape, lineColor },
+    });
+  };
+
+  onMount(() => {
+    console.log('ObjectControlPanel onMount');
+
+    selectedObjectSubscription = selectedObject.subscribe({
+      next: () => {
+        if (!$selectedObject) return;
+
+        console.log('setSelectedObjectShape');
+        console.log($selectedObject?.shape.lineColor);
+
+        lineWidth = $selectedObject?.shape.lineWidth;
+        lineColor = $selectedObject?.shape.lineColor;
+      },
+    });
+  });
+
+  onDestroy$.subscribe({
+    next: () => {
+      selectedObjectSubscription.unsubscribe();
+    },
   });
 </script>
 
@@ -56,8 +88,8 @@
   <section class="panel-section action-list-wrapper">
     <header><h2>Action list</h2></header>
     <ol class="list">
-      {#if $currentQueueObject}
-        {#each $currentQueueObject.effects as effect}
+      {#if $selectedObject}
+        {#each $selectedObject.effects as effect}
           <li class="list-item">
             #{Number(effect.index) + 1}
             {effect.type}
@@ -85,10 +117,7 @@
   <section class="panel-section line-wrapper">
     <header><h2>Line</h2></header>
     <div>
-      <div>
-        <label for="lineWidth" />
-      </div>
-      <div>
+      <div class="line-width-input-wrapper">
         <button on:click={handleDecreaseButtonClick}>&nbsp;-&nbsp;</button>
         <input
           type="number"
@@ -98,6 +127,16 @@
           on:input={handleLineWdithInputChange}
         />
         <button on:click={handleIncreaseButtonClick}>&nbsp;+&nbsp;</button>
+      </div>
+      <div class="line-color-input-wrapper">
+        <label for="lineColorPicker">color</label>
+        <input
+          type="color"
+          name="lineColorPicker"
+          id="lineColorPicker"
+          bind:value={lineColor}
+          on:input={onColorPickerInput}
+        />
       </div>
     </div>
     <ul>

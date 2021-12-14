@@ -52,7 +52,7 @@ export interface ObjectRect {
   height: number;
   lineType: string;
   lineWidth: number;
-  lineColor?: string;
+  lineColor: string;
 }
 
 export interface ObjectText {
