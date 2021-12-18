@@ -1,7 +1,6 @@
 import type { DocumentObject, ObjectTransitionEffect } from '@/http/document';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { document$ } from './document';
 import { object$ } from './object';
 
 export interface CurrentQueueState {
@@ -30,12 +29,12 @@ export function currentQueueReducer(
   }
 }
 
-document$.subscribe(() => {
-  currentQueueReducer({
-    type: 'changeCurrentQueue',
-    index: 0,
-  });
-});
+// document.subscribe(() => {
+//   currentQueueReducer({
+//     type: 'changeCurrentQueue',
+//     index: 0,
+//   });
+// });
 
 export const currentQueue$: Observable<CurrentQueueState> = combineLatest([object$, currentQueueSubject]).pipe(
   map(([objects, index]) => {

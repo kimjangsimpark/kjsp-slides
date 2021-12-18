@@ -5,41 +5,35 @@
   import Editor from '@/editor/Editor.svelte';
   import ObjectContolPanel from '@/object-control-panel/ObjectContolPanel.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
-  import { document$ } from '@/store/document';
-  import Provider, { useSelector } from './provider/Provider.svelte';
-  import { configureAppStore } from './store';
-  import { afterUpdate$, onMount$ } from './misc/svelte-rx';
-
-  const store = configureAppStore();
-  const document = document$;
+  import { useSelector } from './provider/Provider.svelte';
+  import { documentSelector } from './document/document.store';
   $: currentQueueObject = currentQueueObject$;
+  const document = useSelector(documentSelector());
 </script>
 
-<Provider {store}>
-  <div id="app-root">
-    <div id="toolbar-root">
-      <Toolbar />
-    </div>
-    <div id="subtoolbar-root">
-      {#if $document}
-        <SubToolbar />
-      {/if}
-    </div>
-    <div id="app-body">
-      {#if $document}
-        <div id="side-bar-root">
-          <ObjectPanel />
-        </div>
-        <div id="editor-root">
-          <Editor />
-        </div>
-      {/if}
-      {#if $currentQueueObject}
-        <ObjectContolPanel />
-      {/if}
-    </div>
+<div id="app-root">
+  <div id="toolbar-root">
+    <Toolbar />
   </div>
-</Provider>
+  <div id="subtoolbar-root">
+    {#if $document}
+      <SubToolbar />
+    {/if}
+  </div>
+  <div id="app-body">
+    {#if $document}
+      <div id="side-bar-root">
+        <ObjectPanel />
+      </div>
+      <div id="editor-root">
+        <Editor />
+      </div>
+    {/if}
+    {#if $currentQueueObject}
+      <ObjectContolPanel />
+    {/if}
+  </div>
+</div>
 
 <style lang="scss">
   #app-root {

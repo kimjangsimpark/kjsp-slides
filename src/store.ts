@@ -1,4 +1,5 @@
 import { configureStore, createSlice, Store } from '@reduxjs/toolkit';
+import { documentSlice } from './document/document.store';
 import { objectControlPanelSlice } from './object-control-panel/ObjectContolPanel';
 import { objectPanelSlice } from './object-panel/ObjectPanel.store';
 
@@ -19,6 +20,7 @@ export const counterSlice = createSlice({
 export function configureAppStore(): Store {
   const store: Store = configureStore({
     reducer: {
+      document: documentSlice.reducer,
       counter: counterSlice.reducer,
       objectPanel: objectPanelSlice.reducer,
       objectControlPanel: objectControlPanelSlice.reducer,

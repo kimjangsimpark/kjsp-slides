@@ -15,12 +15,18 @@
 
 <script type="ts">
   import { filter, map } from 'rxjs/operators';
-  import { document$, documentReducer } from '@/store/document';
   import Tree from '../tree/Tree.svelte';
   import { object$, objectReducer } from '@/store/object';
-  import TreeGroup from '@/tree/TreeGroup.svelte';
-  import TreeList from '@/tree/TreeList.svelte';
-  import TreeItem from '@/tree/TreeItem.svelte';
+  import { useDispatch, useSelector } from '@/provider/Provider.svelte';
+  import {
+    Document,
+    documentSelector,
+    documentSlice,
+    DocumentState,
+  } from '@/document/document.store';
+
+  const document$ = useSelector(documentSelector());
+  const dispatch = useDispatch();
 
   $: title = document$.pipe(
     filter(Boolean),
@@ -35,16 +41,16 @@
         {
           title: 'New Document',
           onClick: () => {
-            documentReducer({
-              type: 'changeDocument',
-              state: {
+            dispatch(
+              documentSlice.actions.setDocument({
                 documentName: 'Document Name',
                 rect: {
                   width: 1920,
                   height: 1080,
                 },
-              },
-            });
+                objects: [],
+              }),
+            );
             objectReducer({
               type: 'documentChange',
               state: [],
@@ -88,11 +94,8 @@
                 const fileReader = new FileReader();
                 fileReader.onload = e => {
                   const result = e.target?.result as string;
-                  const document = JSON.parse(result);
-                  documentReducer({
-                    type: 'changeDocument',
-                    state: document,
-                  });
+                  const document = JSON.parse(result) as Document;
+                  dispatch(documentSlice.actions.setDocument(document));
                   objectReducer({
                     type: 'documentChange',
                     state: document.objects,

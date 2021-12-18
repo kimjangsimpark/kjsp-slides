@@ -8,7 +8,6 @@
 <script type="ts">
   import { map, pairwise, startWith, tap } from 'rxjs/operators';
   import { afterUpdate$, onDestroy$ } from '@/misc/svelte-rx';
-  import { document$ } from '@/store/document';
   import { currentQueue$ } from '@/store/queue';
   import { currentQueueObject$ } from '@/store/queueObject';
   import { currentQueueObjectReducer } from '@/store/queueObject';
@@ -19,6 +18,8 @@
   import { setContext } from 'svelte';
   import Rectangle from './objects/rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
+  import { useSelector } from '@/provider/Provider.svelte';
+  import { documentSelector } from '@/document/document.store';
 
   let svgElement: SVGElement;
   let queueChanged = false;
@@ -41,7 +42,7 @@
   });
 
   $: selectedObject = currentQueueObject$;
-  $: document = document$;
+  $: document = useSelector(documentSelector());
   $: previousObjects = queue$.pipe(
     map(([previousQueue]) => {
       if (!previousQueue) {

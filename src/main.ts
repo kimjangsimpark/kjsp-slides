@@ -1,5 +1,5 @@
 import '@/styles/global.scss';
-import App from '@/App.svelte';
+import Main from '@/Main.svelte';
 import { fetcher } from './misc/fetcher';
 
 fetcher.setBaseUrl('https://slide.preandero.com');
@@ -13,7 +13,7 @@ fetcher.addResponseInterceptor(response => {
   }
 });
 
-const app = new App({
+const app = new Main({
   target: document.body,
 });
 
