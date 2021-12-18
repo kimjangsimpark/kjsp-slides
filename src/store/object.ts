@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import type { DocumentObject, ObjectRect } from '@/http/document';
+import type { DocumentObject, ObjectRect } from '@/document/document.store';
 import { BehaviorSubject } from 'rxjs';
 
 export interface ObjectDocumentChangeAction {

@@ -17,12 +17,12 @@
 </script>
 
 <script type="ts">
-  import { ObjectType } from '@/http/document';
   import { counterSlice } from '@/store';
   import { objectPanelSelector, objectPanelSlice } from './ObjectPanel.store';
   import { takeUntil } from 'rxjs';
   import { onDestroy$ } from '@/misc/svelte-rx';
   import { useDispatch, useSelector } from '@/provider/provider';
+  import { ObjectType } from '@/document/document.store';
 
   const dispatch = useDispatch();
   const models: PanelGroup[] = [

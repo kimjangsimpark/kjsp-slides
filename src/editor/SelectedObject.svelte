@@ -1,5 +1,6 @@
 <script type="ts">
-  import type { DocumentObject } from '@/http/document';
+  import type { DocumentObject } from '@/document/document.store';
+
   import { createEventDispatcher } from 'svelte';
   export let previous: DocumentObject | null = null;
   export let selected: DocumentObject;

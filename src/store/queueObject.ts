@@ -1,4 +1,4 @@
-import type { DocumentObject } from '@/http/document';
+import type { DocumentObject } from '@/document/document.store';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { currentQueue$ } from './queue';
 

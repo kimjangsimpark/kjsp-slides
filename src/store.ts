@@ -17,8 +17,8 @@ export const counterSlice = createSlice({
   }
 });
 
-export function configureAppStore(): Store {
-  const store: Store = configureStore({
+export function configureAppStore() {
+  const store = configureStore({
     reducer: {
       document: documentSlice.reducer,
       counter: counterSlice.reducer,

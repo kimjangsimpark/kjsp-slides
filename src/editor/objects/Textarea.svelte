@@ -1,5 +1,6 @@
 <script type="ts">
-  import type { DocumentObject, RectangleObject, TextareaObject } from '@/http/document';
+  import type { DocumentObject, TextareaObject } from '@/document/document.store';
+
   export let currentObject: TextareaObject;
   export let previousObject: DocumentObject | TextareaObject | null;
 </script>

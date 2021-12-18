@@ -13,13 +13,16 @@
   import { currentQueueObjectReducer } from '@/store/queueObject';
   import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
-  import { DocumentObject, ObjectType } from '@/http/document';
   import { objectReducer } from '@/store/object';
   import { setContext } from 'svelte';
   import Rectangle from './objects/rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
   import { useSelector } from '@/provider/provider';
-  import { documentSelector } from '@/document/document.store';
+  import {
+    DocumentObject,
+    documentSelector,
+    ObjectType,
+  } from '@/document/document.store';
 
   let svgElement: SVGElement;
   let queueChanged = false;

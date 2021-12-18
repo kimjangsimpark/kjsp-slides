@@ -26,7 +26,8 @@
 </script>
 
 <script type="ts">
-  import { DocumentObject, ObjectType, RectangleObject } from '@/http/document';
+  import { DocumentObject, ObjectType, RectangleObject } from '@/document/document.store';
+
   export let currentObject: RectangleObject;
   export let previousObject: DocumentObject | RectangleObject | null;
 </script>
