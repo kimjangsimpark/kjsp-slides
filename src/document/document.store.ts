@@ -1,3 +1,4 @@
+import type { SelectorFn } from '@/provider/provider';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Document {
@@ -95,10 +96,8 @@ export type DocumentObject = RectangleObject | TextareaObject;
 
 export type DocumentState = Document | null;
 
-export function documentSelector() {
-  return (state: any): Document => {
-    return state.document as Document;
-  };
+export function documentSelector(): SelectorFn<DocumentState> {
+  return state => state.document;
 }
 
 export const documentSlice = createSlice({

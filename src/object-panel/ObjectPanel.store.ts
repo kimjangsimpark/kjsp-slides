@@ -1,3 +1,4 @@
+import type { SelectorFn } from '@/provider/provider';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface ObjectPanelPayload {
@@ -6,10 +7,8 @@ export interface ObjectPanelPayload {
 
 export type ObjectPanelStateType = ObjectPanelPayload | null;
 
-export function objectPanelSelector() {
-  return (state: any): ObjectPanelStateType => {
-    return state.objectPanel as ObjectPanelStateType;
-  }
+export function objectPanelSelector(): SelectorFn<ObjectPanelStateType> {
+  return state => state.objectPanel;
 }
 
 export const objectPanelSlice = createSlice({

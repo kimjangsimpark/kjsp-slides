@@ -17,14 +17,14 @@ export const counterSlice = createSlice({
   }
 });
 
-export function configureAppStore() {
-  const store = configureStore({
-    reducer: {
-      document: documentSlice.reducer,
-      counter: counterSlice.reducer,
-      objectPanel: objectPanelSlice.reducer,
-      objectControlPanel: objectControlPanelSlice.reducer,
-    },
-  });
-  return store;
-}
+export const store = configureStore({
+  reducer: {
+    document: documentSlice.reducer,
+    counter: counterSlice.reducer,
+    objectPanel: objectPanelSlice.reducer,
+    objectControlPanel: objectControlPanelSlice.reducer,
+  },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
