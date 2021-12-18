@@ -18,7 +18,7 @@
   import Tree from '../tree/Tree.svelte';
   import { object$, objectReducer } from '@/store/object';
   import { Document, documentSelector, documentSlice } from '@/document/document.store';
-  import { useDispatch, useSelector } from '@/provider/provider';
+  import { useDispatch, useSelector } from '@/app/hooks';
 
   const document$ = useSelector(documentSelector());
   const dispatch = useDispatch();

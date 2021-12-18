@@ -21,7 +21,7 @@
   import { objectPanelSelector, objectPanelSlice } from './ObjectPanel.store';
   import { takeUntil } from 'rxjs';
   import { onDestroy$ } from '@/misc/svelte-rx';
-  import { useDispatch, useSelector } from '@/provider/provider';
+  import { useDispatch, useSelector } from '@/app/hooks';
   import { ObjectType } from '@/document/document.store';
 
   const dispatch = useDispatch();

@@ -17,7 +17,7 @@
   import { setContext } from 'svelte';
   import Rectangle from './objects/rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
-  import { useSelector } from '@/provider/provider';
+  import { useSelector } from '@/app/hooks';
   import {
     DocumentObject,
     documentSelector,

@@ -1,4 +1,4 @@
-import type { SelectorFn } from '@/provider/provider';
+import type { SelectorFn } from '@/app/hooks';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Document {
@@ -104,11 +104,8 @@ export const documentSlice = createSlice({
   name: 'document',
   initialState: null as DocumentState,
   reducers: {
-    setDocument: (
-      state,
-      params: PayloadAction<DocumentState>,
-    ) => {
+    setDocument: (state, params: PayloadAction<DocumentState>) => {
       return params.payload;
     },
-  }
+  },
 });
