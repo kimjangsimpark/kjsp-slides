@@ -20,6 +20,11 @@
   import { ObjectType } from '@/http/document';
   import { useDispatch, useSelector } from '@/provider/Provider.svelte';
   import { counterSlice } from '@/store';
+  import { objectPanelSelector, objectPanelSlice } from './ObjectPanel.store';
+  import { takeUntil } from 'rxjs';
+  import { onDestroy$ } from '@/misc/svelte-rx';
+
+  const dispatch = useDispatch();
   const models: PanelGroup[] = [
     {
       name: 'object',
@@ -50,7 +55,6 @@
     },
   ];
 
-  const dispatch = useDispatch();
   const num = useSelector(state => state.counter);
 
   function toggleGroup(model: PanelGroup) {
@@ -61,10 +65,11 @@
   }
 
   const onClick = (type: ObjectType) => {
-    // leftSidebarReducer({
-    //   type: 'create',
-    //   objectType: type,
-    // });
+    dispatch(
+      objectPanelSlice.actions.create({
+        type: 'create',
+      }),
+    );
   };
 </script>
 

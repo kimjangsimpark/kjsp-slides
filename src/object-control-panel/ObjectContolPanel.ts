@@ -1,14 +1,14 @@
 import { createSlice, SliceCaseReducers } from '@reduxjs/toolkit';
 
-export interface ObjectPanelPayload {
+export interface ObjectControlPanelPayload {
   type: string;
 }
 
-export const objectPanelSlice = createSlice<
-  ObjectPanelPayload | null,
-  SliceCaseReducers<ObjectPanelPayload | null>
+export const objectControlPanelSlice = createSlice<
+  ObjectControlPanelPayload | null,
+  SliceCaseReducers<ObjectControlPanelPayload | null>
 >({
-  name: 'objectPanel',
+  name: 'objectControlPanel',
   initialState: null,
   reducers: {
     increment: (state, params) => {

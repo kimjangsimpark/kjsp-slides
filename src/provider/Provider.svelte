@@ -1,6 +1,7 @@
 <script type="ts" context="module">
   export const ROOT_STORE_CONTEXT = 'root-store-context';
-  export interface StoreProvider {}
+
+  export type SelectorFn<T> = (state: any) => T;
 
   export function useDispatch(): Dispatch<AnyAction> {
     const store = getContext<Store>(ROOT_STORE_CONTEXT);
@@ -12,7 +13,7 @@
     return store;
   }
 
-  export function useSelector(selectorFn: (state: any) => any): Observable<any> {
+  export function useSelector<T>(selectorFn: SelectorFn<T>): Observable<T> {
     const store = getContext<Store>(ROOT_STORE_CONTEXT);
     return new Observable(context => {
       const state = store.getState();
