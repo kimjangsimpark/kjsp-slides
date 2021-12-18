@@ -6,8 +6,9 @@
   import ObjectContolPanel from '@/object-control-panel/ObjectContolPanel.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
   import { document$ } from '@/store/document';
-  import Provider from './provider/Provider.svelte';
+  import Provider, { useSelector } from './provider/Provider.svelte';
   import { configureAppStore } from './store';
+  import { afterUpdate$, onMount$ } from './misc/svelte-rx';
 
   const store = configureAppStore();
   const document = document$;

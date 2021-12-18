@@ -18,6 +18,8 @@
 
 <script type="ts">
   import { ObjectType } from '@/http/document';
+  import { useDispatch, useSelector } from '@/provider/Provider.svelte';
+  import { counterSlice } from '@/store';
   const models: PanelGroup[] = [
     {
       name: 'object',
@@ -48,6 +50,9 @@
     },
   ];
 
+  const dispatch = useDispatch();
+  const num = useSelector(state => state.counter);
+
   function toggleGroup(model: PanelGroup) {
     const index = models.indexOf(model);
     const newModel = { ...model };
@@ -76,6 +81,9 @@
       </div>
     {/if}
   {/each}
+
+  <button on:click={e => dispatch(counterSlice.actions.increment())}>add num</button>
+  {$num}
 </div>
 
 <style type="scss">

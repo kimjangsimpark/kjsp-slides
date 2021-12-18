@@ -1,11 +1,16 @@
 import { configureStore, createSelector, createSlice, Store } from '@reduxjs/toolkit';
 
-const counterSlice = createSlice({
+export const counterSlice = createSlice({
   name: 'counter',
   initialState: 0,
   reducers: {
-    increment: state => state + 1,
-    decrement: state => state - 1
+    increment: state => {
+      console.log('mutated', state);
+      return state + 1;
+    },
+    decrement: state => {
+      return state - 1;
+    }
   }
 });
 
@@ -15,8 +20,5 @@ export function configureAppStore(): Store {
       counter: counterSlice.reducer,
     },
   });
-
-  createSelector
   return store;
 }
-
