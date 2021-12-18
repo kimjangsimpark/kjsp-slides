@@ -5,7 +5,7 @@
   import Editor from '@/editor/Editor.svelte';
   import ObjectContolPanel from '@/object-control-panel/ObjectContolPanel.svelte';
   import { currentQueueObject$ } from '@/store/queueObject';
-  import { useSelector } from './provider/Provider.svelte';
+  import { useSelector } from './provider/provider';
   import { documentSelector } from './document/document.store';
   $: currentQueueObject = currentQueueObject$;
   const document = useSelector(documentSelector());

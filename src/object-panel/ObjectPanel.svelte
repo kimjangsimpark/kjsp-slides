@@ -18,11 +18,11 @@
 
 <script type="ts">
   import { ObjectType } from '@/http/document';
-  import { useDispatch, useSelector } from '@/provider/Provider.svelte';
   import { counterSlice } from '@/store';
   import { objectPanelSelector, objectPanelSlice } from './ObjectPanel.store';
   import { takeUntil } from 'rxjs';
   import { onDestroy$ } from '@/misc/svelte-rx';
+  import { useDispatch, useSelector } from '@/provider/provider';
 
   const dispatch = useDispatch();
   const models: PanelGroup[] = [

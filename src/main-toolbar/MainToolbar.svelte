@@ -17,13 +17,8 @@
   import { filter, map } from 'rxjs/operators';
   import Tree from '../tree/Tree.svelte';
   import { object$, objectReducer } from '@/store/object';
-  import { useDispatch, useSelector } from '@/provider/Provider.svelte';
-  import {
-    Document,
-    documentSelector,
-    documentSlice,
-    DocumentState,
-  } from '@/document/document.store';
+  import { Document, documentSelector, documentSlice } from '@/document/document.store';
+  import { useDispatch, useSelector } from '@/provider/provider';
 
   const document$ = useSelector(documentSelector());
   const dispatch = useDispatch();

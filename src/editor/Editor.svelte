@@ -18,7 +18,7 @@
   import { setContext } from 'svelte';
   import Rectangle from './objects/rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
-  import { useSelector } from '@/provider/Provider.svelte';
+  import { useSelector } from '@/provider/provider';
   import { documentSelector } from '@/document/document.store';
 
   let svgElement: SVGElement;
