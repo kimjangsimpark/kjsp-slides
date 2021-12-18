@@ -1,7 +1,7 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit';
-import { documentSlice } from './document/document.store';
-import { objectControlPanelSlice } from './object-control-panel/ObjectContolPanel';
-import { objectPanelSlice } from './object-panel/ObjectPanel.store';
+import { documentSlice } from '../document/document.store';
+import { objectControlPanelSlice } from '../object-control-panel/ObjectContolPanel';
+import { objectPanelSlice } from '../object-panel/ObjectPanel.store';
 
 export const counterSlice = createSlice({
   name: 'counter',
@@ -13,8 +13,8 @@ export const counterSlice = createSlice({
     },
     decrement: state => {
       return state - 1;
-    }
-  }
+    },
+  },
 });
 
 export const store = configureStore({

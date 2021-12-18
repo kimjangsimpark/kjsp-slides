@@ -17,7 +17,7 @@
 </script>
 
 <script type="ts">
-  import { counterSlice } from '@/store';
+  import { counterSlice } from '@/app/store';
   import { objectPanelSelector, objectPanelSlice } from './ObjectPanel.store';
   import { takeUntil } from 'rxjs';
   import { onDestroy$ } from '@/misc/svelte-rx';

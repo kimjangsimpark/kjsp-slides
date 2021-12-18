@@ -1,5 +1,5 @@
 <script type="ts">
-  import type { RootState } from '@/store';
+  import type { RootState } from '@/app/store';
   import type { Store } from '@reduxjs/toolkit';
   import { setContext } from 'svelte';
   import { ROOT_STORE_CONTEXT } from './provider';
