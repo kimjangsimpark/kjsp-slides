@@ -1,4 +1,4 @@
-import { configureStore, createSlice, Store } from '@reduxjs/toolkit';
+import { configureStore, createSlice } from '@reduxjs/toolkit';
 import { documentSlice } from './document/document.store';
 import { objectControlPanelSlice } from './object-control-panel/ObjectContolPanel';
 import { objectPanelSlice } from './object-panel/ObjectPanel.store';
@@ -27,4 +27,4 @@ export const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type RootDispatch = typeof store.dispatch;
