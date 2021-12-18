@@ -11,9 +11,12 @@ const counterSlice = createSlice({
 
 export function configureAppStore(): Store {
   const store: Store = configureStore({
-    reducer: counterSlice.reducer,
+    reducer: {
+      counter: counterSlice.reducer,
+    },
   });
 
   createSelector
   return store;
 }
+
