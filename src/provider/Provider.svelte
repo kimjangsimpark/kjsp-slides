@@ -7,6 +7,11 @@
     return store.dispatch;
   }
 
+  export function useStore(): Store {
+    const store = getContext<Store>(ROOT_STORE_CONTEXT);
+    return store;
+  }
+
   export function useSelector(selectorFn: (state: any) => any): Observable<any> {
     const store = getContext<Store>(ROOT_STORE_CONTEXT);
     return new Observable(context => {
