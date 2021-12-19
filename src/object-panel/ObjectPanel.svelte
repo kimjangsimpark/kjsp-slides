@@ -17,7 +17,6 @@
 </script>
 
 <script type="ts">
-  import { counterSlice } from '@/app/store';
   import { objectPanelSelector, objectPanelSlice } from './ObjectPanel.store';
   import { takeUntil } from 'rxjs';
   import { onDestroy$ } from '@/misc/svelte-rx';
@@ -55,8 +54,6 @@
     },
   ];
 
-  const num = useSelector(state => state.counter);
-
   function toggleGroup(model: PanelGroup) {
     const index = models.indexOf(model);
     const newModel = { ...model };
@@ -86,9 +83,6 @@
       </div>
     {/if}
   {/each}
-
-  <button on:click={e => dispatch(counterSlice.actions.increment())}>add num</button>
-  {$num}
 </div>
 
 <style type="scss">
