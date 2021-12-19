@@ -22,12 +22,21 @@
     DocumentObject,
     documentSelector,
     ObjectType,
+    queueObjectSelector,
   } from '@/document/document.store';
 
   let svgElement: SVGElement;
   let queueChanged = false;
 
   const queue$ = currentQueue$.pipe(startWith(null), pairwise());
+
+  const queueObjects = useSelector(queueObjectSelector());
+
+  queueObjects.subscribe({
+    next: e => {
+      console.log(e);
+    },
+  });
 
   interface PreviousQueue {
     [key: string]: DocumentObject;

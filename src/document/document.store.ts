@@ -100,6 +100,43 @@ export function documentSelector(): SelectorFn<DocumentState> {
   return state => state.document;
 }
 
+export function queueObjectSelector(): SelectorFn<DocumentObject[]> {
+  return state => {
+    if (!state.document) {
+      return [];
+    }
+    const index = state.queue;
+    const currentVisibleObjects = state.document.objects.filter(object => {
+      const isCreated = object.effects.find(effect => effect.type === 'create' && effect.index <= index);
+      const isDeleted = object.effects.some(effect => effect.type === 'delete' && effect.index < index);
+      return isCreated && !isDeleted;
+    }).map(object => {
+      const immutable = { ...object };
+      const reversedEffects = object.effects.slice(0).reverse();
+
+      const lastTransition = reversedEffects.find(
+        effect => effect.index < index && effect.type === 'transition',
+      ) as ObjectTransitionEffect;
+
+      const currentTransition = reversedEffects.find(
+        effect => effect.index === index && effect.type === 'transition',
+      ) as ObjectTransitionEffect;
+
+      immutable.shape = {
+        ...object.shape,
+        x: currentTransition?.x || lastTransition?.x || object.shape.x,
+        y: currentTransition?.y || lastTransition?.y || object.shape.y,
+        width: currentTransition?.width || lastTransition?.width || object.shape.width,
+        height:
+          currentTransition?.height || lastTransition?.height || object.shape.height,
+      };
+
+      return immutable;
+    });
+    return currentVisibleObjects;
+  };
+}
+
 export const documentSlice = createSlice({
   name: 'document',
   initialState: null as DocumentState,
