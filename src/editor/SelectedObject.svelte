@@ -1,5 +1,5 @@
 <script type="ts">
-  import type { DocumentObject } from '@/document/document.store';
+  import type { DocumentObject } from '@/document/object.store';
 
   import { createEventDispatcher } from 'svelte';
   export let previous: DocumentObject | null = null;

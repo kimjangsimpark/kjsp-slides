@@ -1,5 +1,5 @@
 <script type="ts">
-  import type { DocumentObject, TextareaObject } from '@/document/document.store';
+  import type { DocumentObject, TextareaObject } from '@/document/object.store';
 
   export let currentObject: TextareaObject;
   export let previousObject: DocumentObject | TextareaObject | null;
@@ -58,11 +58,13 @@
   stroke-width={currentObject.shape.lineWidth}
   fill="transparent"
 >
-  <textarea
-    class="object-textarea"
-    style="height: 100%; width: 100%;"
-    value={currentObject.text.innerText}
-  />
+  {#if currentObject.text}
+    <textarea
+      class="object-textarea"
+      style="height: 100%; width: 100%;"
+      value={currentObject.text.innerText}
+    />
+  {/if}
   {#if previousObject}
     <animate
       class="queue-animator"

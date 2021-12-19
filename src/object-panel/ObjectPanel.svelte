@@ -21,7 +21,7 @@
   import { takeUntil } from 'rxjs';
   import { onDestroy$ } from '@/misc/svelte-rx';
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { ObjectType } from '@/document/document.store';
+  import { ObjectType } from '@/document/object.store';
 
   const dispatch = useDispatch();
   const models: PanelGroup[] = [

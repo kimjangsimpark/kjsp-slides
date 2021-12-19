@@ -1,5 +1,5 @@
 import type { RootDispatch, RootState } from '@/app/store';
-import type { AnyAction, Dispatch, Store } from '@reduxjs/toolkit';
+import type { Store } from '@reduxjs/toolkit';
 import { Observable } from 'rxjs';
 import { getContext } from 'svelte';
 

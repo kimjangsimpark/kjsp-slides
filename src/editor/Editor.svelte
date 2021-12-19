@@ -18,25 +18,17 @@
   import Rectangle from './objects/rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
   import { useSelector } from '@/app/hooks';
+  import { documentSelector } from '@/document/document.store';
   import {
     DocumentObject,
-    documentSelector,
     ObjectType,
     queueObjectSelector,
-  } from '@/document/document.store';
+  } from '@/document/object.store';
 
   let svgElement: SVGElement;
   let queueChanged = false;
 
   const queue$ = currentQueue$.pipe(startWith(null), pairwise());
-
-  const queueObjects = useSelector(queueObjectSelector());
-
-  queueObjects.subscribe({
-    next: e => {
-      console.log(e);
-    },
-  });
 
   interface PreviousQueue {
     [key: string]: DocumentObject;

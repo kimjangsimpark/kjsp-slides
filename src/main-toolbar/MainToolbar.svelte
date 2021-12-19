@@ -19,6 +19,7 @@
   import { object$, objectReducer } from '@/store/object';
   import { Document, documentSelector, documentSlice } from '@/document/document.store';
   import { useDispatch, useSelector } from '@/app/hooks';
+  import { objectsSlice } from '@/document/object.store';
 
   const document$ = useSelector(documentSelector());
   const dispatch = useDispatch();
@@ -43,9 +44,9 @@
                   width: 1920,
                   height: 1080,
                 },
-                objects: [],
               }),
             );
+            dispatch(objectsSlice.actions.setDocumentObjects([]));
             objectReducer({
               type: 'documentChange',
               state: [],
@@ -89,8 +90,9 @@
                 const fileReader = new FileReader();
                 fileReader.onload = e => {
                   const result = e.target?.result as string;
-                  const document = JSON.parse(result) as Document;
+                  const document = JSON.parse(result) as any;
                   dispatch(documentSlice.actions.setDocument(document));
+                  dispatch(objectsSlice.actions.setDocumentObjects(document.objects));
                   objectReducer({
                     type: 'documentChange',
                     state: document.objects,

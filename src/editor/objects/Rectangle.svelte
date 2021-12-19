@@ -8,7 +8,7 @@
         .substr(0, 5),
       effects: [
         {
-          type: 'create',
+          type: ObjectEffectType.CREATE,
           index: index,
         },
       ],
@@ -26,7 +26,12 @@
 </script>
 
 <script type="ts">
-  import { DocumentObject, ObjectType, RectangleObject } from '@/document/document.store';
+  import {
+    DocumentObject,
+    ObjectEffectType,
+    ObjectType,
+    RectangleObject,
+  } from '@/document/object.store';
 
   export let currentObject: RectangleObject;
   export let previousObject: DocumentObject | RectangleObject | null;

@@ -1,4 +1,4 @@
-import type { DocumentObject } from '@/document/document.store';
+import type { DocumentObject } from '@/document/object.store';
 import { BehaviorSubject, combineLatest, map } from 'rxjs';
 import { currentQueue$ } from './queue';
 
@@ -43,7 +43,9 @@ export const currentQueueObject$ = combineLatest([currentQueue$, currentQueueObj
     if (currentObject === null) {
       return null;
     }
-    const found = currentQueue.objects.find(object => object.uuid === currentObject.uuid);
+    const found = currentQueue.objects.find(object => {
+      return object.uuid === currentObject.uuid;
+    });
     return found || null;
   }),
 )

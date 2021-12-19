@@ -1,4 +1,4 @@
-import type { DocumentObject, ObjectTransitionEffect } from '@/document/document.store';
+import type { DocumentObject, ObjectTransitionEffect } from '@/document/object.store';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { object$ } from './object';

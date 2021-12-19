@@ -1,5 +1,5 @@
 /* eslint-disable no-case-declarations */
-import type { DocumentObject, ObjectRect } from '@/document/document.store';
+import { DocumentObject, ObjectEffectType, ObjectRect } from '@/document/object.store';
 import { BehaviorSubject } from 'rxjs';
 
 export interface ObjectDocumentChangeAction {
@@ -91,7 +91,7 @@ export function objectReducer(action: ObjectAction): void {
         newObject.shape = action.shape;
       } else if (existTransitionEffect !== -1) {
         newObject.effects[existTransitionEffect] = {
-          type: 'transition',
+          type: ObjectEffectType.TRANSITION,
           index: newObject.effects[existTransitionEffect].index,
           ...action.shape,
         };
@@ -103,7 +103,7 @@ export function objectReducer(action: ObjectAction): void {
           effectTargetIndex = newObject.effects.length - 1;
         }
         newObject.effects.splice(effectTargetIndex, 0, {
-          type: 'transition',
+          type: ObjectEffectType.TRANSITION,
           index: action.queueIndex,
           ...action.shape,
         });
