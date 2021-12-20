@@ -8,7 +8,7 @@
   import { documentSelector } from './document/document.store';
   import { selectedObjectsSelector } from './document/selected.store';
   const document = useSelector(documentSelector());
-  const selected = useSelector(selectedObjectsSelector);
+  const selected = useSelector(selectedObjectsSelector());
 </script>
 
 <div id="app-root">

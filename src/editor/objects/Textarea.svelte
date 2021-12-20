@@ -1,8 +1,7 @@
 <script type="ts">
-  import type { DocumentObject, TextareaObject } from '@/document/object.store';
-
+  import type { QueueObject, TextareaObject } from '@/document/object.store';
   export let currentObject: TextareaObject;
-  export let previousObject: DocumentObject | TextareaObject | null;
+  export let previousObject: QueueObject | TextareaObject | null;
 </script>
 
 <rect
@@ -11,7 +10,7 @@
   width={currentObject.shape.width}
   height={currentObject.shape.height}
   stroke="#4fbe9f"
-  stroke-width={currentObject.shape.lineWidth}
+  stroke-width={currentObject.stroke.lineWidth}
   fill="transparent"
 >
   {#if previousObject}

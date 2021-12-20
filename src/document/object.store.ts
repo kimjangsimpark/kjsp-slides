@@ -59,7 +59,7 @@ export interface CommonEffect {
 
 export interface QueueObject {
   uuid: string;
-  shape: ObjectAnimatableRect;
+  shape: ObjectRect;
 }
 
 export interface CommonObject extends QueueObject {
@@ -67,14 +67,14 @@ export interface CommonObject extends QueueObject {
   effects: ObjectEffect[];
 }
 
-export interface ObjectAnimatableRect {
+export interface ObjectRect {
   x: number;
   y: number;
   width: number;
   height: number;
 }
 
-export interface ObjectRect extends ObjectAnimatableRect {
+export interface ObjectStroke {
   lineType: string;
   lineWidth: number;
   lineColor: string;
@@ -88,17 +88,20 @@ export interface ObjectText {
 
 export interface RectangleObject extends CommonObject {
   type: ObjectType.RECTANGLE;
-  text?: ObjectText;
+  stroke: ObjectStroke;
+  text: ObjectText;
 }
 
 export interface CircleObject extends CommonObject {
   type: ObjectType.CIRCLE;
-  text?: ObjectText;
+  stroke: ObjectStroke;
+  text: ObjectText;
 }
 
 export interface TextareaObject extends CommonObject {
   type: ObjectType.TEXTAREA;
-  text?: ObjectText;
+  stroke: ObjectStroke;
+  text: ObjectText;
 }
 
 export type DocumentObject = RectangleObject | TextareaObject | CircleObject;
@@ -122,7 +125,7 @@ export const objectSelector = (): SelectorFn<DocumentObject[]> => {
 export function findLatestRect(
   object: DocumentObject,
   index: number
-): ObjectAnimatableRect {
+): ObjectRect {
   const latest = object.effects.slice().reverse().find(
     effect =>
       effect.index <= index &&
@@ -226,17 +229,54 @@ export const objectsSlice = createSlice({
      * 문서에 오브젝트 추가
      */
     createObject: (state, params: PayloadAction<ObjectCreateParams>) => {
-      const pendingCreate: DocumentObject = {
-        uuid: createObjectUUID(),
-        type: params.payload.type,
-        shape: { ...params.payload.rect },
-        effects: [{
-          index: params.payload.index,
-          type: ObjectEffectType.CREATE,
-        }],
+      let pendingObject: DocumentObject;
+
+      switch (params.payload.type) {
+        case ObjectType.RECTANGLE:
+          pendingObject = {
+            uuid: createObjectUUID(),
+            type: params.payload.type,
+            shape: { ...params.payload.rect },
+            stroke: {
+              lineColor: 'black',
+              lineType: 'type',
+              lineWidth: 3,
+            },
+            text: {
+              innerText: '',
+              textColor: 'black',
+            },
+            effects: [{
+              index: params.payload.index,
+              type: ObjectEffectType.CREATE,
+            }],
+          }
+          break;
+        case ObjectType.TEXTAREA:
+          pendingObject = {
+            uuid: createObjectUUID(),
+            type: params.payload.type,
+            shape: { ...params.payload.rect },
+            stroke: {
+              lineColor: 'black',
+              lineType: 'type',
+              lineWidth: 3,
+            },
+            text: {
+              innerText: '',
+              textColor: 'black',
+            },
+            effects: [{
+              index: params.payload.index,
+              type: ObjectEffectType.CREATE,
+            }],
+          }
+          break;
+        default:
+          throw new Error('Unsupported Object')
       }
       const newState = [...state];
-      newState.push(pendingCreate);
+      newState.push(pendingObject);
       return newState;
     },
 
@@ -291,6 +331,7 @@ export const objectsSlice = createSlice({
 
       const newState = [...state];
       newState[index] = pendingUpdate;
+
       return newState;
     },
   }

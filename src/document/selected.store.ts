@@ -1,20 +1,21 @@
 import type { SelectorFn } from '@/app/hooks';
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { objectsByUUIDSelector } from './object.store';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { DocumentObject, objectsByUUIDSelector } from './object.store';
 
 const selectedUUIDSelector: SelectorFn<string[]> = state => state.selectedObjects;
 
-export const selectedObjectsSelector = createSelector(
-  [objectsByUUIDSelector(), selectedUUIDSelector],
-  (objects, uuids) => {
+export const selectedObjectsSelector = (): SelectorFn<DocumentObject[]> => {
+  return state => {
+    const uuids = selectedUUIDSelector(state);
+    const objects = objectsByUUIDSelector()(state);
     return uuids.map(uuid => {
       if (!objects[uuid]) {
         throw new Error(`UUID: ${uuid} object not found`);
       }
       return objects[uuid];
-    })
+    });
   }
-);
+}
 
 export const selectedObjectsSlice = createSlice({
   name: 'selectedObjects',
@@ -33,6 +34,10 @@ export const selectedObjectsSlice = createSlice({
         newState.splice(index, 1);
       }
       return newState;
+    },
+
+    set: (state, params: PayloadAction<string[]>) => {
+      return [...params.payload];
     },
 
     reset: () => {

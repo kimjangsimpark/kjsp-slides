@@ -22,9 +22,10 @@
   import { useDispatch, useSelector } from '@/app/hooks';
   import { objectsSlice, ObjectType } from '@/document/object.store';
   import { currentQueueIndexSelector } from '@/document/queue.store';
-  import { documentSelector } from '@/document/document.store';
+  import { Document, documentSelector } from '@/document/document.store';
+  import type { Observable } from 'rxjs';
 
-  const document = useSelector(documentSelector());
+  const document = useSelector(documentSelector()) as Observable<Document>;
   const queueIndex = useSelector(currentQueueIndexSelector());
   const dispatch = useDispatch();
 
@@ -37,22 +38,24 @@
           key: ObjectType.RECTANGLE,
           previewUrl: rectanglePreview,
           alt: 'rectangle',
-          click: () =>
+          click: () => {
+            console.log($document.rect);
             dispatch(
               objectsSlice.actions.createObject({
                 index: $queueIndex,
                 type: ObjectType.RECTANGLE,
                 rect: {
-                  x: 0,
-                  y: 0,
+                  x: $document.rect.width / 2 - 50,
+                  y: $document.rect.height / 2 - 50,
                   height: 100,
                   width: 100,
-                  lineColor: 'red',
-                  lineType: 'red',
+                  lineColor: 'black',
+                  lineType: 'solid',
                   lineWidth: 3,
                 },
               }),
-            ),
+            );
+          },
         },
         {
           key: ObjectType.CIRCLE,

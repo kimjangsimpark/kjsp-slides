@@ -1,40 +1,7 @@
-<script type="ts" context="module">
-  export function create(index: number, x: number, y: number): RectangleObject {
-    return {
-      type: ObjectType.RECTANGLE,
-      uuid: Math.random()
-        .toString(36)
-        .replace(/[^a-z]+/g, '')
-        .substr(0, 5),
-      effects: [
-        {
-          type: ObjectEffectType.CREATE,
-          index: index,
-        },
-      ],
-      shape: {
-        x: x,
-        y: y,
-        width: 100,
-        height: 100,
-        lineType: 'solid',
-        lineWidth: 1,
-        lineColor: '#000000',
-      },
-    };
-  }
-</script>
-
 <script type="ts">
-  import {
-    DocumentObject,
-    ObjectEffectType,
-    ObjectType,
-    RectangleObject,
-  } from '@/document/object.store';
-
+  import type { QueueObject, RectangleObject } from '@/document/object.store';
   export let currentObject: RectangleObject;
-  export let previousObject: DocumentObject | RectangleObject | null;
+  export let previousObject: QueueObject | null;
 </script>
 
 <rect
@@ -42,8 +9,8 @@
   y={currentObject.shape.y}
   width={currentObject.shape.width}
   height={currentObject.shape.height}
-  stroke={currentObject.shape.lineColor}
-  stroke-width={currentObject.shape.lineWidth}
+  stroke={currentObject.stroke.lineColor}
+  stroke-width={currentObject.stroke.lineWidth}
   fill="transparent"
 >
   {#if previousObject}

@@ -2,34 +2,37 @@
   import { map, pairwise, startWith } from 'rxjs/operators';
   import { afterUpdate$, onDestroy$ } from '@/misc/svelte-rx';
   import { currentQueue$ } from '@/store/queue';
-  import { currentQueueObjectReducer } from '@/store/queueObject';
   import { scale$ } from '@/store/scale';
-  import { objectReducer } from '@/store/object';
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { documentSelector } from '@/document/document.store';
+  import { Document, documentSelector } from '@/document/document.store';
   import {
     DocumentObject,
+    ObjectRect,
     objectsByQueueIndexSelector,
-    ObjectAnimatableRect,
     objectsByUUIDSelector,
+    objectsSlice,
     ObjectType,
     QueueObject,
   } from '@/document/object.store';
   import { currentQueueIndexSelector } from '@/document/queue.store';
-  import { combineLatest } from 'rxjs';
-  import { selectedObjectsSelector } from '@/document/selected.store';
-  import Rectangle from './objects/rectangle.svelte';
+  import { combineLatest, Observable } from 'rxjs';
+  import {
+    selectedObjectsSelector,
+    selectedObjectsSlice,
+  } from '@/document/selected.store';
+  import Rectangle from './objects/Rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
+  import SelectedObject from './SelectedObject.svelte';
 
   let svgElement: SVGElement;
   let queueChanged = false;
 
   const dispatch = useDispatch();
-  const document = useSelector(documentSelector());
+  const document = useSelector(documentSelector()) as Observable<Document>;
   const objectByUUID = useSelector(objectsByUUIDSelector());
   const currentQueueIndex = useSelector(currentQueueIndexSelector());
   const objectsByQueueIndex = useSelector(objectsByQueueIndexSelector());
-  const selectedObjects = useSelector(selectedObjectsSelector);
+  const selectedObjects = useSelector(selectedObjectsSelector());
 
   const previous = combineLatest([currentQueueIndex, objectsByQueueIndex]).pipe(
     map(([index, objects]) => objects[index - 1] || []),
@@ -66,43 +69,39 @@
   $: scale = scale$;
 
   const onEmptySpaceClicked = () => {
-    currentQueueObjectReducer({
-      type: 'resetCurrentQueueObject',
-    });
+    dispatch(selectedObjectsSlice.actions.reset());
   };
 
   const onObjectClicked = (e: MouseEvent, obj: DocumentObject) => {
     e.preventDefault();
     e.stopPropagation();
-    currentQueueObjectReducer({
-      type: 'changeCurrentQueueObject',
-      state: obj,
-    });
+    dispatch(selectedObjectsSlice.actions.set([obj.uuid]));
   };
 
   const onSelectedObjectMouseDown = (customEvent: CustomEvent<{ event: MouseEvent }>) => {
     const e = customEvent.detail.event;
-    if (!$selectedObjects) return;
-    const queueIndex = $queue$[1]?.index as number;
+    if (!$selectedObjects.length) return;
     const object = { ...$selectedObjects[0] };
     const positionX = e.offsetX;
     const positionY = e.offsetY;
-    const captureX = object.shape.x;
-    const captureY = object.shape.y;
-    const shape = { ...object.shape };
+    const capture = object.shape;
 
     const onSelectedObjectMouseMove = (e: MouseEvent) => {
       const diffX = e.offsetX - positionX;
       const diffY = e.offsetY - positionY;
-      shape.x = captureX + diffX;
-      shape.y = captureY + diffY;
-
-      objectReducer({
-        type: 'objectTransitionUpdate',
-        uuid: object.uuid,
-        queueIndex: queueIndex,
-        shape: shape,
-      });
+      const shape = {
+        x: capture.x + diffX,
+        y: capture.y + diffY,
+        width: capture.width,
+        height: capture.height,
+      };
+      dispatch(
+        objectsSlice.actions.updateTransitionOfObject({
+          index: $currentQueueIndex,
+          uuid: object.uuid,
+          rect: shape,
+        }),
+      );
     };
 
     const onSelectedObjectMouseUp = (e: MouseEvent) => {
@@ -120,60 +119,94 @@
       event: MouseEvent;
     }>,
   ) => {
-    if (!$selectedObjects) return;
-    const queueIndex = $queue$[1]?.index as number;
     const position = e.detail.position;
-    const object = { ...$selectedObjects };
+    const object = $selectedObjects[0];
     const positionX = e.detail.event.offsetX;
     const positionY = e.detail.event.offsetY;
-    const capture = { ...object.shape };
-    const shape = { ...object.shape };
+    const capture = {
+      x: object.shape.x,
+      y: object.shape.y,
+      width: object.shape.width,
+      height: object.shape.height,
+    };
+    let shape: ObjectRect;
 
     const onMouseMove = (e: MouseEvent) => {
       const diffX = e.offsetX - positionX;
       const diffY = e.offsetY - positionY;
       switch (position) {
         case 'top-left':
-          shape.x = capture.x + diffX;
-          shape.y = capture.y + diffY;
-          shape.width = capture.width + -diffX;
-          shape.height = capture.height + -diffY;
+          shape = {
+            x: capture.x + diffX,
+            y: capture.y + diffY,
+            width: capture.width + -diffX,
+            height: capture.height + -diffY,
+          };
           break;
         case 'top-middle':
-          shape.y = capture.y + diffY;
-          shape.height = capture.height + -diffY;
+          shape = {
+            x: capture.x,
+            y: capture.y + diffY,
+            width: capture.width,
+            height: capture.height + -diffY,
+          };
           break;
         case 'top-right':
-          shape.width = capture.width + diffX;
-          shape.y = capture.y + diffY;
-          shape.height = capture.height + -diffY;
+          shape = {
+            x: capture.x,
+            y: capture.y + diffY,
+            width: capture.width + diffX,
+            height: capture.height + -diffY,
+          };
           break;
         case 'middle-right':
-          shape.width = capture.width + diffX;
+          shape = {
+            x: capture.x,
+            y: capture.y,
+            width: capture.width + diffX,
+            height: capture.height,
+          };
           break;
         case 'bottom-right':
-          shape.width = capture.width + diffX;
-          shape.height = capture.height + diffY;
+          shape = {
+            x: capture.x,
+            y: capture.y,
+            width: capture.width + diffX,
+            height: capture.height + diffY,
+          };
           break;
         case 'bottom-middle':
-          shape.height = capture.height + diffY;
+          shape = {
+            x: capture.x,
+            y: capture.y,
+            width: capture.width,
+            height: capture.height + diffY,
+          };
           break;
         case 'bottom-left':
-          shape.x = capture.x + diffX;
-          shape.width = capture.width + -diffX;
-          shape.height = capture.height + diffY;
+          shape = {
+            x: capture.x + diffX,
+            y: capture.y,
+            width: capture.width + -diffX,
+            height: capture.height + diffY,
+          };
           break;
         case 'middle-left':
-          shape.x = capture.x + diffX;
-          shape.width = capture.width + -diffX;
+          shape = {
+            x: capture.x + diffX,
+            y: capture.y,
+            width: capture.width + -diffX,
+            height: capture.height,
+          };
           break;
       }
-      objectReducer({
-        type: 'objectTransitionUpdate',
-        uuid: object.uuid,
-        queueIndex: queueIndex,
-        shape: shape,
-      });
+      dispatch(
+        objectsSlice.actions.updateTransitionOfObject({
+          index: $currentQueueIndex,
+          uuid: object.uuid,
+          rect: shape,
+        }),
+      );
     };
 
     const onMouseUp = (e: MouseEvent) => {
@@ -242,14 +275,14 @@
             {/if}
           {/each}
         {/if}
-        <!-- {#if $selectedObject}
+        {#if $selectedObjects && $selectedObjects.length}
           <SelectedObject
-            selected={$selectedObject}
-            previous={$previousObjects[$selectedObject.uuid]}
+            selected={$selectedObjects[0]}
+            previous={$previous[$selectedObjects[0].uuid]}
             on:rect-mousedown={e => onSelectedObjectMouseDown(e)}
             on:vertex-mousedown={e => onSelectedObjectVertextMouseDown(e)}
           />
-        {/if} -->
+        {/if}
       </svg>
     </div>
   </div>
