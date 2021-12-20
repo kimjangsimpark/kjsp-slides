@@ -261,10 +261,6 @@
       flex-direction: column;
       flex: 1 1 auto;
 
-      .title {
-        height: 21px;
-      }
-
       #title-container {
         padding-top: 10px;
         padding-left: 10px;

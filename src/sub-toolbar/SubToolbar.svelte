@@ -1,22 +1,15 @@
 <script type="ts">
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { currentQueueIndexSelector, queueIndexSlice } from '@/document/queue.store';
+  import {
+    currentQueueIndexSelector,
+    currentQueueRangeSelector,
+    queueIndexSlice,
+  } from '@/document/queue.store';
   import { scaleSlice } from '@/document/scale.store';
-  import { map } from 'rxjs';
 
   const dispatch = useDispatch();
   const currentQueueIndex = useSelector(currentQueueIndexSelector());
-
-  const range = currentQueueIndex.pipe(
-    map(index => {
-      const result: number[] = [];
-      let start = Math.max(index - 2, 0);
-      while (result.length < 5) {
-        result.push(start++);
-      }
-      return result;
-    }),
-  );
+  const range = useSelector(currentQueueRangeSelector());
 
   const onPrevClicked = () => {
     dispatch(queueIndexSlice.actions.set($currentQueueIndex - 1));

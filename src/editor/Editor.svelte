@@ -1,8 +1,5 @@
 <script type="ts">
-  import { map, pairwise, startWith } from 'rxjs/operators';
-  import { afterUpdate$, onDestroy$ } from '@/misc/svelte-rx';
-  import { currentQueue$ } from '@/store/queue';
-  import { scale$ } from '@/store/scale';
+  import { map } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { Document, documentSelector } from '@/document/document.store';
   import {
@@ -23,16 +20,17 @@
   import Rectangle from './objects/Rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
   import SelectedObject from './SelectedObject.svelte';
+  import { scaleSelector } from '@/document/scale.store';
 
   let svgElement: SVGElement;
-  let queueChanged = false;
 
   const dispatch = useDispatch();
   const document = useSelector(documentSelector()) as Observable<Document>;
+  const scale = useSelector(scaleSelector());
   const objectByUUID = useSelector(objectsByUUIDSelector());
-  const currentQueueIndex = useSelector(currentQueueIndexSelector());
   const objectsByQueueIndex = useSelector(objectsByQueueIndexSelector());
   const selectedObjects = useSelector(selectedObjectsSelector());
+  const currentQueueIndex = useSelector(currentQueueIndexSelector());
 
   const previous = combineLatest([currentQueueIndex, objectsByQueueIndex]).pipe(
     map(([index, objects]) => objects[index - 1] || []),
@@ -59,14 +57,6 @@
       }, {}),
     ),
   );
-
-  const queue$ = currentQueue$.pipe(startWith(null), pairwise());
-
-  interface PreviousQueue {
-    [key: string]: DocumentObject;
-  }
-
-  $: scale = scale$;
 
   const onEmptySpaceClicked = () => {
     dispatch(selectedObjectsSlice.actions.reset());
@@ -218,25 +208,10 @@
     svgElement.addEventListener('mouseup', onMouseUp);
   };
 
-  const onQueueChangedSubscriber = afterUpdate$.subscribe({
-    next: () => {
-      if (queueChanged) {
-        executeQueueAnimation();
-        queueChanged = false;
-      }
-    },
-  });
-
   const executeQueueAnimation = () => {
     const animators = svgElement.querySelectorAll<SVGAnimateElement>('.queue-animator');
     animators.forEach(animator => animator.beginElement());
   };
-
-  onDestroy$.subscribe({
-    next: () => {
-      onQueueChangedSubscriber.unsubscribe();
-    },
-  });
 </script>
 
 <div id="editor">
