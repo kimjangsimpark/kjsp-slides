@@ -1,5 +1,5 @@
 <script type="ts">
-  import type { QueueObject, TextareaObject } from '@/document/object.store';
+  import type { QueueObject, TextareaObject } from '@/store/object.store';
   export let currentObject: TextareaObject;
   export let previousObject: QueueObject | TextareaObject | null;
 </script>
@@ -53,8 +53,8 @@
   y={currentObject.shape.y}
   width={currentObject.shape.width}
   height={currentObject.shape.height}
-  stroke="#4fbe9f"
-  stroke-width={currentObject.shape.lineWidth}
+  stroke={currentObject.stroke.lineColor}
+  stroke-width={currentObject.stroke.lineWidth}
   fill="transparent"
 >
   {#if currentObject.text}

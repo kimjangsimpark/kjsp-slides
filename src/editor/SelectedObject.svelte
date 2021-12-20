@@ -1,6 +1,5 @@
 <script type="ts">
-  import type { DocumentObject, QueueObject } from '@/document/object.store';
-
+  import type { QueueObject } from '@/store/object.store';
   import { createEventDispatcher } from 'svelte';
   export let previous: QueueObject | null = null;
   export let selected: QueueObject;

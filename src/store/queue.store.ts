@@ -1,6 +1,6 @@
 import type { SelectorFn } from '@/app/hooks';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { ObjectEffectType, ObjectTransitionEffect, QueueObject } from './object.store';
+import type { ObjectTransitionEffect, QueueObject } from './object.store';
 
 export interface CurrentQueueRangeObject {
   index: number;

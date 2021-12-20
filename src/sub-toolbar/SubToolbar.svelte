@@ -4,8 +4,8 @@
     currentQueueIndexSelector,
     currentQueueRangeSelector,
     queueIndexSlice,
-  } from '@/document/queue.store';
-  import { scaleSlice } from '@/document/scale.store';
+  } from '@/store/queue.store';
+  import { scaleSlice } from '@/store/scale.store';
 
   const dispatch = useDispatch();
   const currentQueueIndex = useSelector(currentQueueIndexSelector());

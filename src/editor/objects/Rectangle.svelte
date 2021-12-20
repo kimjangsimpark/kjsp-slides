@@ -1,5 +1,5 @@
 <script type="ts">
-  import type { QueueObject, RectangleObject } from '@/document/object.store';
+  import type { QueueObject, RectangleObject } from '@/store/object.store';
   export let currentObject: RectangleObject;
   export let previousObject: QueueObject | null;
 </script>

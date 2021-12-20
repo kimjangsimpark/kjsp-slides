@@ -1,9 +1,9 @@
-import { objectsSlice } from '@/document/object.store';
-import { selectedObjectsSlice } from '@/document/selected.store';
-import { queueIndexSlice } from '@/document/queue.store';
+import { objectsSlice } from '@/store/object.store';
+import { selectedObjectsSlice } from '@/store/selected.store';
+import { queueIndexSlice } from '@/store/queue.store';
 import { configureStore } from '@reduxjs/toolkit';
-import { documentSlice } from '../document/document.store';
-import { scaleSlice } from '@/document/scale.store';
+import { documentSlice } from '@/store/document.store';
+import { scaleSlice } from '@/store/scale.store';
 
 export const store = configureStore({
   reducer: {

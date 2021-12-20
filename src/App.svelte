@@ -4,9 +4,9 @@
   import ObjectPanel from '@/object-panel/ObjectPanel.svelte';
   import Editor from '@/editor/Editor.svelte';
   import ObjectContolPanel from '@/object-control-panel/ObjectContolPanel.svelte';
-  import { useSelector } from './app/hooks';
-  import { documentSelector } from './document/document.store';
-  import { selectedObjectsSelector } from './document/selected.store';
+  import { useSelector } from '@/app/hooks';
+  import { documentSelector } from '@/store/document.store';
+  import { selectedObjectsSelector } from '@/store/selected.store';
   const document = useSelector(documentSelector());
   const selected = useSelector(selectedObjectsSelector());
 </script>

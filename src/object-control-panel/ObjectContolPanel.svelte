@@ -4,8 +4,8 @@
 <script type="ts">
   import { map } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { selectedObjectsSelector } from '@/document/selected.store';
-  import { DocumentObject, objectsSlice } from '@/document/object.store';
+  import { selectedObjectsSelector } from '@/store/selected.store';
+  import { DocumentObject, objectsSlice } from '@/store/object.store';
 
   const dispatch = useDispatch();
   const selectedObject = useSelector(selectedObjectsSelector()).pipe(
@@ -17,7 +17,6 @@
     if (typeof width === 'string') {
       const num = Number(width);
       parsed = !isNaN(num) ? num : 0;
-      console.log(parsed);
     } else {
       parsed = width;
     }

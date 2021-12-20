@@ -19,9 +19,9 @@
 
 <script type="ts">
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { objectsSlice, ObjectType } from '@/document/object.store';
-  import { currentQueueIndexSelector } from '@/document/queue.store';
-  import { Document, documentSelector } from '@/document/document.store';
+  import { objectsSlice, ObjectType } from '@/store/object.store';
+  import { currentQueueIndexSelector } from '@/store/queue.store';
+  import { Document, documentSelector } from '@/store/document.store';
   import type { Observable } from 'rxjs';
 
   const document = useSelector(documentSelector()) as Observable<Document>;

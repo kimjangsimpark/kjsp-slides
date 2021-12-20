@@ -303,7 +303,6 @@ export const objectsSlice = createSlice({
       }
 
       const newState = [...state];
-      console.log(pendingUpdate);
       newState[index] = pendingUpdate;
 
       return newState;

@@ -16,9 +16,9 @@
 <script type="ts">
   import { filter, map } from 'rxjs/operators';
   import Tree from '../tree/Tree.svelte';
-  import { documentSelector, documentSlice } from '@/document/document.store';
+  import { documentSelector, documentSlice } from '@/store/document.store';
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { objectSelector, objectsSlice } from '@/document/object.store';
+  import { objectSelector, objectsSlice } from '@/store/object.store';
 
   const dispatch = useDispatch();
   const doc = useSelector(documentSelector());

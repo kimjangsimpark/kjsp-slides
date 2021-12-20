@@ -1,7 +1,7 @@
 <script type="ts">
   import { map, pairwise, startWith } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { Document, documentSelector } from '@/document/document.store';
+  import { Document, documentSelector } from '@/store/document.store';
   import {
     DocumentObject,
     ObjectRect,
@@ -9,21 +9,21 @@
     objectsSlice,
     ObjectType,
     QueueObject,
-  } from '@/document/object.store';
+  } from '@/store/object.store';
   import {
     currentQueueIndexSelector,
     CurrentQueueRangeObject,
     currentQueueRangeObjectsSelector,
-  } from '@/document/queue.store';
+  } from '@/store/queue.store';
   import type { Observable } from 'rxjs';
   import {
     selectedObjectsSelector,
     selectedObjectsSlice,
-  } from '@/document/selected.store';
+  } from '@/store/selected.store';
   import Rectangle from './objects/Rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
   import SelectedObject from './SelectedObject.svelte';
-  import { scaleSelector } from '@/document/scale.store';
+  import { scaleSelector } from '@/store/scale.store';
 
   let svgElement: SVGElement;
 
