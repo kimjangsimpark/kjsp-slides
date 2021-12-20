@@ -1,18 +1,21 @@
 <script type="ts">
-  import { map } from 'rxjs/operators';
+  import { map, pairwise, startWith } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { Document, documentSelector } from '@/document/document.store';
   import {
     DocumentObject,
     ObjectRect,
-    objectsByQueueIndexSelector,
     objectsByUUIDSelector,
     objectsSlice,
     ObjectType,
     QueueObject,
   } from '@/document/object.store';
-  import { currentQueueIndexSelector } from '@/document/queue.store';
-  import { combineLatest, Observable } from 'rxjs';
+  import {
+    currentQueueIndexSelector,
+    CurrentQueueRangeObject,
+    currentQueueRangeObjectsSelector,
+  } from '@/document/queue.store';
+  import type { Observable } from 'rxjs';
   import {
     selectedObjectsSelector,
     selectedObjectsSlice,
@@ -28,41 +31,47 @@
   const document = useSelector(documentSelector()) as Observable<Document>;
   const scale = useSelector(scaleSelector());
   const objectByUUID = useSelector(objectsByUUIDSelector());
-  const objectsByQueueIndex = useSelector(objectsByQueueIndexSelector());
   const selectedObjects = useSelector(selectedObjectsSelector());
   const currentQueueIndex = useSelector(currentQueueIndexSelector());
+  const rangeObjects = useSelector(currentQueueRangeObjectsSelector());
 
-  const previous = combineLatest([currentQueueIndex, objectsByQueueIndex]).pipe(
-    map(([index, objects]) => objects[index - 1] || []),
-    map(objects =>
-      objects.reduce<{ [key: string]: QueueObject }>((result, current) => {
-        return Object.assign(result, {
-          [current.uuid]: current,
-        });
-      }, {}),
-    ),
+  const current = rangeObjects.pipe(
+    map(ranges => ranges.find(range => range.current) as CurrentQueueRangeObject),
   );
 
-  const current = combineLatest([currentQueueIndex, objectsByQueueIndex]).pipe(
-    map(([index, objects]) => objects[index] || []),
+  const currentMap = rangeObjects.pipe(
+    map(ranges => ranges.find(range => range.current) as CurrentQueueRangeObject),
+    map(current => {
+      if (current) {
+        return current.objects.reduce<{ [key: string]: QueueObject }>(
+          (result, object) => Object.assign(result, { [object.uuid]: object }),
+          {},
+        );
+      } else {
+        return {};
+      }
+    }),
   );
 
-  const next = combineLatest([currentQueueIndex, objectsByQueueIndex]).pipe(
-    map(([index, objects]) => objects[index + 1] || []),
-    map(objects =>
-      objects.reduce<{ [key: string]: QueueObject }>((result, current) => {
-        return Object.assign(result, {
-          [current.uuid]: current,
-        });
-      }, {}),
-    ),
+  const previousMap = current.pipe(
+    pairwise(),
+    map(([previous, current]) => {
+      if (previous) {
+        return previous.objects.reduce<{ [key: string]: QueueObject }>(
+          (result, object) => Object.assign(result, { [object.uuid]: object }),
+          {},
+        );
+      } else {
+        return {};
+      }
+    }),
   );
 
   const onEmptySpaceClicked = () => {
     dispatch(selectedObjectsSlice.actions.reset());
   };
 
-  const onObjectClicked = (e: MouseEvent, obj: DocumentObject) => {
+  const onObjectClicked = (e: MouseEvent, obj: QueueObject) => {
     e.preventDefault();
     e.stopPropagation();
     dispatch(selectedObjectsSlice.actions.set([obj.uuid]));
@@ -224,36 +233,28 @@
         style="width: {$document.rect.width}px; height: {$document.rect.height}px;"
         on:click={() => onEmptySpaceClicked()}
       >
-        {#if $current}
-          {#each $current as object (object.uuid)}
-            {#if $objectByUUID[object.uuid].type === ObjectType.RECTANGLE}
-              <g
-                class="object"
-                on:click={e => onObjectClicked(e, $objectByUUID[object.uuid])}
-              >
-                <Rectangle
-                  currentObject={$objectByUUID[object.uuid]}
-                  previousObject={$previous[object.uuid]}
-                />
-              </g>
-            {/if}
-            {#if $objectByUUID[object.uuid].type === ObjectType.TEXTAREA}
-              <g
-                class="object"
-                on:click={e => onObjectClicked(e, $objectByUUID[object.uuid])}
-              >
-                <Textarea
-                  currentObject={$objectByUUID[object.uuid]}
-                  previousObject={$previous[object.uuid]}
-                />
-              </g>
-            {/if}
-          {/each}
-        {/if}
+        {#each $current.objects as object (object.uuid)}
+          {#if object.type === ObjectType.RECTANGLE}
+            <g class="object" on:click={e => onObjectClicked(e, object)}>
+              <Rectangle
+                currentObject={object}
+                previousObject={$previousMap ? $previousMap[object.uuid] : null}
+              />
+            </g>
+          {/if}
+          {#if $objectByUUID[object.uuid].type === ObjectType.TEXTAREA}
+            <g class="object" on:click={e => onObjectClicked(e, object)}>
+              <Textarea
+                currentObject={object}
+                previousObject={$previousMap ? $previousMap[object.uuid] : null}
+              />
+            </g>
+          {/if}
+        {/each}
         {#if $selectedObjects && $selectedObjects.length}
           <SelectedObject
             selected={$selectedObjects[0]}
-            previous={$previous[$selectedObjects[0].uuid]}
+            previous={$previousMap ? $previousMap[$selectedObjects[0].uuid] : null}
             on:rect-mousedown={e => onSelectedObjectMouseDown(e)}
             on:vertex-mousedown={e => onSelectedObjectVertextMouseDown(e)}
           />

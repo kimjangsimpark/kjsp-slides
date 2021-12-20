@@ -7,7 +7,7 @@ export const scaleSelector = (): SelectorFn<number> => {
 
 export const scaleSlice = createSlice({
   name: 'scale',
-  initialState: 1,
+  initialState: 0.5,
   reducers: {
     increase: (state) => {
       return state += 0.1;

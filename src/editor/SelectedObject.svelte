@@ -3,7 +3,7 @@
 
   import { createEventDispatcher } from 'svelte';
   export let previous: QueueObject | null = null;
-  export let selected: DocumentObject;
+  export let selected: QueueObject;
 
   const dispatcher = createEventDispatcher();
   const strokeWidth = 8;

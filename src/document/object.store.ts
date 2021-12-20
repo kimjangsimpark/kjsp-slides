@@ -59,6 +59,7 @@ export interface CommonEffect {
 
 export interface QueueObject {
   uuid: string;
+  type: ObjectType;
   shape: ObjectRect;
 }
 
@@ -151,34 +152,6 @@ export function findLatestRect(
   } else {
     throw new Error('Target effect not found');
   }
-}
-
-export const objectsByQueueIndexSelector = (): SelectorFn<Readonly<QueueObject[][]>> => {
-  return state => {
-    const objects = state.objects;
-    const byIndex: QueueObject[][] = [];
-
-    objects.forEach(object => {
-      for (const effect of object.effects) {
-        if (effect.type === ObjectEffectType.DELETE) {
-          byIndex[effect.index].push({
-            uuid: object.uuid,
-            shape: findLatestRect(object, effect.index),
-          });
-          break;
-        }
-        if (!byIndex[effect.index]) {
-          byIndex[effect.index] = [];
-        }
-        byIndex[effect.index].push({
-          uuid: object.uuid,
-          shape: findLatestRect(object, effect.index),
-        });
-      }
-    });
-
-    return byIndex;
-  };
 }
 
 export const objectsByUUIDSelector = (): SelectorFn<Readonly<{ [key: string]: DocumentObject }>> => {
@@ -320,9 +293,9 @@ export const objectsSlice = createSlice({
           effect => effect.index > params.payload.index,
         );
         if (effectTargetIndex === -1) {
-          effectTargetIndex = pendingUpdate.effects.length - 1;
+          effectTargetIndex = pendingUpdate.effects.length - 2;
         }
-        pendingUpdate.effects.splice(effectTargetIndex, 0, {
+        pendingUpdate.effects.splice(effectTargetIndex + 1, 0, {
           type: ObjectEffectType.TRANSITION,
           index: params.payload.index,
           ...params.payload.rect,
@@ -330,6 +303,7 @@ export const objectsSlice = createSlice({
       }
 
       const newState = [...state];
+      console.log(pendingUpdate);
       newState[index] = pendingUpdate;
 
       return newState;
