@@ -1,56 +1,37 @@
 <script type="ts">
   import { useDispatch, useSelector } from '@/app/hooks';
   import { currentQueueIndexSelector, queueIndexSlice } from '@/document/queue.store';
-  import { currentQueue$, currentQueueReducer } from '@/store/queue';
-  import { scale$, scaleReducer } from '@/store/scale';
+  import { scaleSlice } from '@/document/scale.store';
   import { map } from 'rxjs';
-
-  $: scale = scale$;
-  $: currentQueueState = currentQueue$;
-  $: ranges = currentQueueState.pipe(
-    map(({ index }) => {
-      return [index - 2, index - 1, index, index + 1, index + 2];
-    }),
-  );
 
   const dispatch = useDispatch();
   const currentQueueIndex = useSelector(currentQueueIndexSelector());
 
+  const range = currentQueueIndex.pipe(
+    map(index => {
+      const result: number[] = [];
+      let start = Math.max(index - 2, 0);
+      while (result.length < 5) {
+        result.push(start++);
+      }
+      return result;
+    }),
+  );
+
   const onPrevClicked = () => {
-    const pendingIndex = $currentQueueState.index - 1;
-    if (pendingIndex < 0) {
-      return;
-    }
-    dispatch(queueIndexSlice.actions.set(pendingIndex));
-    currentQueueReducer({
-      type: 'changeCurrentQueue',
-      index: pendingIndex,
-    });
+    dispatch(queueIndexSlice.actions.set($currentQueueIndex - 1));
   };
 
   const onNextClicked = () => {
-    const pendingIndex = $currentQueueState.index + 1;
-    dispatch(queueIndexSlice.actions.set(pendingIndex));
-    currentQueueReducer({
-      type: 'changeCurrentQueue',
-      index: pendingIndex,
-    });
+    dispatch(queueIndexSlice.actions.set($currentQueueIndex + 1));
   };
 
   const onScaleDownClicked = () => {
-    const current = $scale;
-    scaleReducer({
-      type: 'scaleChange',
-      value: current - 0.1,
-    });
+    dispatch(scaleSlice.actions.increase());
   };
 
   const onScaleUpClicked = () => {
-    const current = $scale;
-    scaleReducer({
-      type: 'scaleChange',
-      value: current + 0.1,
-    });
+    dispatch(scaleSlice.actions.decrease());
   };
 </script>
 
@@ -58,9 +39,9 @@
   <div class="subtoolbar-item btn prev">
     <button on:click={onPrevClicked}>prev</button>
   </div>
-  {#if $ranges}
-    {#each $ranges as index}
-      <div class="subtoolbar-item {index === $currentQueueState.index ? 'current' : ''}">
+  {#if $range}
+    {#each $range as index}
+      <div class="subtoolbar-item {index === $currentQueueIndex ? 'current' : ''}">
         {index > -1 ? index + 1 : ''}
       </div>
     {/each}

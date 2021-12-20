@@ -16,18 +16,13 @@
 <script type="ts">
   import { filter, map } from 'rxjs/operators';
   import Tree from '../tree/Tree.svelte';
-  import { object$, objectReducer } from '@/store/object';
-  import { Document, documentSelector, documentSlice } from '@/document/document.store';
+  import { documentSelector, documentSlice } from '@/document/document.store';
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { objectsSlice } from '@/document/object.store';
+  import { objectSelector, objectsSlice } from '@/document/object.store';
 
-  const document$ = useSelector(documentSelector());
   const dispatch = useDispatch();
-
-  $: title = document$.pipe(
-    filter(Boolean),
-    map(document => document.documentName),
-  );
+  const doc = useSelector(documentSelector());
+  const objects = useSelector(objectSelector());
 
   let currentActive: number | undefined;
   const items: ToolbarModel[] = [
@@ -47,21 +42,17 @@
               }),
             );
             dispatch(objectsSlice.actions.setDocumentObjects([]));
-            objectReducer({
-              type: 'documentChange',
-              state: [],
-            });
           },
         },
         {
           title: 'Save Document',
           onClick: () => {
-            if (!$document$ || !$object$) return;
-            const metadata = { ...$document$ };
-            const objects = [...$object$];
-            const documentObject = Object.assign({}, metadata, {
-              objects: objects,
-            });
+            if (!$doc) return;
+            const metadata = { ...$doc };
+            const documentObject = {
+              ...$doc,
+              objects: $objects,
+            };
             const stringified = JSON.stringify(documentObject);
             const blob = new Blob([stringified], { type: 'octet/stream' });
             const url = URL.createObjectURL(blob);
@@ -93,10 +84,6 @@
                   const document = JSON.parse(result) as any;
                   dispatch(documentSlice.actions.setDocument(document));
                   dispatch(objectsSlice.actions.setDocumentObjects(document.objects));
-                  objectReducer({
-                    type: 'documentChange',
-                    state: document.objects,
-                  });
                 };
                 fileReader.readAsText(file);
               } catch (e) {}
@@ -232,7 +219,7 @@
   </div>
   <div id="toolbar-container">
     <div id="title-container">
-      <span id="title">{$title || ''}</span>
+      <span id="title">{$doc ? $doc.documentName : ''}</span>
     </div>
     <div class="toolbar-root">
       {#each items as item, index}
@@ -273,6 +260,10 @@
       display: flex;
       flex-direction: column;
       flex: 1 1 auto;
+
+      .title {
+        height: 21px;
+      }
 
       #title-container {
         padding-top: 10px;

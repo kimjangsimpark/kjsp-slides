@@ -18,7 +18,6 @@
 </script>
 
 <script type="ts">
-  import { objectPanelSlice } from './ObjectPanel.store';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { objectsSlice, ObjectType } from '@/document/object.store';
   import { currentQueueIndexSelector } from '@/document/queue.store';
@@ -39,7 +38,6 @@
           previewUrl: rectanglePreview,
           alt: 'rectangle',
           click: () => {
-            console.log($document.rect);
             dispatch(
               objectsSlice.actions.createObject({
                 index: $queueIndex,
@@ -49,9 +47,6 @@
                   y: $document.rect.height / 2 - 50,
                   height: 100,
                   width: 100,
-                  lineColor: 'black',
-                  lineType: 'solid',
-                  lineWidth: 3,
                 },
               }),
             );
@@ -73,7 +68,20 @@
           key: ObjectType.TEXTAREA,
           previewUrl: textareaPreview,
           alt: 'textarea',
-          click: () => {},
+          click: () => {
+            dispatch(
+              objectsSlice.actions.createObject({
+                index: $queueIndex,
+                type: ObjectType.TEXTAREA,
+                rect: {
+                  x: $document.rect.width / 2 - 50,
+                  y: $document.rect.height / 2 - 50,
+                  height: 100,
+                  width: 100,
+                },
+              }),
+            );
+          },
         },
       ],
     },
@@ -85,14 +93,6 @@
     newModel.opened = !newModel.opened;
     models[index] = newModel;
   }
-
-  const onClick = (type: ObjectType) => {
-    dispatch(
-      objectPanelSlice.actions.create({
-        type: 'create',
-      }),
-    );
-  };
 </script>
 
 <div id="object-panel-root">

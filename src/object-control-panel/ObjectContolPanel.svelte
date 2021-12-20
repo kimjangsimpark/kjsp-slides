@@ -85,7 +85,6 @@
     </ol>
   </section>
 
-  <button on:click={() => console.log($selectedObject)}>123123</button>
   <section class="panel-section line-wrapper">
     <header><h2>Line</h2></header>
     <div>

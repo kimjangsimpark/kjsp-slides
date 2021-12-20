@@ -9,8 +9,8 @@ export const queueIndexSlice = createSlice({
   initialState: 0,
   name: 'queue',
   reducers: {
-    next: state => state + 1,
-    set: (state, params: PayloadAction<number>) => params.payload,
-    previous: state => state - 1,
+    next: state => Math.max(state + 1, 0),
+    set: (state, params: PayloadAction<number>) => Math.max(params.payload, 0),
+    previous: state => Math.max(state - 1, 0),
   },
 });

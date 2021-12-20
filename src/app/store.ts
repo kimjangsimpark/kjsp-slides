@@ -3,17 +3,15 @@ import { selectedObjectsSlice } from '@/document/selected.store';
 import { queueIndexSlice } from '@/document/queue.store';
 import { configureStore } from '@reduxjs/toolkit';
 import { documentSlice } from '../document/document.store';
-import { objectControlPanelSlice } from '../object-control-panel/ObjectContolPanel';
-import { objectPanelSlice } from '../object-panel/ObjectPanel.store';
+import { scaleSlice } from '@/document/scale.store';
 
 export const store = configureStore({
   reducer: {
     document: documentSlice.reducer,
     objects: objectsSlice.reducer,
+    scale: scaleSlice.reducer,
     currentQueueIndex: queueIndexSlice.reducer,
     selectedObjects: selectedObjectsSlice.reducer,
-    objectPanel: objectPanelSlice.reducer,
-    objectControlPanel: objectControlPanelSlice.reducer,
   },
   middleware: [],
 });
