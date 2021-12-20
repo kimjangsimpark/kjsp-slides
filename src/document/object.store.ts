@@ -334,5 +334,19 @@ export const objectsSlice = createSlice({
 
       return newState;
     },
+
+    updateStrokeOfObject: (state, params: PayloadAction<{ uuid: string; stroke: ObjectStroke }>) => {
+      const index = state.findIndex(object => object.uuid === params.payload.uuid);
+
+      if (index === -1) {
+        throw new Error('Object not found');
+      }
+
+      const newState = [...state];
+      const newObject = { ...state[index] };
+      newObject.stroke = { ...params.payload.stroke };
+      newState[index] = newObject;
+      return newState;
+    }
   }
 })

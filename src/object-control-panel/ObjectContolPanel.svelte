@@ -2,86 +2,60 @@
 </script>
 
 <script type="ts">
-  import { onMount } from 'svelte';
-  import { combineLatest, Subscription } from 'rxjs';
   import { map } from 'rxjs/operators';
-  import { onDestroy$ } from '@/misc/svelte-rx';
-  import { objectReducer } from '@/store/object';
-  import { currentQueue$ } from '@/store/queue';
-  import { currentQueueObject$ } from '@/store/queueObject';
+  import { useDispatch, useSelector } from '@/app/hooks';
+  import { selectedObjectsSelector } from '@/document/selected.store';
+  import { DocumentObject, objectsSlice } from '@/document/object.store';
 
-  $: selectedObject = currentQueueObject$;
-  $: currentQueueObjectEffects = combineLatest([currentQueue$, currentQueueObject$]).pipe(
-    map(([currentQueue, currentQueueObject]) => {
-      if (currentQueueObject) {
-        const queueIndex = currentQueue.index;
-        return currentQueueObject?.effects.filter(effect => effect.index === queueIndex);
-      } else {
-        return null;
-      }
-    }),
+  const dispatch = useDispatch();
+  const selectedObject = useSelector(selectedObjectsSelector()).pipe(
+    map(objects => objects[0]),
   );
 
-  let lineWidth = 1;
-  let lineColor = '';
-  let selectedObjectSubscription: Subscription;
-
-  const handleDecreaseButtonClick = () => {
-    lineWidth--;
-    updateObjectLineWidth();
+  const setObjectStrokeWidth = (object: DocumentObject, width: number | string) => {
+    let parsed: number = 0;
+    if (typeof width === 'string') {
+      const num = Number(width);
+      parsed = !isNaN(num) ? num : 0;
+      console.log(parsed);
+    } else {
+      parsed = width;
+    }
+    const pending = Math.max(parsed, 1);
+    dispatch(
+      objectsSlice.actions.updateStrokeOfObject({
+        uuid: object.uuid,
+        stroke: {
+          lineColor: object.stroke.lineColor,
+          lineType: object.stroke.lineType,
+          lineWidth: pending,
+        },
+      }),
+    );
   };
 
-  const handleIncreaseButtonClick = () => {
-    lineWidth++;
-    updateObjectLineWidth();
+  const setObjectStrokeColor = (object: DocumentObject, color: string) => {
+    dispatch(
+      objectsSlice.actions.updateStrokeOfObject({
+        uuid: object.uuid,
+        stroke: {
+          lineColor: color,
+          lineType: object.stroke.lineType,
+          lineWidth: object.stroke.lineWidth,
+        },
+      }),
+    );
   };
 
-  const handleLineWdithInputChange = () => {
-    console.log('change!');
-    updateObjectLineWidth();
+  const onStrokeWidthInputChanged = (object: DocumentObject, e: Event) => {
+    const target = e.target as HTMLInputElement;
+    setObjectStrokeWidth(object, target.value);
   };
 
-  const updateObjectLineWidth = () => {
-    if (!$selectedObject) return;
-
-    objectReducer({
-      type: 'objectShapeUpdateAction',
-      uuid: $selectedObject.uuid,
-      shape: { ...$selectedObject.shape, lineWidth },
-    });
+  const onStrokeColorInputChanged = (object: DocumentObject, e: Event) => {
+    const target = e.target as HTMLInputElement;
+    setObjectStrokeColor(object, target.value);
   };
-
-  const onColorPickerInput = () => {
-    if (!$selectedObject) return;
-
-    objectReducer({
-      type: 'objectShapeUpdateAction',
-      uuid: $selectedObject.uuid,
-      shape: { ...$selectedObject.shape, lineColor },
-    });
-  };
-
-  onMount(() => {
-    console.log('ObjectControlPanel onMount');
-
-    selectedObjectSubscription = selectedObject.subscribe({
-      next: () => {
-        if (!$selectedObject) return;
-
-        console.log('setSelectedObjectShape');
-        console.log($selectedObject?.shape.lineColor);
-
-        lineWidth = $selectedObject?.shape.lineWidth;
-        lineColor = $selectedObject?.shape.lineColor;
-      },
-    });
-  });
-
-  onDestroy$.subscribe({
-    next: () => {
-      selectedObjectSubscription.unsubscribe();
-    },
-  });
 </script>
 
 <aside id="object-control-panel-root">
@@ -105,11 +79,9 @@
       <button>+</button>
     </header>
     <ol class="list">
-      {#if $currentQueueObjectEffects}
-        {#each $currentQueueObjectEffects as effect}
-          <li class="list-item">{effect.type}</li>
-        {/each}
-      {/if}
+      {#each $selectedObject.effects as effect}
+        <li class="list-item">{effect.type}</li>
+      {/each}
     </ol>
   </section>
 
@@ -118,15 +90,25 @@
     <header><h2>Line</h2></header>
     <div>
       <div class="line-width-input-wrapper">
-        <button on:click={handleDecreaseButtonClick}>&nbsp;-&nbsp;</button>
+        <button
+          on:click={() =>
+            setObjectStrokeWidth($selectedObject, $selectedObject.stroke.lineWidth - 1)}
+          >&nbsp;-&nbsp;
+        </button>
         <input
           type="number"
           name="lineWidth"
           id="lineWidth"
-          bind:value={lineWidth}
-          on:input={handleLineWdithInputChange}
+          value={$selectedObject.stroke.lineWidth}
+          on:input={e => {
+            onStrokeWidthInputChanged($selectedObject, e);
+          }}
         />
-        <button on:click={handleIncreaseButtonClick}>&nbsp;+&nbsp;</button>
+        <button
+          on:click={() =>
+            setObjectStrokeWidth($selectedObject, $selectedObject.stroke.lineWidth + 1)}
+          >&nbsp;+&nbsp;
+        </button>
       </div>
       <div class="line-color-input-wrapper">
         <label for="lineColorPicker">color</label>
@@ -134,8 +116,8 @@
           type="color"
           name="lineColorPicker"
           id="lineColorPicker"
-          bind:value={lineColor}
-          on:input={onColorPickerInput}
+          value={$selectedObject.stroke.lineColor}
+          on:input={e => onStrokeColorInputChanged($selectedObject, e)}
         />
       </div>
     </div>

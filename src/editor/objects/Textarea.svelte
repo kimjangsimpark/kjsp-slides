@@ -9,7 +9,7 @@
   y={currentObject.shape.y}
   width={currentObject.shape.width}
   height={currentObject.shape.height}
-  stroke="#4fbe9f"
+  stroke={currentObject.stroke.lineColor}
   stroke-width={currentObject.stroke.lineWidth}
   fill="transparent"
 >
