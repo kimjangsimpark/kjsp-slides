@@ -1,6 +1,6 @@
 import type { RootDispatch, RootState } from '@/app/store';
 import type { Store } from '@reduxjs/toolkit';
-import { Observable } from 'rxjs';
+import { distinctUntilChanged, Observable } from 'rxjs';
 import { getContext } from 'svelte';
 
 export const ROOT_STORE_CONTEXT = 'root-store-context';

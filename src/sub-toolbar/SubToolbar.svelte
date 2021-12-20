@@ -1,7 +1,6 @@
 <script type="ts">
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { queueIndexSelector, queueIndexSlice } from '@/queue/queue.store';
-
+  import { currentQueueIndexSelector, queueIndexSlice } from '@/document/queue.store';
   import { currentQueue$, currentQueueReducer } from '@/store/queue';
   import { scale$, scaleReducer } from '@/store/scale';
   import { map } from 'rxjs';
@@ -15,14 +14,14 @@
   );
 
   const dispatch = useDispatch();
-  const currentQueueIndex = useSelector(queueIndexSelector());
+  const currentQueueIndex = useSelector(currentQueueIndexSelector());
 
   const onPrevClicked = () => {
     const pendingIndex = $currentQueueState.index - 1;
     if (pendingIndex < 0) {
       return;
     }
-    dispatch(queueIndexSlice.actions.setCurrentQueue(pendingIndex));
+    dispatch(queueIndexSlice.actions.set(pendingIndex));
     currentQueueReducer({
       type: 'changeCurrentQueue',
       index: pendingIndex,
@@ -31,7 +30,7 @@
 
   const onNextClicked = () => {
     const pendingIndex = $currentQueueState.index + 1;
-    dispatch(queueIndexSlice.actions.setCurrentQueue(pendingIndex));
+    dispatch(queueIndexSlice.actions.set(pendingIndex));
     currentQueueReducer({
       type: 'changeCurrentQueue',
       index: pendingIndex,

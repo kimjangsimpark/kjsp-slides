@@ -4,11 +4,11 @@
   import ObjectPanel from '@/object-panel/ObjectPanel.svelte';
   import Editor from '@/editor/Editor.svelte';
   import ObjectContolPanel from '@/object-control-panel/ObjectContolPanel.svelte';
-  import { currentQueueObject$ } from '@/store/queueObject';
   import { useSelector } from './app/hooks';
   import { documentSelector } from './document/document.store';
-  $: currentQueueObject = currentQueueObject$;
+  import { selectedObjectsSelector } from './document/selected.store';
   const document = useSelector(documentSelector());
+  const selected = useSelector(selectedObjectsSelector);
 </script>
 
 <div id="app-root">
@@ -29,7 +29,7 @@
         <Editor />
       </div>
     {/if}
-    {#if $currentQueueObject}
+    {#if $selected.length}
       <ObjectContolPanel />
     {/if}
   </div>

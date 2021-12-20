@@ -35,10 +35,10 @@ export interface ObjectFadeInEffect extends CommonEffect {
 export interface ObjectTransitionEffect extends CommonEffect {
   index: number;
   type: ObjectEffectType.TRANSITION;
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 export interface ObjectDeleteEffect extends CommonEffect {
@@ -57,18 +57,24 @@ export interface CommonEffect {
   type: ObjectEffectType;
 }
 
-export interface CommonObject {
-  type: ObjectType;
+export interface QueueObject {
   uuid: string;
-  shape: ObjectRect;
+  shape: ObjectAnimatableRect;
+}
+
+export interface CommonObject extends QueueObject {
+  type: ObjectType;
   effects: ObjectEffect[];
 }
 
-export interface ObjectRect {
+export interface ObjectAnimatableRect {
   x: number;
   y: number;
   width: number;
   height: number;
+}
+
+export interface ObjectRect extends ObjectAnimatableRect {
   lineType: string;
   lineWidth: number;
   lineColor: string;
@@ -97,47 +103,88 @@ export interface TextareaObject extends CommonObject {
 
 export type DocumentObject = RectangleObject | TextareaObject | CircleObject;
 
+export function isRectangleObject(object: DocumentObject): object is RectangleObject {
+  return object.type === ObjectType.RECTANGLE;
+}
+
+export function isTransitionEffect(effect: ObjectEffect): effect is ObjectTransitionEffect {
+  return effect && effect.type === ObjectEffectType.TRANSITION;
+}
+
+export function isCreateEffect(effect: ObjectEffect): effect is ObjectCreateEffect {
+  return effect && effect.type === ObjectEffectType.CREATE;
+}
 
 export const objectSelector = (): SelectorFn<DocumentObject[]> => {
   return state => state.objects;
 }
 
-export const queueObjectSelector = (
-  queueIndex: number,
-): SelectorFn<DocumentObject[]> => {
+export function findLatestRect(
+  object: DocumentObject,
+  index: number
+): ObjectAnimatableRect {
+  const latest = object.effects.slice().reverse().find(
+    effect =>
+      effect.index <= index &&
+      (
+        effect.type === ObjectEffectType.TRANSITION ||
+        effect.type === ObjectEffectType.CREATE
+      )
+  );
+  if (latest && isTransitionEffect(latest)) {
+    return {
+      x: latest.x,
+      y: latest.y,
+      height: latest.height,
+      width: latest.width,
+    }
+  } else if (latest && isCreateEffect(latest)) {
+    return {
+      x: object.shape.x,
+      y: object.shape.y,
+      height: object.shape.height,
+      width: object.shape.width,
+    }
+  } else {
+    throw new Error('Target effect not found');
+  }
+}
+
+export const objectsByQueueIndexSelector = (): SelectorFn<Readonly<QueueObject[][]>> => {
   return state => {
     const objects = state.objects;
-    const index = queueIndex;
+    const byIndex: QueueObject[][] = [];
 
-    const currentVisibleObjects = objects.filter(object => {
-      const isCreated = object.effects.find(effect => effect.type === 'create' && effect.index <= index);
-      const isDeleted = object.effects.some(effect => effect.type === 'delete' && effect.index < index);
-      return isCreated && !isDeleted;
-    }).map(object => {
-      const immutable = { ...object };
-      const reversedEffects = object.effects.slice(0).reverse();
-
-      const lastTransition = reversedEffects.find(
-        effect => effect.index < index && effect.type === 'transition',
-      ) as ObjectTransitionEffect;
-
-      const currentTransition = reversedEffects.find(
-        effect => effect.index === index && effect.type === 'transition',
-      ) as ObjectTransitionEffect;
-
-      immutable.shape = {
-        ...object.shape,
-        x: currentTransition?.x || lastTransition?.x || object.shape.x,
-        y: currentTransition?.y || lastTransition?.y || object.shape.y,
-        width: currentTransition?.width || lastTransition?.width || object.shape.width,
-        height:
-          currentTransition?.height || lastTransition?.height || object.shape.height,
-      };
-
-      return immutable;
+    objects.forEach(object => {
+      for (const effect of object.effects) {
+        if (effect.type === ObjectEffectType.DELETE) {
+          byIndex[effect.index].push({
+            uuid: object.uuid,
+            shape: findLatestRect(object, effect.index),
+          });
+          break;
+        }
+        if (!byIndex[effect.index]) {
+          byIndex[effect.index] = [];
+        }
+        byIndex[effect.index].push({
+          uuid: object.uuid,
+          shape: findLatestRect(object, effect.index),
+        });
+      }
     });
 
-    return currentVisibleObjects;
+    return byIndex;
+  };
+}
+
+export const objectsByUUIDSelector = (): SelectorFn<Readonly<{ [key: string]: DocumentObject }>> => {
+  return state => {
+    const byUUID: { [key: string]: DocumentObject } = {};
+    state.objects.forEach(object => {
+      byUUID[object.uuid] = object;
+    });
+    return byUUID;
   };
 }
 

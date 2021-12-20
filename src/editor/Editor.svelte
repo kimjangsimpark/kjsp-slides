@@ -1,32 +1,61 @@
-<script type="ts" context="module">
-  export const EDITOR_CONTEXT_KEY = 'editor-context-key';
-  export interface EditorContext {
-    onObjectClicked: (e: MouseEvent, obj: DocumentObject) => void;
-  }
-</script>
-
 <script type="ts">
-  import { map, pairwise, startWith, tap } from 'rxjs/operators';
+  import { map, pairwise, startWith } from 'rxjs/operators';
   import { afterUpdate$, onDestroy$ } from '@/misc/svelte-rx';
   import { currentQueue$ } from '@/store/queue';
-  import { currentQueueObject$ } from '@/store/queueObject';
   import { currentQueueObjectReducer } from '@/store/queueObject';
-  import SelectedObject from './SelectedObject.svelte';
   import { scale$ } from '@/store/scale';
   import { objectReducer } from '@/store/object';
-  import { setContext } from 'svelte';
-  import Rectangle from './objects/rectangle.svelte';
-  import Textarea from './objects/Textarea.svelte';
-  import { useSelector } from '@/app/hooks';
+  import { useDispatch, useSelector } from '@/app/hooks';
   import { documentSelector } from '@/document/document.store';
   import {
     DocumentObject,
+    objectsByQueueIndexSelector,
+    ObjectAnimatableRect,
+    objectsByUUIDSelector,
     ObjectType,
-    queueObjectSelector,
+    QueueObject,
   } from '@/document/object.store';
+  import { currentQueueIndexSelector } from '@/document/queue.store';
+  import { combineLatest } from 'rxjs';
+  import { selectedObjectsSelector } from '@/document/selected.store';
+  import Rectangle from './objects/rectangle.svelte';
+  import Textarea from './objects/Textarea.svelte';
 
   let svgElement: SVGElement;
   let queueChanged = false;
+
+  const dispatch = useDispatch();
+  const document = useSelector(documentSelector());
+  const objectByUUID = useSelector(objectsByUUIDSelector());
+  const currentQueueIndex = useSelector(currentQueueIndexSelector());
+  const objectsByQueueIndex = useSelector(objectsByQueueIndexSelector());
+  const selectedObjects = useSelector(selectedObjectsSelector);
+
+  const previous = combineLatest([currentQueueIndex, objectsByQueueIndex]).pipe(
+    map(([index, objects]) => objects[index - 1] || []),
+    map(objects =>
+      objects.reduce<{ [key: string]: QueueObject }>((result, current) => {
+        return Object.assign(result, {
+          [current.uuid]: current,
+        });
+      }, {}),
+    ),
+  );
+
+  const current = combineLatest([currentQueueIndex, objectsByQueueIndex]).pipe(
+    map(([index, objects]) => objects[index] || []),
+  );
+
+  const next = combineLatest([currentQueueIndex, objectsByQueueIndex]).pipe(
+    map(([index, objects]) => objects[index + 1] || []),
+    map(objects =>
+      objects.reduce<{ [key: string]: QueueObject }>((result, current) => {
+        return Object.assign(result, {
+          [current.uuid]: current,
+        });
+      }, {}),
+    ),
+  );
 
   const queue$ = currentQueue$.pipe(startWith(null), pairwise());
 
@@ -34,34 +63,6 @@
     [key: string]: DocumentObject;
   }
 
-  setContext<EditorContext>(EDITOR_CONTEXT_KEY, {
-    onObjectClicked: (e: MouseEvent, obj: DocumentObject) => {
-      e.preventDefault();
-      e.stopPropagation();
-      currentQueueObjectReducer({
-        type: 'changeCurrentQueueObject',
-        state: obj,
-      });
-    },
-  });
-
-  $: selectedObject = currentQueueObject$;
-  $: document = useSelector(documentSelector());
-  $: previousObjects = queue$.pipe(
-    map(([previousQueue]) => {
-      if (!previousQueue) {
-        return {};
-      }
-      return previousQueue.objects.reduce<PreviousQueue>((result, current) => {
-        result[current.uuid] = current;
-        return result;
-      }, {});
-    }),
-  );
-  $: objects = queue$.pipe(
-    map(([, currentQueue]) => currentQueue?.objects),
-    tap(() => (queueChanged = true)),
-  );
   $: scale = scale$;
 
   const onEmptySpaceClicked = () => {
@@ -81,9 +82,9 @@
 
   const onSelectedObjectMouseDown = (customEvent: CustomEvent<{ event: MouseEvent }>) => {
     const e = customEvent.detail.event;
-    if (!$selectedObject) return;
+    if (!$selectedObjects) return;
     const queueIndex = $queue$[1]?.index as number;
-    const object = { ...$selectedObject };
+    const object = { ...$selectedObjects[0] };
     const positionX = e.offsetX;
     const positionY = e.offsetY;
     const captureX = object.shape.x;
@@ -119,10 +120,10 @@
       event: MouseEvent;
     }>,
   ) => {
-    if (!$selectedObject) return;
+    if (!$selectedObjects) return;
     const queueIndex = $queue$[1]?.index as number;
     const position = e.detail.position;
-    const object = { ...$selectedObject };
+    const object = { ...$selectedObjects };
     const positionX = e.detail.event.offsetX;
     const positionY = e.detail.event.offsetY;
     const capture = { ...object.shape };
@@ -208,44 +209,48 @@
 <div id="editor">
   <div id="scaler" style="transform: scale({$scale});">
     <div id="frame">
-      {#if $document}
-        <svg
-          bind:this={svgElement}
-          id="svg"
-          class="page"
-          style="width: {$document.rect.width}px; height: {$document.rect.height}px;"
-          on:click={() => onEmptySpaceClicked()}
-        >
-          {#if $objects}
-            {#each $objects as object (object.uuid)}
-              {#if object.type === ObjectType.RECTANGLE}
-                <g class="object" on:click={e => onObjectClicked(e, object)}>
-                  <Rectangle
-                    currentObject={object}
-                    previousObject={$previousObjects[object.uuid]}
-                  />
-                </g>
-              {/if}
-              {#if object.type === ObjectType.TEXTAREA}
-                <g class="object" on:click={e => onObjectClicked(e, object)}>
-                  <Textarea
-                    currentObject={object}
-                    previousObject={$previousObjects[object.uuid]}
-                  />
-                </g>
-              {/if}
-            {/each}
-          {/if}
-          {#if $selectedObject}
-            <SelectedObject
-              selected={$selectedObject}
-              previous={$previousObjects[$selectedObject.uuid]}
-              on:rect-mousedown={e => onSelectedObjectMouseDown(e)}
-              on:vertex-mousedown={e => onSelectedObjectVertextMouseDown(e)}
-            />
-          {/if}
-        </svg>
-      {/if}
+      <svg
+        bind:this={svgElement}
+        id="svg"
+        class="page"
+        style="width: {$document.rect.width}px; height: {$document.rect.height}px;"
+        on:click={() => onEmptySpaceClicked()}
+      >
+        {#if $current}
+          {#each $current as object (object.uuid)}
+            {#if $objectByUUID[object.uuid].type === ObjectType.RECTANGLE}
+              <g
+                class="object"
+                on:click={e => onObjectClicked(e, $objectByUUID[object.uuid])}
+              >
+                <Rectangle
+                  currentObject={$objectByUUID[object.uuid]}
+                  previousObject={$previous[object.uuid]}
+                />
+              </g>
+            {/if}
+            {#if $objectByUUID[object.uuid].type === ObjectType.TEXTAREA}
+              <g
+                class="object"
+                on:click={e => onObjectClicked(e, $objectByUUID[object.uuid])}
+              >
+                <Textarea
+                  currentObject={$objectByUUID[object.uuid]}
+                  previousObject={$previous[object.uuid]}
+                />
+              </g>
+            {/if}
+          {/each}
+        {/if}
+        <!-- {#if $selectedObject}
+          <SelectedObject
+            selected={$selectedObject}
+            previous={$previousObjects[$selectedObject.uuid]}
+            on:rect-mousedown={e => onSelectedObjectMouseDown(e)}
+            on:vertex-mousedown={e => onSelectedObjectVertextMouseDown(e)}
+          />
+        {/if} -->
+      </svg>
     </div>
   </div>
 </div>

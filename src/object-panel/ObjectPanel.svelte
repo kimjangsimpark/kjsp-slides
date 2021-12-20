@@ -7,6 +7,7 @@
     key: ObjectType;
     previewUrl: string;
     alt: string;
+    click: () => void;
   }
 
   interface PanelGroup {
@@ -17,13 +18,16 @@
 </script>
 
 <script type="ts">
-  import { objectPanelSelector, objectPanelSlice } from './ObjectPanel.store';
-  import { takeUntil } from 'rxjs';
-  import { onDestroy$ } from '@/misc/svelte-rx';
+  import { objectPanelSlice } from './ObjectPanel.store';
   import { useDispatch, useSelector } from '@/app/hooks';
-  import { ObjectType } from '@/document/object.store';
+  import { objectsSlice, ObjectType } from '@/document/object.store';
+  import { currentQueueIndexSelector } from '@/document/queue.store';
+  import { documentSelector } from '@/document/document.store';
 
+  const document = useSelector(documentSelector());
+  const queueIndex = useSelector(currentQueueIndexSelector());
   const dispatch = useDispatch();
+
   const models: PanelGroup[] = [
     {
       name: 'object',
@@ -33,11 +37,28 @@
           key: ObjectType.RECTANGLE,
           previewUrl: rectanglePreview,
           alt: 'rectangle',
+          click: () =>
+            dispatch(
+              objectsSlice.actions.createObject({
+                index: $queueIndex,
+                type: ObjectType.RECTANGLE,
+                rect: {
+                  x: 0,
+                  y: 0,
+                  height: 100,
+                  width: 100,
+                  lineColor: 'red',
+                  lineType: 'red',
+                  lineWidth: 3,
+                },
+              }),
+            ),
         },
         {
           key: ObjectType.CIRCLE,
           previewUrl: circlePreview,
           alt: 'circle',
+          click: () => {},
         },
       ],
     },
@@ -49,6 +70,7 @@
           key: ObjectType.TEXTAREA,
           previewUrl: textareaPreview,
           alt: 'textarea',
+          click: () => {},
         },
       ],
     },
@@ -76,7 +98,7 @@
     {#if model.opened}
       <div class="object-list">
         {#each model.objects as object}
-          <div class="object-preview-container" on:click={() => onClick(object.key)}>
+          <div class="object-preview-container" on:click={() => object.click()}>
             <img class="object-preview-image" src={object.previewUrl} alt={object.alt} />
           </div>
         {/each}
