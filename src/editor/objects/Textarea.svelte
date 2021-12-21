@@ -12,6 +12,9 @@
   height={to.shape.height}
   stroke={object.stroke.strokeColor}
   stroke-width={object.stroke.strokeWidth}
+  stroke-dasharray={object.stroke.strokeDasharray.length
+    ? object.stroke.strokeDasharray.join(' ')
+    : null}
   fill="transparent"
 >
   {#if from}

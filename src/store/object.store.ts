@@ -80,7 +80,7 @@ export interface ObjectRect {
 }
 
 export interface ObjectStroke {
-  strokeType: string;
+  strokeDasharray: number[];
   strokeWidth: number;
   strokeColor: string;
 }
@@ -217,7 +217,7 @@ export const objectsSlice = createSlice({
             shape: { ...params.payload.rect },
             stroke: {
               strokeColor: 'black',
-              strokeType: 'type',
+              strokeDasharray: [],
               strokeWidth: 3,
             },
             text: {
@@ -237,7 +237,7 @@ export const objectsSlice = createSlice({
             shape: { ...params.payload.rect },
             stroke: {
               strokeColor: 'black',
-              strokeType: 'type',
+              strokeDasharray: [],
               strokeWidth: 3,
             },
             text: {

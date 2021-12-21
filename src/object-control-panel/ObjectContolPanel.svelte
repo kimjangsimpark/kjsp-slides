@@ -27,7 +27,7 @@
         uuid: object.uuid,
         stroke: {
           strokeColor: object.stroke.strokeColor,
-          strokeType: object.stroke.strokeType,
+          strokeDasharray: object.stroke.strokeDasharray,
           strokeWidth: pending,
         },
       }),
@@ -40,7 +40,20 @@
         uuid: object.uuid,
         stroke: {
           strokeColor: color,
-          strokeType: object.stroke.strokeType,
+          strokeDasharray: object.stroke.strokeDasharray,
+          strokeWidth: object.stroke.strokeWidth,
+        },
+      }),
+    );
+  };
+
+  const setObjectStrokeDasharray = (object: DocumentObject, dasharray: number[]) => {
+    dispatch(
+      objectsSlice.actions.updateStrokeOfObject({
+        uuid: object.uuid,
+        stroke: {
+          strokeColor: object.stroke.strokeColor,
+          strokeDasharray: dasharray,
           strokeWidth: object.stroke.strokeWidth,
         },
       }),
@@ -122,22 +135,17 @@
     </div>
     <ul>
       <li>
-        <button>
+        <button on:click={() => setObjectStrokeDasharray($selectedObject, [4, 4])}>
           <div class="dotted" />
         </button>
       </li>
       <li>
-        <button>
+        <button on:click={() => setObjectStrokeDasharray($selectedObject, [8, 8])}>
           <div class="dashed" />
         </button>
       </li>
       <li>
-        <button>
-          <div class="double" />
-        </button>
-      </li>
-      <li>
-        <button>
+        <button on:click={() => setObjectStrokeDasharray($selectedObject, [])}>
           <div class="solid" />
         </button>
       </li>
