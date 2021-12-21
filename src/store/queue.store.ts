@@ -1,11 +1,11 @@
 import type { SelectorFn } from '@/app/hooks';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { ObjectTransitionEffect, QueueObject } from './object.store';
+import type { ObjectTransitionEffect, Animatable } from './object.store';
 
 export interface CurrentQueueRangeObject {
   index: number;
   current: boolean;
-  objects: QueueObject[];
+  objects: Animatable[];
 }
 
 export function currentQueueRangeSelector(): SelectorFn<number[]> {
@@ -40,7 +40,12 @@ export function currentQueueRangeObjectsSelector(): SelectorFn<CurrentQueueRange
       });
 
       const transformedObjects = currentVisibleObjects.map(object => {
-        const immutable = { ...object };
+        const immutable: Animatable = {
+          uuid: object.uuid,
+          type: object.type,
+          shape: { ...object.shape },
+          duration: 0,
+        };
         const reversedEffects = object.effects.slice(0).reverse();
 
         const lastTransition = reversedEffects.find(
@@ -57,6 +62,9 @@ export function currentQueueRangeObjectsSelector(): SelectorFn<CurrentQueueRange
           width: currentTransition?.width || lastTransition?.width || object.shape.width,
           height: currentTransition?.height || lastTransition?.height || object.shape.height,
         };
+
+        immutable.duration = 0.5;
+
         return immutable;
       });
 

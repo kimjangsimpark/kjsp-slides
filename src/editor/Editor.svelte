@@ -1,14 +1,13 @@
 <script type="ts">
-  import { distinctUntilChanged, map, pairwise, startWith } from 'rxjs/operators';
+  import { debounceTime, distinctUntilChanged, map, pairwise } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { Document, documentSelector } from '@/store/document.store';
   import {
-    DocumentObject,
     ObjectRect,
     objectsByUUIDSelector,
     objectsSlice,
     ObjectType,
-    QueueObject,
+    Animatable,
   } from '@/store/object.store';
   import {
     currentQueueIndexSelector,
@@ -40,7 +39,7 @@
     map(ranges => ranges.find(range => range.current) as CurrentQueueRangeObject),
     map(current => {
       if (current) {
-        return current.objects.reduce<{ [key: string]: QueueObject }>(
+        return current.objects.reduce<{ [key: string]: Animatable }>(
           (result, object) => Object.assign(result, { [object.uuid]: object }),
           {},
         );
@@ -61,7 +60,7 @@
         previousIndex > currentIndex
           ? previousIndex - currentIndex
           : currentIndex - previousIndex;
-      if (diff === 1) {
+      if (diff === 1 && svgElement) {
         const animators =
           svgElement.querySelectorAll<SVGAnimateElement>('.queue-animator');
         animators.forEach(animator => animator.beginElement());
@@ -73,14 +72,14 @@
     dispatch(selectedObjectsSlice.actions.reset());
   };
 
-  const onObjectClicked = (e: MouseEvent, obj: QueueObject) => {
+  const onObjectClicked = (e: MouseEvent, obj: Animatable) => {
     e.preventDefault();
     e.stopPropagation();
     dispatch(selectedObjectsSlice.actions.set([obj.uuid]));
   };
 
   const onSelectedObjectMouseDown = (
-    object: QueueObject,
+    object: Animatable,
     customEvent: CustomEvent<{ event: MouseEvent }>,
   ) => {
     const e = customEvent.detail.event;
@@ -102,6 +101,7 @@
         objectsSlice.actions.updateTransitionOfObject({
           index: $currentQueueIndex,
           uuid: object.uuid,
+          duration: 0.5,
           rect: shape,
         }),
       );
@@ -117,7 +117,7 @@
   };
 
   const onSelectedObjectVertextMouseDown = (
-    object: QueueObject,
+    object: Animatable,
     e: CustomEvent<{
       position: string;
       event: MouseEvent;
@@ -207,6 +207,7 @@
         objectsSlice.actions.updateTransitionOfObject({
           index: $currentQueueIndex,
           uuid: object.uuid,
+          duration: 0.5,
           rect: shape,
         }),
       );
@@ -236,24 +237,26 @@
           {#if object.type === ObjectType.RECTANGLE}
             <g class="object" on:click={e => onObjectClicked(e, object)}>
               <Rectangle
-                currentObject={object}
-                previousObject={$previousMap ? $previousMap[object.uuid] : null}
+                object={$objectByUUID[object.uuid]}
+                to={object}
+                from={$previousMap ? $previousMap[object.uuid] : null}
               />
             </g>
           {/if}
-          {#if $objectByUUID[object.uuid].type === ObjectType.TEXTAREA}
+          {#if object.type === ObjectType.TEXTAREA}
             <g class="object" on:click={e => onObjectClicked(e, object)}>
               <Textarea
-                currentObject={object}
-                previousObject={$previousMap ? $previousMap[object.uuid] : null}
+                object={$objectByUUID[object.uuid]}
+                to={object}
+                from={$previousMap ? $previousMap[object.uuid] : null}
               />
             </g>
           {/if}
         {/each}
         {#if $selectedObjects && $selectedObjects.length}
           <SelectedObject
-            selected={$currentMap[$selectedObjects[0].uuid]}
-            previous={$previousMap ? $previousMap[$selectedObjects[0].uuid] : null}
+            to={$currentMap[$selectedObjects[0].uuid]}
+            from={$previousMap ? $previousMap[$selectedObjects[0].uuid] : null}
             on:rect-mousedown={e =>
               onSelectedObjectMouseDown($currentMap[$selectedObjects[0].uuid], e)}
             on:vertex-mousedown={e =>

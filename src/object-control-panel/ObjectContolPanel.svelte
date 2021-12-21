@@ -8,6 +8,7 @@
   import { DocumentObject, objectsSlice } from '@/store/object.store';
 
   const dispatch = useDispatch();
+
   const selectedObject = useSelector(selectedObjectsSelector()).pipe(
     map(objects => objects[0]),
   );
@@ -25,9 +26,9 @@
       objectsSlice.actions.updateStrokeOfObject({
         uuid: object.uuid,
         stroke: {
-          lineColor: object.stroke.lineColor,
-          lineType: object.stroke.lineType,
-          lineWidth: pending,
+          strokeColor: object.stroke.strokeColor,
+          strokeType: object.stroke.strokeType,
+          strokeWidth: pending,
         },
       }),
     );
@@ -38,9 +39,9 @@
       objectsSlice.actions.updateStrokeOfObject({
         uuid: object.uuid,
         stroke: {
-          lineColor: color,
-          lineType: object.stroke.lineType,
-          lineWidth: object.stroke.lineWidth,
+          strokeColor: color,
+          strokeType: object.stroke.strokeType,
+          strokeWidth: object.stroke.strokeWidth,
         },
       }),
     );
@@ -90,21 +91,21 @@
       <div class="line-width-input-wrapper">
         <button
           on:click={() =>
-            setObjectStrokeWidth($selectedObject, $selectedObject.stroke.lineWidth - 1)}
+            setObjectStrokeWidth($selectedObject, $selectedObject.stroke.strokeWidth - 1)}
           >&nbsp;-&nbsp;
         </button>
         <input
           type="number"
           name="lineWidth"
           id="lineWidth"
-          value={$selectedObject.stroke.lineWidth}
+          value={$selectedObject.stroke.strokeWidth}
           on:input={e => {
             onStrokeWidthInputChanged($selectedObject, e);
           }}
         />
         <button
           on:click={() =>
-            setObjectStrokeWidth($selectedObject, $selectedObject.stroke.lineWidth + 1)}
+            setObjectStrokeWidth($selectedObject, $selectedObject.stroke.strokeWidth + 1)}
           >&nbsp;+&nbsp;
         </button>
       </div>
@@ -114,7 +115,7 @@
           type="color"
           name="lineColorPicker"
           id="lineColorPicker"
-          value={$selectedObject.stroke.lineColor}
+          value={$selectedObject.stroke.strokeColor}
           on:input={e => onStrokeColorInputChanged($selectedObject, e)}
         />
       </div>

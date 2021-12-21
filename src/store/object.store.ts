@@ -39,6 +39,7 @@ export interface ObjectTransitionEffect extends CommonEffect {
   y: number;
   width: number;
   height: number;
+  duration: number;
 }
 
 export interface ObjectDeleteEffect extends CommonEffect {
@@ -57,14 +58,17 @@ export interface CommonEffect {
   type: ObjectEffectType;
 }
 
-export interface QueueObject {
+export interface Animatable {
   uuid: string;
   type: ObjectType;
   shape: ObjectRect;
+  duration: number;
 }
 
-export interface CommonObject extends QueueObject {
+export interface CommonObject {
+  uuid: string;
   type: ObjectType;
+  shape: ObjectRect;
   effects: ObjectEffect[];
 }
 
@@ -76,9 +80,9 @@ export interface ObjectRect {
 }
 
 export interface ObjectStroke {
-  lineType: string;
-  lineWidth: number;
-  lineColor: string;
+  strokeType: string;
+  strokeWidth: number;
+  strokeColor: string;
 }
 
 export interface ObjectText {
@@ -174,6 +178,7 @@ export interface ObjectTransitionUpdateParams {
   uuid: string;
   index: number;
   rect: ObjectRect;
+  duration: number;
 }
 
 export function createObjectUUID(): string {
@@ -211,9 +216,9 @@ export const objectsSlice = createSlice({
             type: params.payload.type,
             shape: { ...params.payload.rect },
             stroke: {
-              lineColor: 'black',
-              lineType: 'type',
-              lineWidth: 3,
+              strokeColor: 'black',
+              strokeType: 'type',
+              strokeWidth: 3,
             },
             text: {
               innerText: '',
@@ -231,9 +236,9 @@ export const objectsSlice = createSlice({
             type: params.payload.type,
             shape: { ...params.payload.rect },
             stroke: {
-              lineColor: 'black',
-              lineType: 'type',
-              lineWidth: 3,
+              strokeColor: 'black',
+              strokeType: 'type',
+              strokeWidth: 3,
             },
             text: {
               innerText: '',
@@ -286,6 +291,7 @@ export const objectsSlice = createSlice({
         pendingUpdate.effects[isTransitionEffectIndex] = {
           type: ObjectEffectType.TRANSITION,
           index: params.payload.index,
+          duration: params.payload.duration,
           ...params.payload.rect,
         };
       } else {
@@ -298,6 +304,7 @@ export const objectsSlice = createSlice({
         pendingUpdate.effects.splice(effectTargetIndex + 1, 0, {
           type: ObjectEffectType.TRANSITION,
           index: params.payload.index,
+          duration: params.payload.duration,
           ...params.payload.rect,
         });
       }

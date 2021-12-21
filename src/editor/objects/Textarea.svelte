@@ -1,101 +1,100 @@
 <script type="ts">
-  import type { QueueObject, TextareaObject } from '@/store/object.store';
-  export let currentObject: TextareaObject;
-  export let previousObject: QueueObject | TextareaObject | null;
+  import type { Animatable, TextareaObject } from '@/store/object.store';
+  export let object: TextareaObject;
+  export let to: Animatable;
+  export let from: Animatable | null;
 </script>
 
 <rect
-  x={currentObject.shape.x}
-  y={currentObject.shape.y}
-  width={currentObject.shape.width}
-  height={currentObject.shape.height}
-  stroke={currentObject.stroke.lineColor}
-  stroke-width={currentObject.stroke.lineWidth}
+  x={to.shape.x}
+  y={to.shape.y}
+  width={to.shape.width}
+  height={to.shape.height}
+  stroke={object.stroke.strokeColor}
+  stroke-width={object.stroke.strokeWidth}
   fill="transparent"
 >
-  {#if previousObject}
+  {#if from}
     <animate
       class="queue-animator"
       begin="indefinite"
       attributeName="height"
-      from={previousObject.shape.height}
-      to={currentObject.shape.height}
-      dur="0.5s"
+      from={from.shape.height}
+      to={to.shape.height}
+      dur={`${from.duration}s`}
     />
     <animate
       class="queue-animator"
       begin="indefinite"
       attributeName="width"
-      from={previousObject.shape.width}
-      to={currentObject.shape.width}
-      dur="0.5s"
+      from={from.shape.width}
+      to={to.shape.width}
+      dur={`${from.duration}s`}
     />
     <animate
       class="queue-animator"
       begin="indefinite"
       attributeName="x"
-      from={previousObject.shape.x}
-      to={currentObject.shape.x}
-      dur="0.5s"
+      from={from.shape.x}
+      to={to.shape.x}
+      dur={`${from.duration}s`}
     />
     <animate
       class="queue-animator"
       begin="indefinite"
       attributeName="y"
-      from={previousObject.shape.y}
-      to={currentObject.shape.y}
-      dur="0.5s"
+      from={from.shape.y}
+      to={to.shape.y}
+      dur={`${from.duration}s`}
     />
   {/if}
 </rect>
 <foreignObject
-  x={currentObject.shape.x}
-  y={currentObject.shape.y}
-  width={currentObject.shape.width}
-  height={currentObject.shape.height}
-  stroke={currentObject.stroke.lineColor}
-  stroke-width={currentObject.stroke.lineWidth}
+  x={to.shape.x}
+  y={to.shape.y}
+  width={to.shape.width}
+  height={to.shape.height}
   fill="transparent"
 >
-  {#if currentObject.text}
+  {#if object.text}
     <textarea
       class="object-textarea"
       style="height: 100%; width: 100%;"
-      value={currentObject.text.innerText}
+      value={object.text.innerText}
     />
   {/if}
-  {#if previousObject}
+  {#if from}
     <animate
       class="queue-animator"
       begin="indefinite"
       attributeName="height"
-      from={previousObject.shape.height}
-      to={currentObject.shape.height}
-      dur="0.5s"
+      from={from.shape.height}
+      to={to.shape.height}
+      dur={`${from.duration}s`}
     />
     <animate
       class="queue-animator"
       begin="indefinite"
       attributeName="width"
-      from={previousObject.shape.width}
-      to={currentObject.shape.width}
-      dur="0.5s"
+      from={from.shape.width}
+      to={to.shape.width}
+      dur={`${from.duration}s`}
     />
     <animate
       class="queue-animator"
       begin="indefinite"
       attributeName="x"
-      from={previousObject.shape.x}
-      to={currentObject.shape.x}
-      dur="0.5s"
+      from={from.shape.x}
+      to={to.shape.x}
+      dur={`${from.duration}s`}
     />
     <animate
       class="queue-animator"
       begin="indefinite"
       attributeName="y"
-      from={previousObject.shape.y}
-      to={currentObject.shape.y}
-      dur="0.5s"
+      from={from.shape.y}
+      to={to.shape.y}
+      dur={`${from.duration}s`}
     />
   {/if}
 </foreignObject>
