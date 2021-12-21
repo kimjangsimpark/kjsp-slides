@@ -1,5 +1,5 @@
 <script type="ts">
-  import { map, pairwise, startWith } from 'rxjs/operators';
+  import { distinctUntilChanged, map, pairwise, startWith } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { Document, documentSelector } from '@/store/document.store';
   import {
@@ -16,10 +16,7 @@
     currentQueueRangeObjectsSelector,
   } from '@/store/queue.store';
   import type { Observable } from 'rxjs';
-  import {
-    selectedObjectsSelector,
-    selectedObjectsSlice,
-  } from '@/store/selected.store';
+  import { selectedObjectsSelector, selectedObjectsSlice } from '@/store/selected.store';
   import Rectangle from './objects/Rectangle.svelte';
   import Textarea from './objects/Textarea.svelte';
   import SelectedObject from './SelectedObject.svelte';
@@ -53,19 +50,24 @@
     }),
   );
 
-  const previousMap = current.pipe(
+  const previousMap = currentMap.pipe(
     pairwise(),
-    map(([previous, current]) => {
-      if (previous) {
-        return previous.objects.reduce<{ [key: string]: QueueObject }>(
-          (result, object) => Object.assign(result, { [object.uuid]: object }),
-          {},
-        );
-      } else {
-        return {};
-      }
-    }),
+    map(([previous]) => previous || {}),
   );
+
+  currentQueueIndex.pipe(distinctUntilChanged(), pairwise()).subscribe({
+    next: ([previousIndex, currentIndex]) => {
+      const diff =
+        previousIndex > currentIndex
+          ? previousIndex - currentIndex
+          : currentIndex - previousIndex;
+      if (diff === 1) {
+        const animators =
+          svgElement.querySelectorAll<SVGAnimateElement>('.queue-animator');
+        animators.forEach(animator => animator.beginElement());
+      }
+    },
+  });
 
   const onEmptySpaceClicked = () => {
     dispatch(selectedObjectsSlice.actions.reset());
@@ -77,10 +79,12 @@
     dispatch(selectedObjectsSlice.actions.set([obj.uuid]));
   };
 
-  const onSelectedObjectMouseDown = (customEvent: CustomEvent<{ event: MouseEvent }>) => {
+  const onSelectedObjectMouseDown = (
+    object: QueueObject,
+    customEvent: CustomEvent<{ event: MouseEvent }>,
+  ) => {
     const e = customEvent.detail.event;
     if (!$selectedObjects.length) return;
-    const object = { ...$selectedObjects[0] };
     const positionX = e.offsetX;
     const positionY = e.offsetY;
     const capture = object.shape;
@@ -113,13 +117,13 @@
   };
 
   const onSelectedObjectVertextMouseDown = (
+    object: QueueObject,
     e: CustomEvent<{
       position: string;
       event: MouseEvent;
     }>,
   ) => {
     const position = e.detail.position;
-    const object = $selectedObjects[0];
     const positionX = e.detail.event.offsetX;
     const positionY = e.detail.event.offsetY;
     const capture = {
@@ -216,11 +220,6 @@
     svgElement.addEventListener('mousemove', onMouseMove);
     svgElement.addEventListener('mouseup', onMouseUp);
   };
-
-  const executeQueueAnimation = () => {
-    const animators = svgElement.querySelectorAll<SVGAnimateElement>('.queue-animator');
-    animators.forEach(animator => animator.beginElement());
-  };
 </script>
 
 <div id="editor">
@@ -253,10 +252,12 @@
         {/each}
         {#if $selectedObjects && $selectedObjects.length}
           <SelectedObject
-            selected={$selectedObjects[0]}
+            selected={$currentMap[$selectedObjects[0].uuid]}
             previous={$previousMap ? $previousMap[$selectedObjects[0].uuid] : null}
-            on:rect-mousedown={e => onSelectedObjectMouseDown(e)}
-            on:vertex-mousedown={e => onSelectedObjectVertextMouseDown(e)}
+            on:rect-mousedown={e =>
+              onSelectedObjectMouseDown($currentMap[$selectedObjects[0].uuid], e)}
+            on:vertex-mousedown={e =>
+              onSelectedObjectVertextMouseDown($currentMap[$selectedObjects[0].uuid], e)}
           />
         {/if}
       </svg>

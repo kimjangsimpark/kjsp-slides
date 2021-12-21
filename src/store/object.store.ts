@@ -293,7 +293,7 @@ export const objectsSlice = createSlice({
           effect => effect.index > params.payload.index,
         );
         if (effectTargetIndex === -1) {
-          effectTargetIndex = pendingUpdate.effects.length - 2;
+          effectTargetIndex = pendingUpdate.effects.length - 1;
         }
         pendingUpdate.effects.splice(effectTargetIndex + 1, 0, {
           type: ObjectEffectType.TRANSITION,
