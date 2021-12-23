@@ -1,14 +1,14 @@
 {
-	"extends": "@tsconfig/svelte/tsconfig.json",
-	"include": ["src/**/*", "src/node_modules/**/*"],
-	"exclude": ["node_modules/*", "__sapper__/*", "static/*"],
-	"compilerOptions": {
-		"lib": ["DOM", "ES2017", "WebWorker"],
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
-		"importsNotUsedAsValues": "error",
-		"strict": true,
-		"baseUrl": "./",
-		"paths": { "@/*": ["src/*"] }
-	}
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": ["src/**/*", "src/node_modules/**/*"],
+  "exclude": ["node_modules/*", "__sapper__/*", "static/*"],
+  "compilerOptions": {
+    "lib": ["es5", "es6", "dom", "es2016"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "importsNotUsedAsValues": "error",
+    "strict": true,
+    "baseUrl": "./",
+    "paths": { "@/*": ["src/*"] }
+  }
 }

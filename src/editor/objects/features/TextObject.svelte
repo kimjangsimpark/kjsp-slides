@@ -11,6 +11,7 @@
   import { selectedObjectsSelector } from '@/store/selected.store';
   import { filter, map, takeUntil } from 'rxjs';
   export let object: DocumentObject;
+  export let edit: boolean;
   export let to: Animatable;
   export let from: Animatable | null;
   export let text: ObjectText;
@@ -105,6 +106,7 @@
 
 <style type="scss">
   div.object-textarea-wrapper {
+    cursor: default;
     width: 100%;
     height: 100%;
     display: flex;

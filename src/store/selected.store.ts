@@ -2,11 +2,13 @@ import type { SelectorFn } from '@/app/hooks';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { DocumentObject, objectsByUUIDSelector } from './object.store';
 
-const selectedUUIDSelector: SelectorFn<string[]> = state => state.selectedObjects;
+export const selectedUUIDSelector = (): SelectorFn<string[]> => {
+  return state => state.selectedObjects;
+};
 
 export const selectedObjectsSelector = (): SelectorFn<DocumentObject[]> => {
   return state => {
-    const uuids = selectedUUIDSelector(state);
+    const uuids = selectedUUIDSelector()(state);
     const objects = objectsByUUIDSelector()(state);
     return uuids.map(uuid => {
       if (!objects[uuid]) {
