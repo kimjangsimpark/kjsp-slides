@@ -44,7 +44,7 @@
     #app-body {
       flex: 1 1 auto;
       display: flex;
-      height: calc(100vh - 108px);
+      height: calc(100vh - 110px);
 
       #side-bar-root {
         flex: 0 0 auto;

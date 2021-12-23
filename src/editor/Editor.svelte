@@ -6,7 +6,6 @@
     ObjectRect,
     objectsByUUIDSelector,
     objectsSlice,
-    ObjectType,
     Animatable,
   } from '@/store/object.store';
   import {
@@ -16,10 +15,9 @@
   } from '@/store/queue.store';
   import type { Observable } from 'rxjs';
   import { selectedObjectsSelector, selectedObjectsSlice } from '@/store/selected.store';
-  import Rectangle from './objects/Rectangle.svelte';
-  import Textarea from './objects/Textarea.svelte';
   import SelectedObject from './SelectedObject.svelte';
   import { scaleSelector } from '@/store/scale.store';
+  import DocumentObject from './objects/DocumentObject.svelte';
 
   let svgElement: SVGElement;
 
@@ -70,12 +68,6 @@
 
   const onEmptySpaceClicked = () => {
     dispatch(selectedObjectsSlice.actions.reset());
-  };
-
-  const onObjectClicked = (e: MouseEvent, obj: Animatable) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dispatch(selectedObjectsSlice.actions.set([obj.uuid]));
   };
 
   const onSelectedObjectMouseDown = (
@@ -234,24 +226,11 @@
         on:click={() => onEmptySpaceClicked()}
       >
         {#each $current.objects as object (object.uuid)}
-          {#if object.type === ObjectType.RECTANGLE}
-            <g class="object" on:click={e => onObjectClicked(e, object)}>
-              <Rectangle
-                object={$objectByUUID[object.uuid]}
-                to={object}
-                from={$previousMap ? $previousMap[object.uuid] : null}
-              />
-            </g>
-          {/if}
-          {#if object.type === ObjectType.TEXTAREA}
-            <g class="object" on:click={e => onObjectClicked(e, object)}>
-              <Textarea
-                object={$objectByUUID[object.uuid]}
-                to={object}
-                from={$previousMap ? $previousMap[object.uuid] : null}
-              />
-            </g>
-          {/if}
+          <DocumentObject
+            object={$objectByUUID[object.uuid]}
+            to={object}
+            from={$previousMap ? $previousMap[object.uuid] : null}
+          />
         {/each}
         {#if $selectedObjects && $selectedObjects.length}
           <SelectedObject
@@ -283,10 +262,6 @@
   #frame {
     display: inline-block;
     padding: 20px;
-  }
-
-  .object {
-    cursor: move;
   }
 
   .page {

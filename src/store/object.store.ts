@@ -65,13 +65,6 @@ export interface Animatable {
   duration: number;
 }
 
-export interface CommonObject {
-  uuid: string;
-  type: ObjectType;
-  shape: ObjectRect;
-  effects: ObjectEffect[];
-}
-
 export interface ObjectRect {
   x: number;
   y: number;
@@ -87,9 +80,30 @@ export interface ObjectStroke {
 
 export interface ObjectText {
   innerText: string;
+  fontSize: number;
   textColor: string;
+  verticalAlign: TextObjectVerticalAlign,
+  horizontalAlign: TextObjectHorizontalAlign,
 }
 
+export enum TextObjectVerticalAlign {
+  TOP = 'top',
+  CENTER = 'center',
+  BOTTOM = 'bottom',
+}
+
+export enum TextObjectHorizontalAlign {
+  LEFT = 'left',
+  CENTER = 'center',
+  RIGHT = 'right',
+}
+
+export interface CommonObject {
+  uuid: string;
+  type: ObjectType;
+  shape: ObjectRect;
+  effects: ObjectEffect[];
+}
 
 export interface RectangleObject extends CommonObject {
   type: ObjectType.RECTANGLE;
@@ -222,7 +236,10 @@ export const objectsSlice = createSlice({
             },
             text: {
               innerText: '',
+              fontSize: 30,
               textColor: 'black',
+              verticalAlign: TextObjectVerticalAlign.CENTER,
+              horizontalAlign: TextObjectHorizontalAlign.CENTER,
             },
             effects: [{
               index: params.payload.index,
@@ -241,8 +258,11 @@ export const objectsSlice = createSlice({
               strokeWidth: 3,
             },
             text: {
-              innerText: '',
+              innerText: 'Text',
+              fontSize: 30,
               textColor: 'black',
+              verticalAlign: TextObjectVerticalAlign.CENTER,
+              horizontalAlign: TextObjectHorizontalAlign.CENTER,
             },
             effects: [{
               index: params.payload.index,
@@ -299,9 +319,9 @@ export const objectsSlice = createSlice({
           effect => effect.index > params.payload.index,
         );
         if (effectTargetIndex === -1) {
-          effectTargetIndex = pendingUpdate.effects.length - 1;
+          effectTargetIndex = pendingUpdate.effects.length;
         }
-        pendingUpdate.effects.splice(effectTargetIndex + 1, 0, {
+        pendingUpdate.effects.splice(effectTargetIndex, 0, {
           type: ObjectEffectType.TRANSITION,
           index: params.payload.index,
           duration: params.payload.duration,

@@ -2,15 +2,24 @@
 </script>
 
 <script type="ts">
-  import { map } from 'rxjs/operators';
+  import { filter, map } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { selectedObjectsSelector } from '@/store/selected.store';
   import { DocumentObject, objectsSlice } from '@/store/object.store';
+  import { currentQueueIndexSelector } from '@/store/queue.store';
 
+  const currentQueueIndex = useSelector(currentQueueIndexSelector());
   const dispatch = useDispatch();
 
   const selectedObject = useSelector(selectedObjectsSelector()).pipe(
     map(objects => objects[0]),
+    filter(object => Boolean(object)),
+  );
+
+  const effects = selectedObject.pipe(map(object => object.effects));
+
+  const currentEffects = effects.pipe(
+    map(effects => effects.filter(effect => effect.index === $currentQueueIndex)),
   );
 
   const setObjectStrokeWidth = (object: DocumentObject, width: number | string) => {
@@ -73,27 +82,28 @@
 
 <aside id="object-control-panel-root">
   <section class="panel-section action-list-wrapper">
-    <header><h2>Action list</h2></header>
+    <header><h2>Effects</h2></header>
     <ol class="list">
-      {#if $selectedObject}
-        {#each $selectedObject.effects as effect}
-          <li class="list-item">
-            #{Number(effect.index) + 1}
-            {effect.type}
-          </li>
-        {/each}
-      {/if}
+      {#each $effects as effect}
+        <li class="list-item">
+          #{Number(effect.index) + 1}
+          {effect.type}
+        </li>
+      {/each}
     </ol>
   </section>
 
   <section class="panel-section effect-list-wrapper">
     <header>
-      <h2>Effect List</h2>
+      <h2>Current effects</h2>
       <button>+</button>
     </header>
     <ol class="list">
-      {#each $selectedObject.effects as effect}
-        <li class="list-item">{effect.type}</li>
+      {#each $currentEffects as effect}
+        <li class="list-item">
+          #{Number(effect.index) + 1}
+          {effect.type}
+        </li>
       {/each}
     </ol>
   </section>
@@ -154,6 +164,12 @@
 
   <section class="panel-section fill-wrapper">
     <header><h2>fill</h2></header>
+  </section>
+
+  <section class="panel-section effect-list-wrapper">
+    <header>
+      <h2>Font Size</h2>
+    </header>
   </section>
 </aside>
 
