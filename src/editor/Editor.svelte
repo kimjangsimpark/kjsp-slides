@@ -6,25 +6,21 @@
 </script>
 
 <script type="ts">
-  import {
-    distinctUntilChanged,
-    filter,
-    map,
-    pairwise,
-    startWith,
-    takeUntil,
-    tap,
-  } from 'rxjs/operators';
+  import { distinctUntilChanged, map, pairwise, takeUntil, tap } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { Document, documentSelector } from '@/store/document.store';
-  import { objectsByUUIDSelector, Animatable } from '@/store/object.store';
+  import { objectsByUUIDSelector, Animatable, objectsSlice } from '@/store/object.store';
   import {
     currentQueueIndexSelector,
     CurrentQueueRangeObject,
     currentQueueRangeObjectsSelector,
   } from '@/store/queue.store';
   import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
-  import { selectedObjectsSlice } from '@/store/selected.store';
+  import {
+    selectedObjectsSelector,
+    selectedObjectsSlice,
+    selectedUUIDSelector,
+  } from '@/store/selected.store';
   import { scaleSelector } from '@/store/scale.store';
   import DocumentObject from './objects/DocumentObject.svelte';
 
@@ -36,6 +32,7 @@
   const objectByUUID = useSelector(objectsByUUIDSelector());
   const currentQueueIndex = useSelector(currentQueueIndexSelector());
   const rangeObjects = useSelector(currentQueueRangeObjectsSelector());
+  const selectedUUIDs = useSelector(selectedUUIDSelector());
   const selectionRange = new BehaviorSubject<any>(null);
 
   const current = rangeObjects.pipe(
@@ -129,6 +126,52 @@
         },
       });
   };
+
+  const onObjectMouseDown = (object: Animatable, e: CustomEvent<MouseEvent>) => {
+    e.detail.preventDefault();
+    e.detail.stopPropagation();
+
+    if (!$selectedUUIDs.includes(object.uuid)) {
+      dispatch(selectedObjectsSlice.actions.set([object.uuid]));
+    }
+
+    const positionX = e.detail.clientX;
+    const positionY = e.detail.clientY;
+    const captures = $selectedUUIDs.map(uuid => ({
+      uuid: uuid,
+      capture: $currentMap[uuid].shape,
+    }));
+
+    const onSelectedObjectMouseMove = (e: MouseEvent) => {
+      const diffX = (e.clientX - positionX) * (1 / $scale);
+      const diffY = (e.clientY - positionY) * (1 / $scale);
+
+      captures.forEach(({ uuid, capture }) => {
+        const shape = {
+          x: capture.x + diffX,
+          y: capture.y + diffY,
+          width: capture.width,
+          height: capture.height,
+        };
+        dispatch(
+          objectsSlice.actions.updateTransitionOfObject({
+            index: $currentQueueIndex,
+            uuid: uuid,
+            duration: 0.5,
+            rect: shape,
+          }),
+        );
+      });
+    };
+
+    const onSelectedObjectMouseUp = (e: MouseEvent) => {
+      document.body.removeEventListener('mousemove', onSelectedObjectMouseMove);
+      document.body.removeEventListener('mouseup', onSelectedObjectMouseUp);
+    };
+
+    document.body.addEventListener('mousemove', onSelectedObjectMouseMove);
+    document.body.addEventListener('mouseup', onSelectedObjectMouseUp);
+  };
 </script>
 
 <div id="editor">
@@ -143,6 +186,7 @@
       >
         {#each $current.objects as object (object.uuid)}
           <DocumentObject
+            on:mousedown={e => onObjectMouseDown(object, e)}
             object={$objectByUUID[object.uuid]}
             to={object}
             from={$previousMap ? $previousMap[object.uuid] : null}
