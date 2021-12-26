@@ -9,18 +9,19 @@
   import { distinctUntilChanged, map, pairwise, takeUntil, tap } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { Document, documentSelector } from '@/store/document.store';
-  import { objectsByUUIDSelector, Animatable, objectsSlice } from '@/store/object.store';
+  import {
+    objectsByUUIDSelector,
+    Animatable,
+    objectsSlice,
+    ObjectRect,
+  } from '@/store/object.store';
   import {
     currentQueueIndexSelector,
     CurrentQueueRangeObject,
     currentQueueRangeObjectsSelector,
   } from '@/store/queue.store';
   import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
-  import {
-    selectedObjectsSelector,
-    selectedObjectsSlice,
-    selectedUUIDSelector,
-  } from '@/store/selected.store';
+  import { selectedObjectsSlice, selectedUUIDSelector } from '@/store/selected.store';
   import { scaleSelector } from '@/store/scale.store';
   import DocumentObject from './objects/DocumentObject.svelte';
 
@@ -34,6 +35,8 @@
   const rangeObjects = useSelector(currentQueueRangeObjectsSelector());
   const selectedUUIDs = useSelector(selectedUUIDSelector());
   const selectionRange = new BehaviorSubject<any>(null);
+
+  const pendingTransitionUpdate: { [key: string]: Animatable } = {};
 
   const current = rangeObjects.pipe(
     map(ranges => ranges.find(range => range.current) as CurrentQueueRangeObject),
@@ -137,10 +140,15 @@
 
     const positionX = e.detail.clientX;
     const positionY = e.detail.clientY;
+
     const captures = $selectedUUIDs.map(uuid => ({
       uuid: uuid,
       capture: $currentMap[uuid].shape,
     }));
+
+    $selectedUUIDs.forEach(uuid => {
+      pendingTransitionUpdate[uuid] = { ...$currentMap[uuid] };
+    });
 
     const onSelectedObjectMouseMove = (e: MouseEvent) => {
       const diffX = (e.clientX - positionX) * (1 / $scale);
@@ -153,18 +161,24 @@
           width: capture.width,
           height: capture.height,
         };
+        pendingTransitionUpdate[uuid].shape = shape;
+      });
+    };
+
+    const onSelectedObjectMouseUp = () => {
+      $selectedUUIDs.forEach(uuid => {
         dispatch(
           objectsSlice.actions.updateTransitionOfObject({
             index: $currentQueueIndex,
             uuid: uuid,
             duration: 0.5,
-            rect: shape,
+            rect: pendingTransitionUpdate[uuid].shape,
           }),
         );
       });
-    };
-
-    const onSelectedObjectMouseUp = (e: MouseEvent) => {
+      Object.keys(pendingTransitionUpdate).forEach(
+        key => delete pendingTransitionUpdate[key],
+      );
       document.body.removeEventListener('mousemove', onSelectedObjectMouseMove);
       document.body.removeEventListener('mouseup', onSelectedObjectMouseUp);
     };
@@ -188,7 +202,7 @@
           <DocumentObject
             on:mousedown={e => onObjectMouseDown(object, e)}
             object={$objectByUUID[object.uuid]}
-            to={object}
+            to={pendingTransitionUpdate[object.uuid] || object}
             from={$previousMap ? $previousMap[object.uuid] : null}
           />
         {/each}
