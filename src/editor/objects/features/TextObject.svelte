@@ -77,6 +77,7 @@
       bind:this={textarea}
       class="object-textarea"
       contenteditable="true"
+      spellcheck="false"
       on:keydown={e => onKeydown(e)}
       on:mousedown={e => onMousedown(e)}
       style="font-size: {text.fontSize}px;"
@@ -131,6 +132,7 @@
     div.object-textarea {
       outline: 0px solid transparent;
       display: inline-block;
+
       cursor: text;
     }
   }
