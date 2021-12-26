@@ -40,12 +40,19 @@
 
   $: horizontalAlign =
     text.horizontalAlign === TextObjectHorizontalAlign.LEFT
-      ? 'flex-start'
+      ? 'left'
       : text.horizontalAlign === TextObjectHorizontalAlign.CENTER
       ? 'center'
       : text.horizontalAlign === TextObjectHorizontalAlign.RIGHT
-      ? 'flex-end'
+      ? 'right'
       : '';
+
+  const onKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      document.execCommand('insertLineBreak');
+      e.preventDefault();
+    }
+  };
 </script>
 
 <foreignObject
@@ -57,14 +64,14 @@
 >
   <div
     class="object-textarea-wrapper"
-    style="justify-content: {verticalAlign}; align-items: {horizontalAlign};"
+    style="justify-content: {verticalAlign}; text-align: {horizontalAlign};"
   >
     <div
       bind:this={textarea}
-      on:input={e => console.log(e)}
       class="object-textarea"
       contenteditable="true"
-      style="font-size: {text.fontSize}px; align-items: {horizontalAlign};"
+      on:keydown={e => onKeydown(e)}
+      style="font-size: {text.fontSize}px;"
       value={text.innerText}
     />
   </div>
@@ -115,7 +122,7 @@
 
     div.object-textarea {
       outline: 0px solid transparent;
-      display: flex;
+      display: inline-block;
       flex-direction: column;
       justify-content: center;
       align-items: center;
