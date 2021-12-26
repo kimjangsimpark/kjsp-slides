@@ -11,6 +11,7 @@
     filter,
     map,
     pairwise,
+    startWith,
     takeUntil,
     tap,
   } from 'rxjs/operators';
@@ -89,17 +90,23 @@
           fromEvent<MouseEvent>(document.body, 'mouseup').pipe(
             tap(() => {
               const range = selectionRange.getValue();
+
               if (!range) {
                 return;
               }
 
-              const selections = $current.objects.map(object => {
-                return (
-                  object.shape.x > range.x &&
-                  object.shape.x + object.shape.width < range.x + range.width
-                );
-              });
+              const selections = $current.objects
+                .filter(object => {
+                  return (
+                    object.shape.x > range.x &&
+                    object.shape.x + object.shape.width < range.x + range.width &&
+                    object.shape.y > range.y &&
+                    object.shape.y + object.shape.height < range.y + range.height
+                  );
+                })
+                .map(object => object.uuid);
 
+              dispatch(selectedObjectsSlice.actions.set(selections));
               selectionRange.next(null);
             }),
           ),
@@ -151,7 +158,8 @@
               height={$selectionRange.height}
               stroke="black"
               stroke-width="1"
-              fill="transparent"
+              fill-opacity="25%"
+              fill="black"
             />
           </g>
         {/if}
