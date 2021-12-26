@@ -6,25 +6,26 @@
 </script>
 
 <script type="ts">
-  import { distinctUntilChanged, map, pairwise } from 'rxjs/operators';
+  import {
+    distinctUntilChanged,
+    filter,
+    map,
+    pairwise,
+    takeUntil,
+    tap,
+  } from 'rxjs/operators';
   import { useDispatch, useSelector } from '@/app/hooks';
   import { Document, documentSelector } from '@/store/document.store';
-  import {
-    ObjectRect,
-    objectsByUUIDSelector,
-    objectsSlice,
-    Animatable,
-  } from '@/store/object.store';
+  import { objectsByUUIDSelector, Animatable } from '@/store/object.store';
   import {
     currentQueueIndexSelector,
     CurrentQueueRangeObject,
     currentQueueRangeObjectsSelector,
   } from '@/store/queue.store';
-  import type { Observable } from 'rxjs';
-  import { selectedObjectsSelector, selectedObjectsSlice } from '@/store/selected.store';
+  import { BehaviorSubject, fromEvent, Observable } from 'rxjs';
+  import { selectedObjectsSlice } from '@/store/selected.store';
   import { scaleSelector } from '@/store/scale.store';
   import DocumentObject from './objects/DocumentObject.svelte';
-  import SelectedObject from './objects/Resizers.svelte';
 
   let svgElement: SVGElement;
 
@@ -32,9 +33,9 @@
   const doc = useSelector(documentSelector()) as Observable<Document>;
   const scale = useSelector(scaleSelector());
   const objectByUUID = useSelector(objectsByUUIDSelector());
-  const selectedObjects = useSelector(selectedObjectsSelector());
   const currentQueueIndex = useSelector(currentQueueIndexSelector());
   const rangeObjects = useSelector(currentQueueRangeObjectsSelector());
+  const selectionRange = new BehaviorSubject<any>(null);
 
   const current = rangeObjects.pipe(
     map(ranges => ranges.find(range => range.current) as CurrentQueueRangeObject),
@@ -73,8 +74,53 @@
     },
   });
 
-  const onEmptySpaceClicked = () => {
+  const onEmptySpaceClicked = (e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     dispatch(selectedObjectsSlice.actions.reset());
+    const startOffsetX = e.offsetX;
+    const startOffsetY = e.offsetY;
+    const startClientX = e.clientX;
+    const startClientY = e.clientY;
+    fromEvent<MouseEvent>(document.body, 'mousemove')
+      .pipe(
+        takeUntil(
+          fromEvent<MouseEvent>(document.body, 'mouseup').pipe(
+            tap(() => {
+              const range = selectionRange.getValue();
+              if (!range) {
+                return;
+              }
+
+              const selections = $current.objects.map(object => {
+                return (
+                  object.shape.x > range.x &&
+                  object.shape.x + object.shape.width < range.x + range.width
+                );
+              });
+
+              selectionRange.next(null);
+            }),
+          ),
+        ),
+      )
+      .subscribe({
+        next: e => {
+          const movedX = (e.clientX - startClientX) * (1 / $scale);
+          const movedY = (e.clientY - startClientY) * (1 / $scale);
+          const startX = movedX >= 0 ? startOffsetX : startOffsetX + movedX;
+          const startY = movedY >= 0 ? startOffsetY : startOffsetY + movedY;
+          const width = Math.abs(movedX);
+          const height = Math.abs(movedY);
+          selectionRange.next({
+            x: startX,
+            y: startY,
+            width: width,
+            height: height,
+          });
+        },
+      });
   };
 </script>
 
@@ -86,7 +132,7 @@
         id="svg"
         class="page"
         style="width: {$doc.rect.width}px; height: {$doc.rect.height}px;"
-        on:mousedown={() => onEmptySpaceClicked()}
+        on:mousedown={e => onEmptySpaceClicked(e)}
       >
         {#each $current.objects as object (object.uuid)}
           <DocumentObject
@@ -95,6 +141,20 @@
             from={$previousMap ? $previousMap[object.uuid] : null}
           />
         {/each}
+
+        {#if $selectionRange}
+          <g class="range-selector">
+            <rect
+              x={$selectionRange.x}
+              y={$selectionRange.y}
+              width={$selectionRange.width}
+              height={$selectionRange.height}
+              stroke="black"
+              stroke-width="1"
+              fill="transparent"
+            />
+          </g>
+        {/if}
       </svg>
     </div>
   </div>
