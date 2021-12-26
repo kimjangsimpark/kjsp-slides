@@ -34,7 +34,6 @@
   const scale = useSelector(scaleSelector());
   const currentQueueIndex = useSelector(currentQueueIndexSelector());
   const selected = useSelector(selectedUUIDSelector()).pipe(
-    tap(e => console.log(e)),
     map(uuids => uuids.includes(object.uuid)),
   );
 

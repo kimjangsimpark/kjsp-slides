@@ -53,6 +53,10 @@
       e.preventDefault();
     }
   };
+
+  const onMousedown = (e: MouseEvent) => {
+    e.stopPropagation();
+  };
 </script>
 
 <foreignObject
@@ -71,6 +75,7 @@
       class="object-textarea"
       contenteditable="true"
       on:keydown={e => onKeydown(e)}
+      on:mousedown={e => onMousedown(e)}
       style="font-size: {text.fontSize}px;"
       value={text.innerText}
     />
@@ -123,9 +128,7 @@
     div.object-textarea {
       outline: 0px solid transparent;
       display: inline-block;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      cursor: text;
     }
   }
 </style>
