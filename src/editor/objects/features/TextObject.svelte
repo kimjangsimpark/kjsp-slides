@@ -1,5 +1,5 @@
 <script type="ts">
-  import { useSelector } from '@/app/hooks';
+  import { useDispatch, useSelector } from '@/app/hooks';
   import { onDestroy$ } from '@/misc/svelte-rx';
   import {
     Animatable,
@@ -8,13 +8,15 @@
     TextObjectHorizontalAlign,
     TextObjectVerticalAlign,
   } from '@/store/object.store';
-  import { selectedObjectsSelector } from '@/store/selected.store';
+  import { selectedObjectsSelector, selectedObjectsSlice } from '@/store/selected.store';
   import { filter, map, takeUntil } from 'rxjs';
   export let object: DocumentObject;
   export let edit: boolean;
   export let to: Animatable;
   export let from: Animatable | null;
   export let text: ObjectText;
+
+  const dispatch = useDispatch();
 
   let textarea: HTMLDivElement;
 
@@ -56,6 +58,7 @@
 
   const onMousedown = (e: MouseEvent) => {
     e.stopPropagation();
+    dispatch(selectedObjectsSlice.actions.set([object.uuid]));
   };
 </script>
 
