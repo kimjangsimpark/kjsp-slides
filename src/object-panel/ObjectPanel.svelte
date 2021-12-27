@@ -1,12 +1,8 @@
 <script type="ts" context="module">
-	import rectanglePreview from './previews/rectangle.svg';
-	import circlePreview from './previews/circle.svg';
-	import textareaPreview from './previews/textarea.svg';
-
 	interface PanelItem {
 		key: ObjectType;
-		previewUrl: string;
-		preview?: string;
+		keywords: string[];
+		preview: string;
 		alt: string;
 		click: () => void;
 	}
@@ -29,6 +25,7 @@
 	const document = useSelector(documentSelector()) as Observable<Document>;
 	const queueIndex = useSelector(currentQueueIndexSelector());
 	const dispatch = useDispatch();
+	let keyword: string = '';
 
 	const models: PanelGroup[] = [
 		{
@@ -37,7 +34,7 @@
 			objects: [
 				{
 					key: ObjectType.RECTANGLE,
-					previewUrl: rectanglePreview,
+					keywords: ['rectangle', 'square'],
 					preview: `
             <g>
               <rect width="30" height="30" stroke="black" stroke-width="4" fill="transparent" />
@@ -61,7 +58,7 @@
 				},
 				{
 					key: ObjectType.CIRCLE,
-					previewUrl: circlePreview,
+					keywords: ['circle', 'ellipse'],
 					preview: `
             <g>
               <circle cx="15" cy="15" r="13" stroke="black" stroke-width="2" fill="transparent" />
@@ -91,7 +88,7 @@
 			objects: [
 				{
 					key: ObjectType.TEXTAREA,
-					previewUrl: textareaPreview,
+					keywords: ['rectangle', 'square', 'text'],
 					preview: `
             <g>
               <rect width="30" height="30" stroke="black" stroke-width="4" fill="transparent" />
@@ -128,17 +125,26 @@
 		},
 	];
 
-	function toggleGroup(model: PanelGroup) {
-		const index = models.indexOf(model);
-		const newModel = { ...model };
-		newModel.opened = !newModel.opened;
-		models[index] = newModel;
-	}
+	$: filteredModels = keyword
+		? models.reduce<PanelGroup[]>((result, current) => {
+				const filtered = current.objects.filter((object) => {
+					return object.keywords.some((word) => word.match(keyword));
+				});
+				if (filtered.length) {
+					result.push({
+						...current,
+						objects: filtered,
+					});
+				}
+				return result;
+		  }, [])
+		: models;
 </script>
 
 <div id="object-panel-root">
-	{#each models as model}
-		<QueButton border={false} on:click={() => toggleGroup(model)}>
+	<input class="object-search-input" bind:value={keyword} type="text" placeholder="Search Shapes" />
+	{#each filteredModels as model}
+		<QueButton border={false} on:click={() => (model.opened = !model.opened)}>
 			<div class="object-group">
 				<div class="object-group-text {model.opened ? 'opened' : 'closed'}">
 					{model.name}
@@ -171,6 +177,14 @@
 		flex-direction: column;
 	}
 
+	.object-search-input {
+		border: 0;
+		outline: 0;
+		width: 100%;
+		height: 30px;
+		padding: 5px;
+	}
+
 	.object-group,
 	.object-list {
 		width: 100%;
@@ -180,6 +194,9 @@
 	.object-group {
 		width: 100%;
 		display: flex;
+		border-top: 1px solid rgba(0, 0, 0, 0.1);
+		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
 		.object-group-text {
 			width: 100%;
 			background-repeat: no-repeat;
@@ -199,15 +216,6 @@
 	.object-list {
 		display: grid;
 		grid-template-columns: repeat(4, 25%);
-	}
-
-	.object-preview-container {
-		width: 100%;
-		display: block;
-
-		:hover {
-			background-color: #eee;
-		}
 	}
 
 	.preview-svg {
