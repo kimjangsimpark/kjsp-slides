@@ -19,6 +19,17 @@ export const selectedObjectsSelector = (): SelectorFn<DocumentObject[]> => {
   }
 }
 
+export const selectedObjectsByUUIDSelector = (): SelectorFn<{ [key: string]: DocumentObject }> => {
+  return state => {
+    const uuids = selectedUUIDSelector()(state);
+    const objects = objectsByUUIDSelector()(state);
+    return uuids.reduce<{ [key: string]: DocumentObject }>((result, uuid) => {
+      result[uuid] = objects[uuid];
+      return result;
+    }, {});
+  }
+}
+
 export const selectedObjectsSlice = createSlice({
   name: 'selectedObjects',
   initialState: [] as string[],

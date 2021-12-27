@@ -8,7 +8,11 @@
 		TextObjectHorizontalAlign,
 		TextObjectVerticalAlign,
 	} from '@/store/object.store';
-	import { selectedObjectsSelector, selectedObjectsSlice } from '@/store/selected.store';
+	import {
+		selectedObjectsByUUIDSelector,
+		selectedObjectsSelector,
+		selectedObjectsSlice,
+	} from '@/store/selected.store';
 	import { filter, map, takeUntil } from 'rxjs';
 	export let object: DocumentObject;
 	export let to: Animatable;
@@ -16,18 +20,26 @@
 	export let text: ObjectText;
 
 	const dispatch = useDispatch();
-
 	let textarea: HTMLDivElement;
 
-	useSelector(selectedObjectsSelector())
+	useSelector(selectedObjectsByUUIDSelector())
 		.pipe(
 			takeUntil(onDestroy$),
-			map((objects) => objects.find(({ uuid }) => object.uuid === uuid)),
-			filter((selected) => Boolean(selected)),
+			map((objects) => objects[object.uuid]),
 			filter(() => Boolean(textarea)),
 		)
 		.subscribe({
-			next: () => textarea.focus(),
+			next: (selected) => {
+				if (selected && !textarea.childNodes[0]) {
+					textarea.focus();
+				} else if (!selected) {
+					const selection = window.getSelection();
+					if (selection?.focusNode === textarea.childNodes[0]) {
+						selection.removeAllRanges();
+					}
+					textarea.blur();
+				}
+			},
 		});
 
 	$: verticalAlign =
@@ -50,8 +62,8 @@
 
 	const onKeydown = (e: KeyboardEvent) => {
 		if (e.key === 'Enter') {
-			document.execCommand('insertLineBreak');
 			e.preventDefault();
+			document.execCommand('insertLineBreak');
 		}
 	};
 
@@ -90,7 +102,7 @@
 			attributeName="height"
 			from={from.shape.height}
 			to={to.shape.height}
-			dur={`${from.duration}s`}
+			dur={`${to.duration}s`}
 		/>
 		<animate
 			class="queue-animator"
@@ -98,7 +110,7 @@
 			attributeName="width"
 			from={from.shape.width}
 			to={to.shape.width}
-			dur={`${from.duration}s`}
+			dur={`${to.duration}s`}
 		/>
 		<animate
 			class="queue-animator"
@@ -106,7 +118,7 @@
 			attributeName="x"
 			from={from.shape.x}
 			to={to.shape.x}
-			dur={`${from.duration}s`}
+			dur={`${to.duration}s`}
 		/>
 		<animate
 			class="queue-animator"
@@ -114,7 +126,7 @@
 			attributeName="y"
 			from={from.shape.y}
 			to={to.shape.y}
-			dur={`${from.duration}s`}
+			dur={`${to.duration}s`}
 		/>
 	{/if}
 </foreignObject>
