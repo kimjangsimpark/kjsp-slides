@@ -8,11 +8,7 @@
 		TextObjectHorizontalAlign,
 		TextObjectVerticalAlign,
 	} from '@/store/object.store';
-	import {
-		selectedObjectsByUUIDSelector,
-		selectedObjectsSelector,
-		selectedObjectsSlice,
-	} from '@/store/selected.store';
+	import { selectedObjectsByUUIDSelector, selectedObjectsSlice } from '@/store/selected.store';
 	import { filter, map, takeUntil } from 'rxjs';
 	export let object: DocumentObject;
 	export let to: Animatable;

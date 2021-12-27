@@ -17,6 +17,7 @@
 	import Rectangle from './types/Rectangle.svelte';
 	import Textarea from './types/Textarea.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import Circle from './types/Circle.svelte';
 
 	const dispatcher = createEventDispatcher();
 
@@ -38,6 +39,8 @@
 		<Rectangle {object} {to} {from} />
 	{:else if object.type === ObjectType.TEXTAREA}
 		<Textarea {object} {to} {from} />
+	{:else if object.type === ObjectType.CIRCLE}
+		<Circle {object} {to} {from} />
 	{/if}
 
 	{#if object.text}

@@ -270,6 +270,29 @@ export const objectsSlice = createSlice({
             }],
           }
           break;
+        case ObjectType.CIRCLE:
+          pendingObject = {
+            uuid: createObjectUUID(),
+            type: params.payload.type,
+            shape: { ...params.payload.rect },
+            stroke: {
+              strokeColor: 'black',
+              strokeDasharray: [],
+              strokeWidth: 3,
+            },
+            text: {
+              innerText: 'Text',
+              fontSize: 30,
+              textColor: 'black',
+              verticalAlign: TextObjectVerticalAlign.CENTER,
+              horizontalAlign: TextObjectHorizontalAlign.CENTER,
+            },
+            effects: [{
+              index: params.payload.index,
+              type: ObjectEffectType.CREATE,
+            }],
+          }
+          break;
         default:
           throw new Error('Unsupported Object')
       }
