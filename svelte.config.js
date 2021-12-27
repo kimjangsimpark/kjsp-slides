@@ -9,10 +9,10 @@ module.exports = {
   },
   emitCss: prod,
   hotReload: !prod,
-  preprocess: sveltePreprocess({ 
+  preprocess: sveltePreprocess({
     sourceMap: !prod,
     scss: {
-      prependData:  `@import "src/styles/variables.scss";`,
+      prependData: `@import "src/styles/variables.scss";`,
     },
     // postcss
     // npm i -D postcss autoprefixer postcss-loader  브라우저 벤더 접두사 추가해주는 것 논의필요

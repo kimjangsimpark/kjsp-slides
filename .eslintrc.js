@@ -1,21 +1,16 @@
 module.exports = {
+  root: true,
   parser: '@typescript-eslint/parser',
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking'
+    'prettier'
   ],
-  parserOptions: {
-    ecmaVersion: 2020,
-    sourceType: 'module',
-    tsconfigRootDir: __dirname,
-    project: ['./tsconfig.json'],
-    extraFileExtensions: ['.svelte']
-  },
-  env: {
-    es6: true,
-    browser: true
-  },
+  plugins: [
+    'svelte3',
+    '@typescript-eslint',
+  ],
+  ignorePatterns: ['*.cjs'],
   overrides: [
     {
       files: ['*.svelte'],
@@ -23,16 +18,18 @@ module.exports = {
     }
   ],
   settings: {
-    'svelte3/typescript': require('typescript'),
-    'svelte3/typescript': true,
+    'svelte3/typescript': () => require('typescript')
   },
-  plugins: [
-    'svelte3',
-    '@typescript-eslint',
-  ],
-  ignorePatterns: ['node_modules'],
+  parserOptions: {
+    sourceType: 'module',
+    ecmaVersion: 2020,
+  },
+  env: {
+    browser: true,
+    es2017: true,
+    node: true
+  },
   rules: {
     quotes: ['error', 'single'],
-    '@typescript-eslint/no-unsafe-assignment': 'off',
   },
 };
