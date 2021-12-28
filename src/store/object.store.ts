@@ -18,6 +18,7 @@ export enum ObjectType {
 export enum ObjectEffectType {
   CREATE = 'create',
   FADE_IN = 'fade-in',
+  FADE_OUT = 'fade-out',
   TRANSITION = 'transition',
   DELETE = 'delete',
 }
@@ -25,11 +26,22 @@ export enum ObjectEffectType {
 export interface ObjectCreateEffect extends CommonEffect {
   index: number;
   type: ObjectEffectType.CREATE;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
 export interface ObjectFadeInEffect extends CommonEffect {
   index: number;
   type: ObjectEffectType.FADE_IN;
+  duration: number;
+}
+
+export interface ObjectFadeOutEffect extends CommonEffect {
+  index: number;
+  type: ObjectEffectType.FADE_OUT;
+  duration: number;
 }
 
 export interface ObjectTransitionEffect extends CommonEffect {
@@ -50,6 +62,7 @@ export interface ObjectDeleteEffect extends CommonEffect {
 export type ObjectEffect =
   | ObjectCreateEffect
   | ObjectFadeInEffect
+  | ObjectFadeOutEffect
   | ObjectTransitionEffect
   | ObjectDeleteEffect;
 
@@ -101,7 +114,6 @@ export enum TextObjectHorizontalAlign {
 export interface CommonObject {
   uuid: string;
   type: ObjectType;
-  shape: ObjectRect;
   effects: ObjectEffect[];
 }
 
@@ -139,37 +151,6 @@ export function isCreateEffect(effect: ObjectEffect): effect is ObjectCreateEffe
 
 export const objectSelector = (): SelectorFn<DocumentObject[]> => {
   return state => state.objects;
-}
-
-export function findLatestRect(
-  object: DocumentObject,
-  index: number
-): ObjectRect {
-  const latest = object.effects.slice().reverse().find(
-    effect =>
-      effect.index <= index &&
-      (
-        effect.type === ObjectEffectType.TRANSITION ||
-        effect.type === ObjectEffectType.CREATE
-      )
-  );
-  if (latest && isTransitionEffect(latest)) {
-    return {
-      x: latest.x,
-      y: latest.y,
-      height: latest.height,
-      width: latest.width,
-    }
-  } else if (latest && isCreateEffect(latest)) {
-    return {
-      x: object.shape.x,
-      y: object.shape.y,
-      height: object.shape.height,
-      width: object.shape.width,
-    }
-  } else {
-    throw new Error('Target effect not found');
-  }
 }
 
 export const objectsByUUIDSelector = (): SelectorFn<Readonly<{ [key: string]: DocumentObject }>> => {
@@ -228,7 +209,6 @@ export const objectsSlice = createSlice({
           pendingObject = {
             uuid: createObjectUUID(),
             type: params.payload.type,
-            shape: { ...params.payload.rect },
             stroke: {
               strokeColor: 'black',
               strokeDasharray: [],
@@ -244,6 +224,7 @@ export const objectsSlice = createSlice({
             effects: [{
               index: params.payload.index,
               type: ObjectEffectType.CREATE,
+              ...params.payload.rect
             }],
           }
           break;
@@ -251,7 +232,6 @@ export const objectsSlice = createSlice({
           pendingObject = {
             uuid: createObjectUUID(),
             type: params.payload.type,
-            shape: { ...params.payload.rect },
             stroke: {
               strokeColor: 'black',
               strokeDasharray: [],
@@ -267,6 +247,7 @@ export const objectsSlice = createSlice({
             effects: [{
               index: params.payload.index,
               type: ObjectEffectType.CREATE,
+              ...params.payload.rect
             }],
           }
           break;
@@ -274,7 +255,6 @@ export const objectsSlice = createSlice({
           pendingObject = {
             uuid: createObjectUUID(),
             type: params.payload.type,
-            shape: { ...params.payload.rect },
             stroke: {
               strokeColor: 'black',
               strokeDasharray: [],
@@ -290,6 +270,7 @@ export const objectsSlice = createSlice({
             effects: [{
               index: params.payload.index,
               type: ObjectEffectType.CREATE,
+              ...params.payload.rect
             }],
           }
           break;
@@ -329,7 +310,11 @@ export const objectsSlice = createSlice({
       );
 
       if (isCreateQueueIndex !== -1) {
-        pendingUpdate.shape = params.payload.rect;
+        pendingUpdate.effects[isCreateQueueIndex] = {
+          type: ObjectEffectType.CREATE,
+          index: params.payload.index,
+          ...params.payload.rect
+        };
       } else if (isTransitionEffectIndex !== -1) {
         pendingUpdate.effects[isTransitionEffectIndex] = {
           type: ObjectEffectType.TRANSITION,

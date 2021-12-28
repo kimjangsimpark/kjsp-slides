@@ -7,17 +7,18 @@
 	import { selectedObjectsSelector } from '@/store/selected.store';
 	import { DocumentObject, objectsSlice } from '@/store/object.store';
 	import { currentQueueIndexSelector } from '@/store/queue.store';
+	import QueButton from '@/buttons/QueButton.svelte';
+	import QueEffectList from './effects/QueEffectList.svelte';
+	import QueEffect from './effects/QueEffect.svelte';
 
-	const currentQueueIndex = useSelector(currentQueueIndexSelector());
 	const dispatch = useDispatch();
-
+	const currentQueueIndex = useSelector(currentQueueIndexSelector());
 	const selectedObject = useSelector(selectedObjectsSelector()).pipe(
 		map((objects) => objects[0]),
 		filter((object) => Boolean(object)),
 	);
 
 	const effects = selectedObject.pipe(map((object) => object.effects));
-
 	const currentEffects = effects.pipe(
 		map((effects) => effects.filter((effect) => effect.index === $currentQueueIndex)),
 	);
@@ -81,33 +82,30 @@
 </script>
 
 <aside id="object-control-panel-root">
+	<!-- effects list -->
 	<section class="panel-section action-list-wrapper">
 		<header><h2>Effects</h2></header>
-		<ol class="list">
+		<QueEffectList>
 			{#each $effects as effect}
-				<li class="list-item">
-					#{Number(effect.index) + 1}
-					{effect.type}
-				</li>
+				<QueEffect uuid={$selectedObject.uuid} {effect}>asdf</QueEffect>
 			{/each}
-		</ol>
+		</QueEffectList>
 	</section>
 
+	<!-- current effects list -->
 	<section class="panel-section effect-list-wrapper">
 		<header>
 			<h2>Current effects</h2>
-			<button>+</button>
+			<QueButton>+</QueButton>
 		</header>
-		<ol class="list">
+		<QueEffectList>
 			{#each $currentEffects as effect}
-				<li class="list-item">
-					#{Number(effect.index) + 1}
-					{effect.type}
-				</li>
+				<QueEffect uuid={$selectedObject.uuid} {effect}>asdf</QueEffect>
 			{/each}
-		</ol>
+		</QueEffectList>
 	</section>
 
+	<!-- line -->
 	<section class="panel-section line-wrapper">
 		<header><h2>Line</h2></header>
 		<div>
@@ -181,6 +179,7 @@
 		}
 
 		header {
+			pointer-events: none;
 			h2 {
 				font-size: 1.125rem;
 				text-align: center;

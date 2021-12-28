@@ -43,24 +43,29 @@ export function currentQueueRangeObjectsSelector(): SelectorFn<CurrentQueueRange
         const immutable: Animatable = {
           uuid: object.uuid,
           type: object.type,
-          shape: { ...object.shape },
+          shape: {
+            height: 0,
+            width: 0,
+            x: 0,
+            y: 0,
+          },
           duration: 0,
         };
         const reversedEffects = object.effects.slice(0).reverse();
 
         const lastTransition = reversedEffects.find(
-          effect => effect.index < range.index && effect.type === 'transition',
+          effect => effect.index < range.index && effect.type === 'transition' || effect.type === 'create',
         ) as ObjectTransitionEffect;
 
         const currentTransition = reversedEffects.find(
-          effect => effect.index === range.index && effect.type === 'transition',
+          effect => effect.index === range.index && effect.type === 'transition' || effect.type === 'create',
         ) as ObjectTransitionEffect;
 
         immutable.shape = {
-          x: currentTransition?.x || lastTransition?.x || object.shape.x,
-          y: currentTransition?.y || lastTransition?.y || object.shape.y,
-          width: currentTransition?.width || lastTransition?.width || object.shape.width,
-          height: currentTransition?.height || lastTransition?.height || object.shape.height,
+          x: currentTransition?.x || lastTransition?.x,
+          y: currentTransition?.y || lastTransition?.y,
+          width: currentTransition?.width || lastTransition?.width,
+          height: currentTransition?.height || lastTransition?.height,
         };
 
         immutable.duration = 0.5;

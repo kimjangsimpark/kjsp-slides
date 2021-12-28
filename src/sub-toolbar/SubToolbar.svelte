@@ -36,12 +36,12 @@
 <div id="subtoolbar">
 	<div class="subtoolbar-button-group">
 		<div class="subtoolbar-item">
-			<QueButton class="subtoolbar-button">
+			<QueButton>
 				<i class="ri-arrow-go-back-line" />
 			</QueButton>
 		</div>
 		<div class="subtoolbar-item">
-			<QueButton class="subtoolbar-button">
+			<QueButton>
 				<i class="ri-arrow-go-forward-line" />
 			</QueButton>
 		</div>
@@ -49,13 +49,13 @@
 
 	<div class="subtoolbar-button-group">
 		<div class="subtoolbar-item">
-			<QueButton class="subtoolbar-button" on:click={() => onPrevClicked()}>
+			<QueButton on:click={() => onPrevClicked()}>
 				<i class="ri-arrow-left-line" />
 			</QueButton>
 		</div>
 		{#each $range as index}
 			<div class="subtoolbar-item">
-				<QueButton class="subtoolbar-button" on:click={() => onIndexClicked(index)}>
+				<QueButton on:click={() => onIndexClicked(index)}>
 					<span class="que-index {index === $currentQueueIndex ? 'current' : ''}">
 						{index > -1 ? index + 1 : ''}
 					</span>
@@ -63,7 +63,7 @@
 			</div>
 		{/each}
 		<div class="subtoolbar-item">
-			<QueButton class="subtoolbar-button" on:click={() => onNextClicked()}>
+			<QueButton on:click={() => onNextClicked()}>
 				<i class="ri-arrow-right-line" />
 			</QueButton>
 		</div>
@@ -71,13 +71,13 @@
 
 	<div class="subtoolbar-button-group">
 		<div class="subtoolbar-item">
-			<QueButton class="subtoolbar-button" on:click={() => onScaleDownClicked()}>
+			<QueButton on:click={() => onScaleDownClicked()}>
 				<i class="ri-subtract-line" />
 			</QueButton>
 		</div>
 
 		<div class="subtoolbar-item">
-			<QueButton class="subtoolbar-button" on:click={() => onScaleUpClicked()}>
+			<QueButton on:click={() => onScaleUpClicked()}>
 				<i class="ri-add-line" />
 			</QueButton>
 		</div>
