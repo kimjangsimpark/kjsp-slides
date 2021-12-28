@@ -34,7 +34,7 @@
 			attributeName="ry"
 			from={previous_ry}
 			to={ry}
-			dur={`${from.duration}s`}
+			dur={`${to.duration}s`}
 		/>
 		<animate
 			class="queue-animator"
@@ -42,7 +42,7 @@
 			attributeName="rx"
 			from={previous_rx}
 			to={rx}
-			dur={`${from.duration}s`}
+			dur={`${to.duration}s`}
 		/>
 		<animate
 			class="queue-animator"
@@ -50,7 +50,7 @@
 			attributeName="cx"
 			from={previous_cx}
 			to={cx}
-			dur={`${from.duration}s`}
+			dur={`${to.duration}s`}
 		/>
 		<animate
 			class="queue-animator"
@@ -58,7 +58,7 @@
 			attributeName="cy"
 			from={previous_cy}
 			to={cy}
-			dur={`${from.duration}s`}
+			dur={`${to.duration}s`}
 		/>
 	{/if}
 </ellipse>

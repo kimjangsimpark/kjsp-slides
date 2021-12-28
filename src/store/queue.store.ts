@@ -1,6 +1,6 @@
 import type { SelectorFn } from '@/app/hooks';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { ObjectTransitionEffect, Animatable } from './object.store';
+import type { ObjectTransitionEffect, Animatable, ObjectCreateEffect } from './object.store';
 
 export interface CurrentQueueRangeObject {
   index: number;
@@ -54,21 +54,17 @@ export function currentQueueRangeObjectsSelector(): SelectorFn<CurrentQueueRange
         const reversedEffects = object.effects.slice(0).reverse();
 
         const lastTransition = reversedEffects.find(
-          effect => effect.index < range.index && effect.type === 'transition' || effect.type === 'create',
-        ) as ObjectTransitionEffect;
-
-        const currentTransition = reversedEffects.find(
-          effect => effect.index === range.index && effect.type === 'transition' || effect.type === 'create',
+          effect => effect.index <= range.index && effect.type === 'transition' || effect.type === 'create',
         ) as ObjectTransitionEffect;
 
         immutable.shape = {
-          x: currentTransition?.x || lastTransition?.x,
-          y: currentTransition?.y || lastTransition?.y,
-          width: currentTransition?.width || lastTransition?.width,
-          height: currentTransition?.height || lastTransition?.height,
+          x: lastTransition.x,
+          y: lastTransition.y,
+          width: lastTransition.width,
+          height: lastTransition.height,
         };
 
-        immutable.duration = 0.5;
+        immutable.duration = lastTransition.duration || 0.5;
 
         return immutable;
       });
