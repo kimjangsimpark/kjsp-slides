@@ -16,12 +16,16 @@
 	export let text: ObjectText;
 
 	const dispatch = useDispatch();
+	const selected = useSelector(selectedObjectsByUUIDSelector()).pipe(
+		takeUntil(onDestroy$),
+		map((objects) => objects[object.uuid]),
+	);
+
 	let textarea: HTMLDivElement;
 
-	useSelector(selectedObjectsByUUIDSelector())
+	selected
 		.pipe(
 			takeUntil(onDestroy$),
-			map((objects) => objects[object.uuid]),
 			filter(() => Boolean(textarea)),
 		)
 		.subscribe({
@@ -82,8 +86,8 @@
 	>
 		<div
 			bind:this={textarea}
-			class="object-textarea"
-			contenteditable="true"
+			class="object-textarea {$selected ? 'selected' : ''}"
+			contenteditable={!!$selected}
 			spellcheck="false"
 			on:keydown={(e) => onKeydown(e)}
 			on:mousedown={(e) => onMousedown(e)}
@@ -139,8 +143,9 @@
 		div.object-textarea {
 			outline: 0px solid transparent;
 			display: inline-block;
-
-			cursor: text;
+			&.selected {
+				cursor: text;
+			}
 		}
 	}
 </style>
